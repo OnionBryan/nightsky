@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Sky Observation Planner</title>
+    <link rel="stylesheet" href="css/planner.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="planner-header">
+        <div class="header-left">
+            <a href="index.html" class="back-link" title="Back to Planetarium">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <h1>Night Sky Planner</h1>
+        </div>
+        <div class="header-center">
+            <div class="location-controls">
+                <div class="location-input-row">
+                    <input type="text" id="location-input" placeholder="Enter city or coordinates (lat, lon)">
+                    <button id="use-location-btn" class="icon-btn" title="Use my location">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="location-time">
+                    <span id="location-display">Loading location...</span>
+                    <span class="separator">|</span>
+                    <span id="date-display"></span>
+                    <span id="time-display"></span>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button id="night-mode-toggle" class="icon-btn" title="Toggle Red Night Mode">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <line x1="12" y1="2" x2="12" y2="6"/>
+                    <line x1="12" y1="18" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="6" y2="12"/>
+                    <line x1="18" y1="12" x2="22" y2="12"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="planner-main">
+        <!-- Sidebar Widgets -->
+        <aside class="planner-sidebar">
+            <!-- Moon Phase Widget -->
+            <div class="widget moon-widget">
+                <h3>Moon Phase</h3>
+                <div class="moon-display">
+                    <div id="moon-phase"></div>
+                    <div id="moon-info"></div>
+                </div>
+            </div>
+
+            <!-- Bortle Scale Indicator -->
+            <div class="widget bortle-widget">
+                <h3>Sky Conditions</h3>
+                <div id="bortle-indicator">
+                    <div class="bortle-class">Class 5</div>
+                    <div class="bortle-name">Suburban Sky</div>
+                    <div class="bortle-lm">Limiting Mag: 5.8</div>
+                </div>
+            </div>
+
+            <!-- Planets Tonight -->
+            <div class="widget planets-widget">
+                <h3>Planets Tonight</h3>
+                <div id="planets-list"></div>
+            </div>
+        </aside>
+
+        <!-- Tab Content Area -->
+        <div class="tab-container">
+            <!-- Tab Navigation -->
+            <nav class="tab-nav">
+                <button class="tab-btn active" data-tab="tonight">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Tonight's Best
+                </button>
+                <button class="tab-btn" data-tab="ephemeris">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    Rise/Set Times
+                </button>
+                <button class="tab-btn" data-tab="distance">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+                    </svg>
+                    Angular Distance
+                </button>
+                <button class="tab-btn" data-tab="lists">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"/>
+                        <line x1="8" y1="12" x2="21" y2="12"/>
+                        <line x1="8" y1="18" x2="21" y2="18"/>
+                        <line x1="3" y1="6" x2="3.01" y2="6"/>
+                        <line x1="3" y1="12" x2="3.01" y2="12"/>
+                        <line x1="3" y1="18" x2="3.01" y2="18"/>
+                    </svg>
+                    Object Lists
+                </button>
+                <button class="tab-btn" data-tab="weather">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+                    </svg>
+                    Weather
+                </button>
+                <button class="tab-btn" data-tab="stories">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        <path d="M12 6l2 4 4 .5-3 3 .5 4-3.5-2-3.5 2 .5-4-3-3 4-.5 2-4z"/>
+                    </svg>
+                    Stories
+                </button>
+            </nav>
+
+            <!-- Tab Panels -->
+            <div class="tab-content">
+                <!-- Tonight's Best Panel -->
+                <div id="tonight-panel" class="tab-panel active">
+                    <div class="panel-header">
+                        <h2>Best Objects to Observe Tonight</h2>
+                        <div class="filter-group">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="galaxy">Galaxies</button>
+                            <button class="filter-btn" data-filter="nebula">Nebulae</button>
+                            <button class="filter-btn" data-filter="cluster">Clusters</button>
+                        </div>
+                    </div>
+                    <div id="tonight-list" class="object-grid">
+                        <div class="loading">Calculating visible objects...</div>
+                    </div>
+                </div>
+
+                <!-- Ephemeris Panel -->
+                <div id="ephemeris-panel" class="tab-panel">
+                    <div class="panel-header">
+                        <h2>Rise / Transit / Set Times</h2>
+                    </div>
+                    <div class="ephemeris-search">
+                        <input type="text" id="object-search" placeholder="Enter object name (e.g., M31, Venus, Polaris)">
+                        <button onclick="calculateEphemeris()" class="btn-primary">Calculate</button>
+                    </div>
+                    <div id="ephemeris-result" class="ephemeris-display">
+                        <p class="placeholder-text">Enter an object name above to see its rise, transit, and set times.</p>
+                    </div>
+                    <canvas id="ephemeris-timeline" class="timeline-canvas"></canvas>
+                </div>
+
+                <!-- Angular Distance Panel -->
+                <div id="distance-panel" class="tab-panel">
+                    <div class="panel-header">
+                        <h2>Angular Distance Calculator</h2>
+                    </div>
+                    <div class="distance-calculator">
+                        <div class="coord-inputs">
+                            <div class="coord-group">
+                                <h3>Position 1</h3>
+                                <div class="input-row">
+                                    <label>RA:</label>
+                                    <input type="text" id="coord1-ra" placeholder="e.g., 12h 30m 45s or 187.6875">
+                                </div>
+                                <div class="input-row">
+                                    <label>Dec:</label>
+                                    <input type="text" id="coord1-dec" placeholder="e.g., +41° 16' 09&quot; or 41.2692">
+                                </div>
+                            </div>
+                            <div class="coord-group">
+                                <h3>Position 2</h3>
+                                <div class="input-row">
+                                    <label>RA:</label>
+                                    <input type="text" id="coord2-ra" placeholder="e.g., 0h 42m 44s or 10.6847">
+                                </div>
+                                <div class="input-row">
+                                    <label>Dec:</label>
+                                    <input type="text" id="coord2-dec" placeholder="e.g., +41° 16' 09&quot; or 41.2692">
+                                </div>
+                            </div>
+                        </div>
+                        <button id="calc-distance-btn" class="btn-primary">Calculate Distance</button>
+                        <div id="distance-result" class="distance-display">
+                            <p class="placeholder-text">Enter coordinates above to calculate the angular separation.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Object Lists Panel -->
+                <div id="lists-panel" class="tab-panel">
+                    <div class="panel-header">
+                        <h2>Observation Checklists</h2>
+                    </div>
+                    <div class="catalog-sections">
+                        <!-- Messier Catalog -->
+                        <div class="catalog-section">
+                            <div class="catalog-header catalog-toggle">
+                                <h3>Messier Catalog</h3>
+                                <div id="messier-progress" class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <span class="progress-text">0 / 110</span>
+                                </div>
+                                <svg class="expand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </div>
+                            <div id="messier-list" class="catalog-list"></div>
+                        </div>
+
+                        <!-- Caldwell Catalog -->
+                        <div class="catalog-section collapsed">
+                            <div class="catalog-header catalog-toggle">
+                                <h3>Caldwell Catalog</h3>
+                                <div id="caldwell-progress" class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 0%"></div>
+                                    </div>
+                                    <span class="progress-text">0 / 109</span>
+                                </div>
+                                <svg class="expand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </div>
+                            <div id="caldwell-list" class="catalog-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Panel -->
+                <div id="weather-panel" class="tab-panel">
+                    <div class="panel-header">
+                        <h2>Weather & Observing Conditions</h2>
+                    </div>
+                    <div id="weather-container" class="weather-display">
+                        <div class="loading">Loading weather forecast...</div>
+                    </div>
+                </div>
+
+                <!-- Constellation Stories Panel -->
+                <div id="stories-panel" class="tab-panel">
+                    <div class="panel-header">
+                        <h2>Constellation Stories & Mythology</h2>
+                        <div class="culture-selector">
+                            <label for="culture-select">Culture:</label>
+                            <select id="culture-select">
+                                <option value="all">All Cultures</option>
+                                <option value="greek">Greek/Roman</option>
+                                <option value="chinese">Chinese</option>
+                                <option value="arabic">Arabic/Islamic</option>
+                                <option value="hebrew">Hebrew/Mazzaroth</option>
+                                <option value="african">African Traditions</option>
+                                <option value="indigenous">Indigenous Peoples</option>
+                                <option value="hindu">Hindu/Vedic</option>
+                                <option value="mesopotamian">Mesopotamian/Babylonian</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="stories-layout">
+                        <!-- Object Browser Sidebar -->
+                        <div class="stories-sidebar">
+                            <div class="stories-search">
+                                <input type="text" id="stories-search-input" placeholder="Search constellations...">
+                            </div>
+                            <div class="stories-categories">
+                                <button class="category-btn active" data-category="zodiac">
+                                    <span class="category-icon">♈</span> Zodiac
+                                </button>
+                                <button class="category-btn" data-category="constellations">
+                                    <span class="category-icon">⭐</span> Constellations
+                                </button>
+                                <button class="category-btn" data-category="planets">
+                                    <span class="category-icon">🪐</span> Planets
+                                </button>
+                                <button class="category-btn" data-category="stars">
+                                    <span class="category-icon">✦</span> Stars
+                                </button>
+                                <button class="category-btn" data-category="asterisms">
+                                    <span class="category-icon">✧</span> Asterisms
+                                </button>
+                                <button class="category-btn" data-category="meteorShowers">
+                                    <span class="category-icon">☄</span> Meteor Showers
+                                </button>
+                            </div>
+                            <div id="stories-object-list" class="stories-object-list">
+                                <div class="loading">Loading constellation data...</div>
+                            </div>
+                        </div>
+                        <!-- Story Display Area -->
+                        <div class="stories-content">
+                            <div id="story-display" class="story-display">
+                                <div class="story-placeholder">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    <h3>Select a Constellation</h3>
+                                    <p>Choose from the list to explore myths and stories from cultures around the world.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/astronomy.js"></script>
+    <script src="js/planner.js"></script>
+    <script>
+        // Additional inline initialization for planets widget
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update planets list in sidebar
+            function updatePlanetsList() {
+                const planetsList = document.getElementById('planets-list');
+                if (!planetsList || !PlannerState.location.lat) return;
+
+                const planets = Astronomy.getVisiblePlanets(
+                    PlannerState.location.lat,
+                    PlannerState.location.lon,
+                    new Date()
+                );
+
+                const visiblePlanets = planets.filter(p => p.isVisible);
+
+                if (visiblePlanets.length === 0) {
+                    planetsList.innerHTML = '<div class="no-planets">No planets currently above horizon</div>';
+                    return;
+                }
+
+                planetsList.innerHTML = visiblePlanets.map(p => `
+                    <div class="planet-item ${p.isRetrograde ? 'retrograde' : ''}">
+                        <span class="planet-symbol">${p.symbol}</span>
+                        <span class="planet-name">${p.name}</span>
+                        <span class="planet-info">
+                            Alt: ${p.altitude.toFixed(0)}°
+                            ${p.magnitude ? `| Mag: ${p.magnitude.toFixed(1)}` : ''}
+                            ${p.isRetrograde ? '<span class="retrograde-badge">R</span>' : ''}
+                        </span>
+                    </div>
+                `).join('');
+            }
+
+            // Update planets periodically
+            setInterval(updatePlanetsList, 60000);  // Every minute
+
+            // Initial update after location is loaded
+            const checkLocation = setInterval(() => {
+                if (PlannerState.location.lat) {
+                    updatePlanetsList();
+                    clearInterval(checkLocation);
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Sky Viewer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://slowe.github.io/VirtualSky/stuquery.min.js"></script>
+    <script src="https://slowe.github.io/VirtualSky/virtualsky.min.js"></script>
+    <!-- Aladin Lite for telescope view -->
+    <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.min.css" />
+    <script type="text/javascript" src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>Night Sky Viewer</h1>
+                    <p class="subtitle">Interactive planetarium - drag to look around, scroll to zoom</p>
+                </div>
+                <nav class="header-nav">
+                    <a href="planner.html" class="nav-link planner-link">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Observation Planner
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Controls Panel -->
+            <aside class="controls-panel">
+                <!-- Location Input -->
+                <div class="control-section">
+                    <h3>Location</h3>
+                    <div class="location-row">
+                        <input type="text" id="location-input"
+                               placeholder="City name or coordinates (lat, lon)">
+                        <button id="use-location-btn" class="icon-btn" title="Use my location">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="location-info" class="location-info"></div>
+                </div>
+
+                <!-- Direction Selector -->
+                <div class="control-section">
+                    <h3>View Direction</h3>
+                    <div class="direction-grid">
+                        <button class="direction-btn" data-az="315">NW</button>
+                        <button class="direction-btn" data-az="0">N</button>
+                        <button class="direction-btn" data-az="45">NE</button>
+                        <button class="direction-btn" data-az="270">W</button>
+                        <div class="direction-center">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <button class="direction-btn" data-az="90">E</button>
+                        <button class="direction-btn" data-az="225">SW</button>
+                        <button class="direction-btn selected" data-az="180">S</button>
+                        <button class="direction-btn" data-az="135">SE</button>
+                    </div>
+                </div>
+
+                <!-- Projection -->
+                <div class="control-section">
+                    <h3>Projection</h3>
+                    <div class="style-controls">
+                        <div class="style-row">
+                            <select id="projection-select">
+                                <option value="stereo" selected>Stereographic (horizon)</option>
+                                <option value="fisheye">Fisheye (wide angle)</option>
+                                <option value="polar">Polar (zenith up)</option>
+                                <option value="lambert">Lambert (all-sky)</option>
+                                <option value="ortho">Orthographic</option>
+                                <option value="mollweide">Mollweide (full map)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Celestial Objects -->
+                <div class="control-section">
+                    <h3>Objects</h3>
+                    <div class="options-grid">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-stars" checked>
+                            <span>Stars</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-starlabels">
+                            <span>Star Labels</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-planets" checked>
+                            <span>Planets</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-planetlabels" checked>
+                            <span>Planet Labels</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-constellations" checked>
+                            <span>Constellations</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-constellationlabels">
+                            <span>Const. Labels</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-boundaries">
+                            <span>Boundaries</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-galaxy">
+                            <span>Milky Way</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-meteorshowers">
+                            <span>Meteor Showers</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-orbits">
+                            <span>Planet Orbits</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Reference Lines -->
+                <div class="control-section">
+                    <h3>Reference Lines</h3>
+                    <div class="options-grid">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-ground" checked>
+                            <span>Ground</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-cardinals" checked>
+                            <span>Cardinals</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-ecliptic">
+                            <span>Ecliptic</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-meridian">
+                            <span>Meridian</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-gridaz">
+                            <span>Alt/Az Grid</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-grideq">
+                            <span>RA/Dec Grid</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Time Controls -->
+                <div class="control-section">
+                    <h3>Time</h3>
+                    <div class="time-controls">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="opt-live" checked>
+                            <span>Live (real-time)</span>
+                        </label>
+                        <div class="time-buttons">
+                            <button class="time-btn" id="time-back-day" title="-1 day">-1d</button>
+                            <button class="time-btn" id="time-back-hour" title="-1 hour">-1h</button>
+                            <button class="time-btn" id="time-now" title="Now">Now</button>
+                            <button class="time-btn" id="time-fwd-hour" title="+1 hour">+1h</button>
+                            <button class="time-btn" id="time-fwd-day" title="+1 day">+1d</button>
+                        </div>
+                        <div id="current-time" class="current-time"></div>
+                    </div>
+                </div>
+
+                <!-- Advanced Settings -->
+                <details class="control-section advanced-section">
+                    <summary>Advanced Settings</summary>
+                    <div class="advanced-content">
+                        <div class="slider-control">
+                            <label for="magnitude">Star Magnitude: <span id="mag-value">5</span></label>
+                            <input type="range" id="magnitude" min="1" max="8" step="0.5" value="5">
+                        </div>
+                        <div class="slider-control">
+                            <label for="fov">Field of View: <span id="fov-value">60</span>°</label>
+                            <input type="range" id="fov" min="20" max="120" step="5" value="60">
+                        </div>
+                        <div class="slider-control">
+                            <label for="scalestars">Star Size: <span id="scale-value">1.0</span>x</label>
+                            <input type="range" id="scalestars" min="0.5" max="2" step="0.1" value="1">
+                        </div>
+                        <div class="style-row">
+                            <label for="color-scheme">Color Scheme</label>
+                            <select id="color-scheme">
+                                <option value="normal">Normal (dark sky)</option>
+                                <option value="negative">Negative (white sky)</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+            </aside>
+
+            <!-- Sky View Display -->
+            <main class="sky-view-container">
+                <div id="starmap"></div>
+            </main>
+        </div>
+
+        <!-- Info Panel -->
+        <div id="info-panel" class="info-panel">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Location</span>
+                    <span id="info-location" class="info-value">--</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Coordinates</span>
+                    <span id="info-coords" class="info-value">--</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Direction</span>
+                    <span id="info-direction" class="info-value">South</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Local Time</span>
+                    <span id="info-time" class="info-value">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Powered by <a href="https://slowe.github.io/VirtualSky/" target="_blank">VirtualSky</a> &amp;
+               <a href="https://aladin.cds.unistra.fr/AladinLite/" target="_blank">Aladin Lite</a> |
+               Right-click any star for telescope view</p>
+        </footer>
+
+        <!-- Telescope View Modal -->
+        <div id="telescope-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="telescope-title">Deep Sky View</h2>
+                    <div class="modal-header-buttons">
+                        <button class="fullscreen-btn" id="fullscreen-btn" title="Fullscreen">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                            </svg>
+                        </button>
+                        <button class="modal-close" id="modal-close">&times;</button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="telescope-top-controls">
+                        <div class="search-box">
+                            <input type="text" id="object-search" placeholder="Search: M31, Orion Nebula, Sirius...">
+                            <button id="search-btn" class="search-btn">Go</button>
+                        </div>
+                        <div class="catalog-toggles">
+                            <label class="checkbox-label small">
+                                <input type="checkbox" id="show-messier" checked>
+                                <span>Messier</span>
+                            </label>
+                            <label class="checkbox-label small">
+                                <input type="checkbox" id="show-ngc">
+                                <span>NGC</span>
+                            </label>
+                            <label class="checkbox-label small">
+                                <input type="checkbox" id="show-stars" checked>
+                                <span>Star Names</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="aladin-container"></div>
+                    <div id="click-info" class="click-info">Click any object for details</div>
+                    <div class="telescope-controls">
+                        <div class="survey-select">
+                            <label for="survey-select">Survey:</label>
+                            <select id="survey-select">
+                                <optgroup label="Wide Field (Full/Most Sky)">
+                                    <option value="CDS/P/DSS2/color">DSS2 Color (100% sky)</option>
+                                    <option value="CDS/P/SDSS9/color">SDSS DR9 (35% deep)</option>
+                                    <option value="CDS/P/DECaPS/DR2/color">DECaPS (Galactic plane)</option>
+                                </optgroup>
+                                <optgroup label="PanSTARRS (78% sky, 0.2 arcsec)">
+                                    <option value="CDS/P/PanSTARRS/DR1/color-z-zg-g">PanSTARRS Color (z+g)</option>
+                                    <option value="CDS/P/PanSTARRS/DR1/color-i-r-g">PanSTARRS Color (i,r,g)</option>
+                                    <option value="CDS/P/PanSTARRS/DR1/g">PanSTARRS g band</option>
+                                    <option value="CDS/P/PanSTARRS/DR1/r">PanSTARRS r band</option>
+                                    <option value="CDS/P/PanSTARRS/DR1/i">PanSTARRS i band</option>
+                                    <option value="CDS/P/PanSTARRS/DR1/z">PanSTARRS z band</option>
+                                </optgroup>
+                                <optgroup label="Hubble Optical (0.05 arcsec)">
+                                    <option value="CDS/P/HLA/wideV">Hubble Wide V (F606W)</option>
+                                    <option value="CDS/P/HLA/V">Hubble V band (F555W)</option>
+                                    <option value="CDS/P/HLA/B">Hubble Blue (F450W)</option>
+                                    <option value="CDS/P/HLA/R">Hubble Red (F702W)</option>
+                                    <option value="CDS/P/HLA/I">Hubble I band (F814W)</option>
+                                    <option value="CDS/P/HLA/SDSSg">Hubble SDSS-g (F475W)</option>
+                                    <option value="CDS/P/HLA/SDSSr">Hubble SDSS-r (F625W)</option>
+                                </optgroup>
+                                <optgroup label="Hubble Emission Lines">
+                                    <option value="CDS/P/HLA/Halpha">Hubble H-alpha (nebulae)</option>
+                                    <option value="CDS/P/HLA/OIII">Hubble OIII (nebulae)</option>
+                                    <option value="CDS/P/HLA/Hbeta">Hubble H-beta</option>
+                                </optgroup>
+                                <optgroup label="Infrared">
+                                    <option value="CDS/P/2MASS/color">2MASS Color</option>
+                                    <option value="CDS/P/allWISE/color">AllWISE (mid-IR)</option>
+                                    <option value="CDS/P/HLA/H">Hubble H band (F160W)</option>
+                                    <option value="CDS/P/HLA/J">Hubble J band (F125W)</option>
+                                    <option value="CDS/P/HLA/Y">Hubble Y band (F110W)</option>
+                                </optgroup>
+                                <optgroup label="Ultraviolet">
+                                    <option value="CDS/P/GALEXGR6_7/NUV">GALEX NUV</option>
+                                    <option value="CDS/P/GALEXGR6_7/FUV">GALEX FUV</option>
+                                    <option value="CDS/P/HLA/UV">Hubble UV (F170W)</option>
+                                    <option value="CDS/P/HLA/U">Hubble U band (F336W)</option>
+                                </optgroup>
+                                <optgroup label="Other">
+                                    <option value="CDS/P/Mellinger/color">Mellinger (wide-field)</option>
+                                    <option value="CDS/P/Fermi/color">Fermi Gamma-ray</option>
+                                    <option value="CDS/P/RASS">ROSAT X-ray</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="coord-display">
+                            <span id="coord-ra">RA: --</span>
+                            <span id="coord-dec">Dec: --</span>
+                        </div>
+                        <div class="zoom-buttons">
+                            <button id="zoom-in" class="zoom-btn">+ Zoom</button>
+                            <button id="zoom-out" class="zoom-btn">- Zoom</button>
+                            <span id="fov-display" class="fov-display">FOV: 30'</span>
+                        </div>
+                    </div>
+                    <div id="object-info" class="object-info"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,558 @@
+/* NOAA-21 Orbital Visualization - Enhanced Dark Theme */
+
+:root {
+    --bg-primary: #0a0a12;
+    --bg-secondary: #12121f;
+    --bg-card: rgba(26, 26, 46, 0.95);
+    --ocean: #0d1b2a;
+    --land: #1b263b;
+    --land-stroke: #415a77;
+    --graticule: rgba(65, 90, 119, 0.3);
+    --orbit-track: #00d4ff;
+    --swath-fill: rgba(0, 212, 255, 0.15);
+    --swath-stroke: rgba(0, 212, 255, 0.5);
+    --satellite: #ff6b6b;
+    --velocity: #ffd93d;
+    --text-primary: #e0e1dd;
+    --text-secondary: #778da9;
+    --accent: #00d4ff;
+    --border: rgba(65, 90, 119, 0.4);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: 'SF Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-title h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.satellite-badge {
+    background: rgba(0, 212, 255, 0.15);
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* Satellite Selector */
+.satellite-selector {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.sat-btn {
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sat-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.sat-btn.active {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.sat-btn .sat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.sat-btn.active .sat-dot {
+    box-shadow: 0 0 6px currentColor;
+}
+
+/* Tabs */
+.tab-container {
+    display: flex;
+    gap: 4px;
+    background: rgba(26, 26, 46, 0.8);
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.tab-btn {
+    padding: 8px 20px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(65, 90, 119, 0.2);
+}
+
+.tab-btn.active {
+    background: var(--accent);
+    color: var(--bg-primary);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+
+#map-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+}
+
+#map-svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Map Elements */
+.sphere {
+    fill: var(--ocean);
+    stroke: var(--land-stroke);
+    stroke-width: 2;
+}
+
+.land {
+    fill: var(--land);
+    stroke: var(--land-stroke);
+    stroke-width: 0.3;
+}
+
+.country {
+    transition: fill 0.15s, stroke-width 0.15s;
+}
+
+.graticule {
+    fill: none;
+    stroke: var(--graticule);
+    stroke-width: 0.5;
+}
+
+/* Panels */
+.panel {
+    position: absolute;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    backdrop-filter: blur(12px);
+    z-index: 50;
+}
+
+.info-panel {
+    top: 16px;
+    left: 16px;
+    min-width: 200px;
+}
+
+.position-panel {
+    top: 16px;
+    right: 16px;
+    min-width: 180px;
+}
+
+.zoom-panel {
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.legend-panel {
+    bottom: 16px;
+    left: 16px;
+    min-width: 180px;
+}
+
+.time-panel {
+    bottom: 16px;
+    right: 16px;
+    min-width: 260px;
+}
+
+.panel h3 {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+/* Info Rows */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(65, 90, 119, 0.2);
+    font-size: 0.8rem;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: var(--text-secondary);
+}
+
+.info-value {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.info-value.accent {
+    color: var(--accent);
+}
+
+/* Time Display */
+#time-display {
+    font-size: 1rem;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+.coord-display {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+    min-height: 1.2em;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.control-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.control-btn:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: var(--accent);
+}
+
+.control-btn.active {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: var(--accent);
+}
+
+.shortcuts-hint {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    text-align: center;
+    opacity: 0.7;
+}
+
+/* Icon Buttons (Zoom) */
+.icon-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Legend */
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend-dot.satellite {
+    background: var(--satellite);
+    box-shadow: 0 0 8px var(--satellite);
+}
+
+.legend-line {
+    width: 20px;
+    height: 2px;
+    flex-shrink: 0;
+}
+
+.legend-line.track {
+    background: var(--orbit-track);
+}
+
+.legend-line.velocity {
+    background: var(--velocity);
+}
+
+.legend-rect {
+    width: 20px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.legend-rect.swath {
+    background: var(--swath-fill);
+    border: 1px dashed var(--swath-stroke);
+}
+
+.legend-rect.night {
+    background: rgba(0, 0, 30, 0.35);
+    border: 1px dashed rgba(255, 200, 100, 0.5);
+}
+
+.legend-toggles {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(65, 90, 119, 0.2);
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+    border-color: var(--accent);
+}
+
+.toggle-btn.active {
+    background: rgba(0, 212, 255, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Loading */
+#loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 18, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+#loading-overlay.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top: 16px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* Error */
+#error-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.4);
+    color: #ff6b6b;
+    padding: 20px 30px;
+    border-radius: 12px;
+    display: none;
+    z-index: 100;
+    text-align: center;
+    max-width: 400px;
+}
+
+#error-message.visible {
+    display: block;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+    0% {
+        r: 8;
+        opacity: 1;
+    }
+    100% {
+        r: 30;
+        opacity: 0;
+    }
+}
+
+.satellite-pulse {
+    animation: pulse 2s ease-out infinite;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 16px;
+    }
+
+    .panel {
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .info-panel {
+        top: 10px;
+        left: 10px;
+    }
+
+    .position-panel {
+        top: 10px;
+        right: 10px;
+    }
+
+    .legend-panel {
+        bottom: 10px;
+        left: 10px;
+    }
+
+    .time-panel {
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .zoom-panel {
+        right: 10px;
+    }
+
+    .shortcuts-hint {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .position-panel {
+        display: none;
+    }
+
+    .legend-panel {
+        display: none;
+    }
+}

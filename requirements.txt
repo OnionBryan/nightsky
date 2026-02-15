@@ -1,0 +1,7 @@
+sgp4>=2.22
+skyfield>=1.46
+flask>=2.3
+flask-cors>=4.0
+numpy>=1.24
+requests>=2.31
+python-dateutil>=2.8
