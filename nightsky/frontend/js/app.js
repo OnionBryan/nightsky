@@ -225,9 +225,10 @@ function setupEventListeners() {
     setupCheckbox('opt-starlabels', 'showstarlabels');
     setupCheckbox('opt-planets', 'showplanets');
     setupCheckbox('opt-planetlabels', 'showplanetlabels');
-    setupCheckbox('opt-constellations', 'constellations');
-    setupCheckbox('opt-constellationlabels', 'constellationlabels');
-    setupCheckbox('opt-boundaries', 'constellationboundaries');
+    // VirtualSky uses nested constellation object at runtime
+    setupNestedCheckbox('opt-constellations', 'constellation', 'lines');
+    setupNestedCheckbox('opt-constellationlabels', 'constellation', 'labels');
+    setupNestedCheckbox('opt-boundaries', 'constellation', 'boundaries');
     setupCheckbox('opt-galaxy', 'showgalaxy');
     setupCheckbox('opt-meteorshowers', 'meteorshowers');
     setupCheckbox('opt-orbits', 'showorbits');
@@ -294,6 +295,20 @@ function setupEventListeners() {
     }, 250));
 }
 
+// Helper for VirtualSky nested properties (e.g. constellation.lines)
+function setupNestedCheckbox(elementId, parent, child) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    element.addEventListener('change', (e) => {
+        if (!state.planetarium) return;
+        if (!state.planetarium[parent]) state.planetarium[parent] = {};
+        state.planetarium[parent][child] = e.target.checked;
+        state.planetarium.checkLoaded();
+        state.planetarium.draw();
+    });
+}
+
 // Helper to set up checkbox listeners
 function setupCheckbox(elementId, property) {
     const element = document.getElementById(elementId);
@@ -302,6 +317,7 @@ function setupCheckbox(elementId, property) {
     element.addEventListener('change', (e) => {
         if (!state.planetarium) return;
         state.planetarium[property] = e.target.checked;
+        state.planetarium.checkLoaded();
         state.planetarium.draw();
     });
 }
