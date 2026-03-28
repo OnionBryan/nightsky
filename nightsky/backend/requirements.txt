@@ -1,0 +1,8 @@
+flask>=2.3
+flask-cors>=4.0
+skyfield>=1.46
+starplot>=0.10
+timezonefinder>=6.2
+geopy>=2.4
+numpy>=1.24
+requests>=2.31

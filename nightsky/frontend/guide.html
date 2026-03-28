@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Manual — Night Sky Viewer & NOAA Orbit Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?v=2">
+    <link rel="stylesheet" href="css/guide.css?v=1">
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════════════
+         Top Bar — Fixed navigation header
+         ═══════════════════════════════════════════════════ -->
+    <div class="guide-topbar">
+        <div class="topbar-left">
+            <button class="toc-toggle" id="toc-toggle" aria-label="Toggle table of contents">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+            <a href="index.html" class="topbar-back" title="Back to Night Sky Viewer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Planetarium
+            </a>
+            <span class="topbar-title">Equipment Manual</span>
+        </div>
+        <div class="topbar-right">
+            <a href="index.html" class="topbar-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                Night Sky
+            </a>
+            <a href="planner.html" class="topbar-link">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Planner
+            </a>
+        </div>
+    </div>
+
+    <!-- Mobile TOC overlay backdrop -->
+    <div class="toc-overlay" id="toc-overlay"></div>
+
+    <!-- ═══════════════════════════════════════════════════
+         Main Layout: Sidebar TOC + Content
+         ═══════════════════════════════════════════════════ -->
+    <div class="guide-container">
+
+        <!-- ── Sidebar Table of Contents ── -->
+        <nav class="guide-toc" id="guide-toc" aria-label="Table of Contents">
+            <div class="toc-header">
+                <h2>Contents</h2>
+                <div class="toc-subtitle">Operator's Reference Guide</div>
+            </div>
+            <ul class="toc-nav" id="toc-nav">
+                <li><a href="#welcome" data-section="welcome">Welcome</a></li>
+
+                <li><span class="toc-group-label">Night Sky Viewer</span></li>
+                <li class="toc-sub"><a href="#getting-started" data-section="getting-started">Getting Started</a></li>
+                <li class="toc-sub"><a href="#planetarium" data-section="planetarium">The Planetarium</a></li>
+                <li class="toc-sub"><a href="#telescope" data-section="telescope">Telescope View</a></li>
+                <li class="toc-sub"><a href="#sky-surveys" data-section="sky-surveys">Sky Surveys Explained</a></li>
+                <li class="toc-sub"><a href="#observation-planner" data-section="observation-planner">Observation Planner</a></li>
+                <li class="toc-sub"><a href="#twilight-bar" data-section="twilight-bar">Twilight Bar</a></li>
+                <li class="toc-sub"><a href="#red-light-mode" data-section="red-light-mode">Red Light Mode</a></li>
+
+                <li><span class="toc-group-label">NOAA Orbit Tracker</span></li>
+                <li class="toc-sub"><a href="#live-tracking" data-section="live-tracking">Live Tracking</a></li>
+                <li class="toc-sub"><a href="#constellation-view" data-section="constellation-view">Constellation View</a></li>
+                <li class="toc-sub"><a href="#globe-3d" data-section="globe-3d">3D Globe</a></li>
+                <li class="toc-sub"><a href="#time-machine" data-section="time-machine">Time Machine</a></li>
+                <li class="toc-sub"><a href="#simbad-search" data-section="simbad-search">SIMBAD Deep Sky Search</a></li>
+
+                <li><span class="toc-group-label">Reference</span></li>
+                <li class="toc-sub"><a href="#keyboard-shortcuts" data-section="keyboard-shortcuts">Keyboard Shortcuts</a></li>
+                <li class="toc-sub"><a href="#credits" data-section="credits">Credits & Data Sources</a></li>
+            </ul>
+        </nav>
+
+        <!-- ── Main Content Area ── -->
+        <main class="guide-main">
+
+            <!-- ══════════════════════════════════════════
+                 Page Title / Cover
+                 ══════════════════════════════════════════ -->
+            <div class="guide-page-header">
+                <div class="manual-number">TM-NSV-2026-001</div>
+                <h1>Night Sky Viewer &<br>NOAA Orbit Tracker</h1>
+                <div class="edition-line">Operator's Equipment Manual</div>
+            </div>
+
+
+            <!-- ══════════════════════════════════════════
+                 Section 1: Welcome / What This Is
+                 ══════════════════════════════════════════ -->
+            <section class="guide-section" id="welcome">
+                <div class="section-header">
+                    <span class="section-number">Section 1</span>
+                    <h2>Welcome</h2>
+                </div>
+                <div class="content-placeholder" id="content-welcome">
+                    <p>You are holding two instruments. The <strong>Night Sky Viewer</strong> is an interactive planetarium that puts the entire visible sky on your screen, then lets you punch through to real photographic imagery from the world's greatest telescopes. The <strong>NOAA Orbit Tracker</strong> follows the Joint Polar Satellite System constellation in real time as it circles the Earth every 101 minutes, scanning the planet with infrared eyes.</p>
+                    <p>What makes these different from a typical star chart or satellite map: when you zoom in on a nebula, you are looking at actual photographic plates from the Digitized Sky Survey, or deep exposures from Hubble, or infrared light captured by 2MASS. When you track NOAA-21, you are watching real SGP4-propagated orbital mechanics computed from today's Two-Line Element sets. These are not illustrations. This is the data.</p>
+                </div>
+            </section>
+
+
+            <!-- ══════════════════════════════════════════
+                 Section 2: Night Sky Viewer
+                 ══════════════════════════════════════════ -->
+
+            <!-- 2.1 Getting Started -->
+            <section class="guide-section" id="getting-started">
+                <div class="section-header">
+                    <span class="section-number">Section 2.1</span>
+                    <h2>Getting Started</h2>
+                </div>
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.1.1</span>
+                    <h3>Setting Your Location</h3>
+                </div>
+                <div class="content-placeholder" id="content-location">
+                    <p>The sky looks different from every point on Earth, so the first thing the viewer needs to know is where you are standing. You have three ways to tell it. When the location changes, the entire sky redraws to show what is actually above your horizon right now.</p>
+                </div>
+                <ol class="steps-list">
+                    <li class="step-item">
+                        <span class="step-number">1</span>
+                        <div class="step-content" id="content-step-location-1">
+                            <strong>Type a city name.</strong> Enter "Chicago" or "Tokyo" or "Reykjavik" in the Location box and press Enter. The app uses OpenStreetMap's Nominatim geocoder to find your coordinates. It will display the resolved name below the input so you can confirm it got the right place.
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-number">2</span>
+                        <div class="step-content" id="content-step-location-2">
+                            <strong>Type coordinates directly.</strong> If you know your latitude and longitude, enter them as a comma-separated pair: <code>40.7128, -74.0060</code>. The app detects the coordinate format automatically -- no need to label which is which.
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-number">3</span>
+                        <div class="step-content" id="content-step-location-3">
+                            <strong>Click the GPS crosshair button.</strong> The small target icon next to the location input asks your browser for your actual position. Your browser will request permission first. Once acquired, the coordinates fill in automatically and the app reverse-geocodes them to show your city name.
+                        </div>
+                    </li>
+                </ol>
+                <div class="pro-tip">
+                    <div class="pro-tip-body" id="content-tip-location">
+                        Coordinates can be entered as a simple comma-separated pair like <code>34.05, -118.25</code>. Rural locations away from city lights will reward you when combined with higher magnitude settings -- more stars become visible in darker skies. Use the Bortle class indicator in the Observation Planner to gauge your site's light pollution level.
+                    </div>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.1.2</span>
+                    <h3>Choosing Your View Direction</h3>
+                </div>
+                <div class="content-placeholder" id="content-direction">
+                    <p>The 3x3 compass grid below the location input points your view toward any cardinal or intercardinal direction. South is selected by default because most interesting objects transit through the southern sky (if you are in the Northern Hemisphere). Click N, NE, E, SE, SW, W, or NW to swing your view. The center dot represents zenith -- straight up.</p>
+                    <p>Each click immediately re-renders the planetarium. The current direction is shown in the info bar at the bottom of the screen.</p>
+                </div>
+                <div class="figure-placeholder">
+                    <span class="figure-label">Figure 2.1</span>
+                    <span class="figure-description">[FIGURE: Screenshot or diagram of the direction grid compass rose]</span>
+                </div>
+                <div class="figure-caption">Fig. 2.1 — Direction selector compass rose with South (S) active</div>
+            </section>
+
+
+            <!-- 2.2 The Planetarium -->
+            <section class="guide-section" id="planetarium">
+                <div class="section-header">
+                    <span class="section-number">Section 2.2</span>
+                    <h2>The Planetarium</h2>
+                </div>
+                <div class="content-placeholder" id="content-planetarium-intro">
+                    <p>The planetarium is powered by VirtualSky by Stuart Lowe (Las Cumbres Observatory). It renders stars by apparent magnitude, draws constellation stick figures, plots the planets at their current positions, and shows the ground and horizon. Drag to pan, scroll to zoom, and use the controls panel to toggle overlays and adjust settings.</p>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.2.1</span>
+                    <h3>Projection Modes</h3>
+                </div>
+                <div class="content-placeholder" id="content-projections">
+                    <p>The Projection dropdown changes how the spherical sky gets flattened onto your rectangular screen. Each one is useful for different things:</p>
+                    <ul>
+                        <li><strong>Stereographic (horizon)</strong> -- The default. Shows the sky as you would see it standing outside and looking in one direction. The horizon is at the bottom, zenith is up. This is the most natural view.</li>
+                        <li><strong>Fisheye (wide angle)</strong> -- A wider field of view with barrel distortion, like looking through a security camera. Good for getting a sense of the whole visible sky at once.</li>
+                        <li><strong>Polar (zenith up)</strong> -- Centers on the point directly overhead. Constellations near zenith are shown undistorted; the horizon wraps around the edges.</li>
+                        <li><strong>Lambert (all-sky)</strong> -- An equal-area projection of the entire hemisphere. Every constellation gets fair representation, though shapes distort near the edges.</li>
+                        <li><strong>Orthographic</strong> -- The sky as seen from infinitely far away. Clean and geometric.</li>
+                        <li><strong>Mollweide (full map)</strong> -- Shows the entire celestial sphere in an ellipse, like a world map projection. Both hemispheres visible at once.</li>
+                        <li><strong>Free Look (drag anywhere)</strong> -- Unlocks the view from the horizon. Drag to look anywhere on the celestial sphere. Ground and cardinal points are disabled automatically since they do not apply in this mode.</li>
+                    </ul>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.2.2</span>
+                    <h3>Celestial Object Toggles</h3>
+                </div>
+                <div class="content-placeholder" id="content-toggles">
+                    <p>The Objects section gives you checkboxes for everything the planetarium can draw:</p>
+                    <table class="spec-table">
+                        <thead><tr><th>Checkbox</th><th>What It Shows</th><th>Default</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Stars</strong></td><td>All stars down to the current magnitude limit</td><td>On</td></tr>
+                            <tr><td><strong>Star Labels</strong></td><td>Proper names on bright stars (Sirius, Vega, etc.)</td><td>Off</td></tr>
+                            <tr><td><strong>Planets</strong></td><td>Solar system planets at their current positions</td><td>On</td></tr>
+                            <tr><td><strong>Planet Labels</strong></td><td>Names next to the planets</td><td>On</td></tr>
+                            <tr><td><strong>Constellations</strong></td><td>Stick-figure constellation lines</td><td>On</td></tr>
+                            <tr><td><strong>Const. Labels</strong></td><td>Names of the constellations</td><td>Off</td></tr>
+                            <tr><td><strong>Boundaries</strong></td><td>IAU constellation boundary lines</td><td>Off</td></tr>
+                            <tr><td><strong>Milky Way</strong></td><td>The diffuse band of our galaxy</td><td>Off</td></tr>
+                            <tr><td><strong>Meteor Showers</strong></td><td>Active meteor shower radiants</td><td>Off</td></tr>
+                            <tr><td><strong>Planet Orbits</strong></td><td>Orbital paths of the planets</td><td>Off</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.2.3</span>
+                    <h3>Reference Lines</h3>
+                </div>
+                <div class="content-placeholder" id="content-reflines">
+                    <p>These overlays help you navigate the coordinate systems astronomers use:</p>
+                    <table class="spec-table">
+                        <thead><tr><th>Checkbox</th><th>What It Shows</th><th>Default</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Ground</strong></td><td>The horizon line and solid ground below it</td><td>On</td></tr>
+                            <tr><td><strong>Cardinals</strong></td><td>N, S, E, W markers on the horizon</td><td>On</td></tr>
+                            <tr><td><strong>Ecliptic</strong></td><td>The plane of the solar system -- the Sun, Moon, and planets stay near this line</td><td>Off</td></tr>
+                            <tr><td><strong>Meridian</strong></td><td>The line from due North through zenith to due South</td><td>Off</td></tr>
+                            <tr><td><strong>Alt/Az Grid</strong></td><td>Altitude and azimuth coordinate grid (local sky coordinates)</td><td>Off</td></tr>
+                            <tr><td><strong>RA/Dec Grid</strong></td><td>Right ascension and declination grid (celestial coordinates, fixed to the stars)</td><td>Off</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.2.4</span>
+                    <h3>Time Controls</h3>
+                </div>
+                <div class="content-placeholder" id="content-time">
+                    <p><strong>Live mode</strong> (checkbox, default on). When checked, the sky updates in real time. The clock ticks, the stars drift, the planets creep along.</p>
+                    <p>When you click any time button, Live mode automatically disengages:</p>
+                    <table class="spec-table">
+                        <thead><tr><th>Button</th><th>Effect</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>-1d</strong></td><td>Jump backward one full day</td></tr>
+                            <tr><td><strong>-1h</strong></td><td>Jump backward one hour</td></tr>
+                            <tr><td><strong>Now</strong></td><td>Snap back to the current moment and re-enable Live mode</td></tr>
+                            <tr><td><strong>+1h</strong></td><td>Jump forward one hour</td></tr>
+                            <tr><td><strong>+1d</strong></td><td>Jump forward one full day</td></tr>
+                        </tbody>
+                    </table>
+                    <p>The current simulated date and time are displayed below the buttons. Use the time controls to preview tonight's sky before you go outside, or check what was visible last night.</p>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.2.5</span>
+                    <h3>Advanced Settings</h3>
+                </div>
+                <div class="content-placeholder" id="content-advanced">
+                    <p>Click the "Advanced Settings" expander to reveal three sliders and a color scheme selector:</p>
+                    <p><strong>Star Magnitude</strong> (range 1-8, default 5). This controls how faint the faintest visible stars are. Magnitude 5 approximates what a dark suburban sky shows. Crank it to 8 to see thousands more stars. Drop it to 1 or 2 for a minimalist view showing only the brightest.</p>
+                    <p><strong>Field of View</strong> (range 20-120 degrees, default 60). How wide your view is. 60 degrees is roughly what your eyes see when you look in one direction. Go to 120 for a panoramic sweep. Narrow it to 20 for a telephoto-like zoom on one patch of sky.</p>
+                    <p><strong>Star Size</strong> (range 0.5x-2.0x, default 1.0). A cosmetic multiplier on how large the star dots render. Useful on high-DPI screens or if you want the planetarium to feel bolder.</p>
+                    <p><strong>Color Scheme</strong>. Normal gives you white stars on a dark sky. Negative inverts everything -- dark stars on a white background -- useful for printing star charts.</p>
+                </div>
+                <div class="pro-tip">
+                    <div class="pro-tip-body" id="content-tip-magnitude">
+                        Start at magnitude 5, which approximates the naked-eye limit. Increase to 7-8 when using the telescope view to locate fainter deep-sky objects on the planetarium. The Negative color scheme (dark stars on a white background) is ideal if you want to print a star chart on paper to take outside.
+                    </div>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.2.6</span>
+                    <h3>Rise / Set Times</h3>
+                </div>
+                <div class="content-placeholder" id="content-riseset">
+                    <p>Below the Advanced Settings, a Rise / Set Times panel lets you pick any solar system object from a dropdown -- Sun, Moon, Mercury, Venus, Mars, Jupiter, or Saturn. Select one and the app fetches its rise, transit, and set times for today, plus draws an altitude-over-time chart showing the object's arc across your sky. The horizon line is highlighted in amber at zero degrees. This is enormously helpful for planning: "When does Jupiter clear the trees tonight?"</p>
+                </div>
+            </section>
+
+
+            <!-- 2.3 Telescope View — THE KEY FEATURE -->
+            <section class="guide-section" id="telescope">
+                <div class="section-header">
+                    <span class="section-number">Section 2.3</span>
+                    <h2>Telescope View</h2>
+                </div>
+                <div class="feature-card key-feature">
+                    <div class="key-feature-badge">Key Feature</div>
+                    <div class="feature-card-title">The Aladin Sky Atlas</div>
+                    <div class="feature-card-body" id="content-telescope-hero">
+                        This is where the app goes from "nice planetarium" to "actual observatory on your screen." The telescope view is powered by Aladin Lite from the Centre de Donnees astronomiques de Strasbourg (CDS). It streams real sky survey imagery as tiled HiPS maps. When you see the Orion Nebula in this view, you are looking at a photographic image of the actual nebula, not a computer rendering. The data comes from the same surveys professional astronomers use -- including Hubble Space Telescope, 2MASS infrared, GALEX ultraviolet, and more. You can zoom from full-sky views down to individual galaxies and nebulae. Right-click any star in the planetarium to open the telescope centered on that object.
+                    </div>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.3.1</span>
+                    <h3>Opening the Telescope</h3>
+                </div>
+                <ol class="steps-list">
+                    <li class="step-item">
+                        <span class="step-number">1</span>
+                        <div class="step-content" id="content-step-telescope-1">
+                            <strong>Click the Telescope button</strong> in the header bar. This opens the deep sky viewer centered on whatever your planetarium is currently pointing at. Alternatively, <strong>right-click any star</strong> in the planetarium -- the telescope opens centered exactly on those coordinates, then automatically scans the region for cataloged objects and tells you what it finds.
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-number">2</span>
+                        <div class="step-content" id="content-step-telescope-2">
+                            The modal opens showing the sky in <strong>DSS2 Color</strong> survey by default. Use your mouse to drag and pan, scroll to zoom. The current field of view is displayed as degrees, arcminutes, or arcseconds depending on how far in you are.
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-number">3</span>
+                        <div class="step-content" id="content-step-telescope-3">
+                            <strong>Search for any object by name.</strong> The search bar accepts any standard astronomical name or catalog number. Type a name and press Enter or click Go. The viewer resolves the name through SIMBAD, flies to those coordinates, and adjusts the zoom. Try: <strong>M31</strong> (Andromeda Galaxy), <strong>M42</strong> (Orion Nebula), <strong>Sirius</strong>, <strong>M13</strong> (globular cluster in Hercules), <strong>NGC 7293</strong> (Helix Nebula), or <strong>Crab Nebula</strong>.
+                        </div>
+                    </li>
+                    <li class="step-item">
+                        <span class="step-number">4</span>
+                        <div class="step-content" id="content-step-telescope-4">
+                            <strong>Switch surveys</strong> using the dropdown to see the same region in different wavelengths. Toggle the three catalog overlays: <strong>Messier</strong> (red circles -- the 110 greatest hits of deep sky observing), <strong>NGC</strong> (green squares -- thousands more galaxies, nebulae, and clusters), and <strong>Star Names</strong> (yellow crosses -- named bright stars). Click any marker to see its catalog data.
+                        </div>
+                    </li>
+                </ol>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.3.2</span>
+                    <h3>Telescope Controls</h3>
+                </div>
+                <div class="content-placeholder" id="content-telescope-controls">
+                    <p>The telescope interface provides these controls:</p>
+                    <ul>
+                        <li><strong>Search box</strong> -- Type any object name or catalog number and press Enter or click Go. The viewer resolves the name through SIMBAD and flies to those coordinates.</li>
+                        <li><strong>Catalog toggles</strong> -- Messier (red circles), NGC (green squares), Star Names (yellow crosses). Overlays reload when you pan to a new region.</li>
+                        <li><strong>Survey dropdown</strong> -- Switch between DSS2, SDSS, PanSTARRS, Hubble, 2MASS, GALEX, Fermi, ROSAT, and more. See the Sky Surveys section for details on each.</li>
+                        <li><strong>Zoom buttons</strong> -- Click <strong>+ Zoom</strong> to halve the field of view (zoom in). Click <strong>- Zoom</strong> to double it (zoom out). You can also scroll your mouse wheel. At maximum zoom you can reach sub-arcsecond scales.</li>
+                        <li><strong>Fullscreen button</strong> -- Expands the telescope view to fill your entire screen. Press Escape or click the X to exit.</li>
+                        <li><strong>Coordinate display</strong> -- RA/Dec updates in real-time as you pan across the sky.</li>
+                    </ul>
+                </div>
+
+                <div class="subsection-header">
+                    <span class="subsection-ref">2.3.3</span>
+                    <h3>Object Details</h3>
+                </div>
+                <div class="content-placeholder" id="content-telescope-objects">
+                    <p>When the telescope identifies an object -- either from a right-click, a search, or clicking a catalog marker -- a detailed info panel appears below the viewer. It shows:</p>
+                    <ul>
+                        <li><strong>Object name and type</strong> (galaxy, nebula, star cluster, etc.)</li>
+                        <li><strong>Visual magnitude</strong> with a human-readable description ("Visible to naked eye," "Binoculars needed," etc.) and all available photometric bands</li>
+                        <li><strong>Spectral type</strong> for stars, with a plain-English translation ("G2V -- Yellow star, like our Sun")</li>
+                        <li><strong>Distance</strong> in light years, computed from parallax when available</li>
+                        <li><strong>Radial velocity</strong> -- whether the object is approaching or receding, and how fast</li>
+                        <li><strong>Angular size</strong> for extended objects</li>
+                        <li><strong>Coordinates</strong> in RA/Dec</li>
+                        <li><strong>Nearby objects</strong> in the same field -- other cataloged items within the search radius</li>
+                        <li><strong>Fun facts</strong> -- contextual notes based on object type ("Nebulae are stellar nurseries where new stars are born from clouds of gas and dust")</li>
+                    </ul>
+                </div>
+                <div class="pro-tip">
+                    <div class="pro-tip-body" id="content-tip-telescope">
+                        Right-clicking a star in the planetarium opens the telescope centered exactly on that star's coordinates. This is the fastest way to explore what is near a specific star. The Hubble surveys have the highest resolution (0.05 arcsecond) but only cover small patches of sky -- if you see blank or gray tiles, that survey does not cover your region. Switch back to DSS2 which covers 100% of the sky.
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 2.4 Sky Surveys Explained -->
+            <section class="guide-section" id="sky-surveys">
+                <div class="section-header">
+                    <span class="section-number">Section 2.4</span>
+                    <h2>Sky Surveys Explained</h2>
+                </div>
+                <div class="content-placeholder" id="content-surveys-intro">
+                    <p>The Survey dropdown is one of the most powerful controls in the entire app. Each survey captured the sky in different wavelengths, at different depths, and at different resolutions. Switching surveys on the same object is like putting on different pairs of glasses -- optical shows what our eyes would see, infrared penetrates dust clouds, ultraviolet reveals hot young stars, X-ray and gamma-ray show the violent universe. The telescope view gives you access to all of these, plus additional surveys like <strong>DECaPS</strong> (Dark Energy Camera Plane Survey, focused on the galactic plane where star fields are crowded) and <strong>Mellinger</strong> (a wide-field visible light mosaic, good for context when you want to see where your object sits relative to the Milky Way).</p>
+                </div>
+
+                <div class="survey-grid">
+                    <div class="survey-card">
+                        <div class="survey-card-name">DSS2 Color</div>
+                        <div class="survey-card-body" id="content-survey-dss2">
+                            The Digitized Sky Survey, Second Generation. Scanned from photographic plates taken at Palomar and the UK Schmidt Telescope. Covers 100% of the sky. This is your starting point, the "default view." Resolution is modest but it shows everything.
+                        </div>
+                        <div class="survey-card-meta">
+                            <span class="survey-tag">Optical</span>
+                            <span class="survey-tag">100% Sky</span>
+                        </div>
+                    </div>
+                    <div class="survey-card">
+                        <div class="survey-card-name">SDSS DR9</div>
+                        <div class="survey-card-body" id="content-survey-sdss">
+                            The Sloan Digital Sky Survey. Covers about 35% of the sky (mostly the north galactic cap) but goes much deeper than DSS2. Sharper images, better color. If your object is in SDSS coverage, switch here for deep-field galaxy hunting and faint nebulae.
+                        </div>
+                        <div class="survey-card-meta">
+                            <span class="survey-tag">Optical</span>
+                            <span class="survey-tag">35% Sky</span>
+                            <span class="survey-tag">Deep</span>
+                        </div>
+                    </div>
+                    <div class="survey-card">
+                        <div class="survey-card-name">PanSTARRS</div>
+                        <div class="survey-card-body" id="content-survey-panstarrs">
+                            The Panoramic Survey Telescope and Rapid Response System from Haleakala, Hawaii. Covers 78% of the sky at 0.2 arcsecond resolution -- incredibly sharp. Available in multiple filter combinations (g, r, i, z bands). The color composites are beautiful. This is often the best general-purpose survey.
+                        </div>
+                        <div class="survey-card-meta">
+                            <span class="survey-tag">Optical</span>
+                            <span class="survey-tag">78% Sky</span>
+                            <span class="survey-tag">0.2"</span>
+                        </div>
+                    </div>
+                    <div class="survey-card">
+                        <div class="survey-card-name">Hubble</div>
+                        <div class="survey-card-body" id="content-survey-hubble">
+                            Space Telescope imagery at 0.05 arcsecond resolution. Preposterously detailed, but Hubble has only observed tiny patches of sky. Available in multiple optical bands (V, B, R, I) and emission line filters (H-alpha for hydrogen gas, OIII for oxygen, H-beta). Try Hubble H-alpha on any nebula -- the structure in the gas is astonishing. If your object has Hubble coverage, you will see detail that no ground telescope can match.
+                        </div>
+                        <div class="survey-card-meta">
+                            <span class="survey-tag">Multi-band</span>
+                            <span class="survey-tag">0.05"</span>
+                            <span class="survey-tag">Partial</span>
+                        </div>
+                    </div>
+                    <div class="survey-card">
+                        <div class="survey-card-name">2MASS / WISE</div>
+                        <div class="survey-card-body" id="content-survey-infrared">
+                            <strong>2MASS</strong>: The Two Micron All-Sky Survey. Near-infrared (J, H, K bands). Infrared light passes through interstellar dust that blocks visible light. Point this at the Milky Way center and suddenly you can see through the dust lanes to the stars behind them. <strong>AllWISE</strong>: Mid-infrared from the Wide-field Infrared Survey Explorer satellite. Goes even deeper into the infrared. Warm dust glows brightly here.
+                        </div>
+                        <div class="survey-card-meta">
+                            <span class="survey-tag">Infrared</span>
+                            <span class="survey-tag">Full Sky</span>
+                        </div>
+                    </div>
+                    <div class="survey-card">
+                        <div class="survey-card-name">GALEX UV</div>
+                        <div class="survey-card-body" id="content-survey-uv">
+                            The Galaxy Evolution Explorer. Ultraviolet light. Hot young stars and active galactic nuclei blaze in UV while cooler stars fade. Try GALEX on a spiral galaxy to see where new stars are forming. Things that look ordinary in visible light can be blazing bright in ultraviolet.
+                        </div>
+                        <div class="survey-card-meta">
+                            <span class="survey-tag">Ultraviolet</span>
+                            <span class="survey-tag">NUV + FUV</span>
+                        </div>
+                    </div>
+                    <div class="survey-card">
+                        <div class="survey-card-name">Fermi / ROSAT</div>
+                        <div class="survey-card-body" id="content-survey-highenergy">
+                            <strong>Fermi</strong>: The Fermi Gamma-ray Space Telescope. This is the extreme universe -- gamma rays from pulsars, blazars, and supernova remnants. The resolution is low (gamma ray telescopes cannot focus well) but the science is extraordinary. The entire sky looks completely different in gamma rays. <strong>ROSAT</strong>: X-ray imagery from the Roentgen Satellite. Another view of the high-energy universe -- hot gas in galaxy clusters, black hole accretion disks, and supernova shock waves.
+                        </div>
+                        <div class="survey-card-meta">
+                            <span class="survey-tag">Gamma-ray</span>
+                            <span class="survey-tag">X-ray</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pro-tip">
+                    <div class="pro-tip-body" id="content-tip-surveys">
+                        Try switching surveys while zoomed into the same object. The Orion Nebula (M42) in DSS2 optical vs. 2MASS infrared vs. Hubble H-alpha is a completely different experience -- the nebula nearly vanishes in infrared and you see the young star cluster inside, while H-alpha reveals astonishing structure in the ionized gas. Each wavelength tells a different part of the story. If you see blank or gray tiles, that survey does not cover that region -- switch back to DSS2 which covers everything.
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 2.5 Observation Planner -->
+            <section class="guide-section" id="observation-planner">
+                <div class="section-header">
+                    <span class="section-number">Section 2.5</span>
+                    <h2>Observation Planner</h2>
+                </div>
+                <div class="content-placeholder" id="content-planner">
+                    <p>The Observation Planner is a separate page (click the Observation Planner link in the header) built for planning real observing sessions. It includes:</p>
+                    <ul>
+                        <li><strong>Tonight's Best</strong> -- Ranks every Messier and Caldwell object by visibility from your location right now. Each object card shows its name, type, constellation, magnitude, and current altitude/azimuth. Objects near transit get an "Optimal" badge. Filter by object type. The ranking algorithm accounts for your latitude, the object's current altitude, and the limiting magnitude for your Bortle class (light pollution level).</li>
+                        <li><strong>Object Checklists</strong> -- The complete Messier catalog (110 objects) and Caldwell catalog (109 objects) as checklists with progress bars. Check off objects as you observe them. Your progress persists in local storage between sessions.</li>
+                        <li><strong>Ephemeris Calculator</strong> -- Search for any object and get its current altitude, azimuth, and rise/transit/set times. A visual timeline shows the object's arc with twilight zones behind it.</li>
+                        <li><strong>Angular Distance Calculator</strong> -- Enter two RA/Dec coordinates and get the angular separation in degrees, arcminutes, arcseconds, and Moon widths. Useful for star-hopping.</li>
+                        <li><strong>Moon Phase Widget</strong> -- Shows the current Moon phase as an SVG illustration with illumination percentage, age in days, rise/set times, and the date of the next full Moon. The Moon is the number one factor in whether you will have a good deep sky night.</li>
+                        <li><strong>Weather Forecast</strong> -- A 48-hour cloud cover forecast from Open-Meteo, rendered as a color-coded bar chart. Green means clear skies. Red means overcast. It automatically identifies good observing windows.</li>
+                        <li><strong>Constellation Stories</strong> -- Mythology and lore for constellations, sorted by culture and category. Search or browse.</li>
+                        <li><strong>Bortle Class Indicator</strong> -- Your site's light pollution level on a scale from 1 (pristine dark site) to 9 (inner-city). The limiting magnitude adjusts accordingly.</li>
+                    </ul>
+                </div>
+                <div class="figure-placeholder">
+                    <span class="figure-label">Figure 2.5</span>
+                    <span class="figure-description">[FIGURE: Screenshot of the Observation Planner page layout]</span>
+                </div>
+                <div class="figure-caption">Fig. 2.5 — Observation Planner with moon phase, visible objects, and twilight bar</div>
+            </section>
+
+
+            <!-- 2.6 Twilight Bar -->
+            <section class="guide-section" id="twilight-bar">
+                <div class="section-header">
+                    <span class="section-number">Section 2.6</span>
+                    <h2>Twilight Bar</h2>
+                </div>
+                <div class="content-placeholder" id="content-twilight">
+                    <p>At the bottom of the Night Sky Viewer, a horizontal timeline bar shows the darkness conditions for the next 24 hours.</p>
+                    <table class="spec-table">
+                        <thead><tr><th>Color</th><th>Phase</th><th>Sun Position</th></tr></thead>
+                        <tbody>
+                            <tr><td>Gold</td><td>Daylight</td><td>Above horizon</td></tr>
+                            <tr><td>Warm brown</td><td>Civil twilight</td><td>0 to -6 degrees below horizon</td></tr>
+                            <tr><td>Deep blue</td><td>Nautical twilight</td><td>-6 to -12 degrees below</td></tr>
+                            <tr><td>Near-black</td><td>Astronomical twilight</td><td>-12 to -18 degrees below</td></tr>
+                            <tr><td>Black</td><td>Full night</td><td>More than 18 degrees below horizon</td></tr>
+                        </tbody>
+                    </table>
+                    <p>True astronomical darkness -- when the Sun is more than 18 degrees below the horizon -- is what you need for serious deep sky observing. The bar makes it obvious how much dark time you have.</p>
+                    <p><strong>Moon overlay:</strong> Hatched regions on the bar indicate when the Moon is above the horizon. Even during full night, a bright Moon washes out faint objects. The ideal observing window is the gap where the bar is black and there is no hatching.</p>
+                    <p><strong>Summary line:</strong> Above the bar, a one-line summary reads something like: "6.2h dark / 4.1h moonless / Waxing Gibbous." That tells you everything you need to plan your night in three numbers.</p>
+                    <p><strong>The Now marker:</strong> A thin amber vertical line marks the current time on the bar and updates every minute.</p>
+                </div>
+                <div class="figure-placeholder">
+                    <span class="figure-label">Figure 2.6</span>
+                    <span class="figure-description">[FIGURE: Annotated diagram of the twilight bar showing each segment type]</span>
+                </div>
+                <div class="figure-caption">Fig. 2.6 — Twilight timeline showing darkness windows and moon interference</div>
+            </section>
+
+
+            <!-- 2.7 Red Light Mode -->
+            <section class="guide-section" id="red-light-mode">
+                <div class="section-header">
+                    <span class="section-number">Section 2.7</span>
+                    <h2>Red Light Mode</h2>
+                </div>
+                <div class="content-placeholder" id="content-redlight">
+                    <p>Red light mode shifts the entire interface to deep red tones. Every element -- text, backgrounds, buttons, the planetarium itself -- goes red.</p>
+                    <p><strong>Why astronomers use it:</strong> Your eyes take 20 to 30 minutes to fully adapt to darkness. White or blue light from a screen destroys that adaptation instantly. Red light, however, does not affect your rod cells (the ones responsible for night vision). Professional observatories use red lighting exclusively after dark. So do experienced amateur astronomers.</p>
+                    <p><strong>How to toggle it:</strong> Click the <strong>Red Light</strong> button in the top header bar. It has a small sun icon. Click it once to go red, click again to go back to normal. Your preference is saved in local storage, so if you enable it tonight, it will still be on when you come back tomorrow night. The Observation Planner has its own independent night mode toggle that works the same way.</p>
+                </div>
+                <div class="pro-tip">
+                    <div class="pro-tip-body" id="content-tip-redlight">
+                        Enable red light mode BEFORE going outside, and give your eyes at least 20 minutes to adapt. Even a brief flash of white light sets the adaptation clock back to zero. The mode also reduces screen brightness overall, which helps in very dark sites.
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ══════════════════════════════════════════
+                 Section 3: NOAA Orbit Tracker
+                 ══════════════════════════════════════════ -->
+
+            <!-- 3.1 Live Tracking -->
+            <section class="guide-section" id="live-tracking">
+                <div class="section-header">
+                    <span class="section-number">Section 3.1</span>
+                    <h2>Live Tracking</h2>
+                </div>
+                <div class="content-placeholder" id="content-live-tracking">
+                    <p>The Joint Polar Satellite System is a constellation of three satellites -- NOAA-21 (launched 2022), NOAA-20 (launched 2017), and Suomi NPP (launched 2011) -- operated by NOAA and NASA. They fly in sun-synchronous polar orbits at about 824 km altitude, circling the Earth every 101 minutes. Each one carries the VIIRS instrument, which scans a 3,060 km wide swath below, imaging the entire planet twice per day in 22 spectral bands.</p>
+                    <p>The default tab shows a polar azimuthal projection of the Earth with the selected satellite's current position marked as a colored, pulsing dot. A fading trail shows where it has been. A dashed prediction line shows where it is going, computed from the pre-fetched 3-hour track. The VIIRS swath is drawn as a translucent band around the ground track. A velocity vector arrow shows the direction of motion.</p>
+                    <p>The orbital info panel (top-left) displays the satellite's inclination, altitude, orbital period, and current orbit number. The position panel (top-right) shows latitude, longitude, altitude in km, and velocity in km/s. Toggle buttons in the legend panel let you show or hide the swath, velocity vector, and day/night terminator independently.</p>
+                    <p>In 2D modes, press <strong>M</strong> or click the <strong>P/E</strong> button to toggle between polar (azimuthal equidistant) and equirectangular (flat map) projections. Hover your mouse over the map and the bottom-right panel shows the geographic coordinates under your cursor.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-title">Satellite Selector</div>
+                    <div class="feature-card-body" id="content-sat-selector">
+                        Three buttons at the top -- NOAA-21, NOAA-20, Suomi NPP -- switch between satellites. Each has a unique color (red, teal, yellow). Clicking a satellite reloads its TLE data, orbit info, and track prediction. NOAA-21 is the newest, launched November 2022.
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 3.2 Constellation View -->
+            <section class="guide-section" id="constellation-view">
+                <div class="section-header">
+                    <span class="section-number">Section 3.2</span>
+                    <h2>Constellation View</h2>
+                </div>
+                <div class="content-placeholder" id="content-constellation">
+                    <p>Click the <strong>Constellation</strong> tab to see all three satellites simultaneously on the same map. Each is drawn with its own color and label. Click any satellite marker to select it. The position panel updates to show that satellite's data.</p>
+                    <p>This view makes visible the elegant phasing of the constellation -- the satellites are spaced to maximize global coverage. Each point on Earth is observed multiple times per day. The ground tracks show the characteristic sinusoidal pattern of polar-orbiting sun-synchronous satellites.</p>
+                </div>
+            </section>
+
+
+            <!-- 3.3 3D Globe -->
+            <section class="guide-section" id="globe-3d">
+                <div class="section-header">
+                    <span class="section-number">Section 3.3</span>
+                    <h2>3D Globe</h2>
+                </div>
+                <div class="content-placeholder" id="content-globe">
+                    <p>Click the <strong>3D Globe</strong> tab to see the satellite on a WebGL-rendered Earth powered by globe.gl. The satellite appears as a glowing dot above the surface with its trail arcing behind it and prediction ahead. The VIIRS swath projects onto the globe surface. You can drag to rotate, scroll to zoom.</p>
+                    <p>This view is the best way to viscerally understand what a polar orbit looks like -- the orbital altitude (roughly 824 km) and how the Earth rotates beneath the orbit, creating the ground track pattern.</p>
+                </div>
+                <div class="pro-tip">
+                    <div class="pro-tip-body" id="content-tip-globe">
+                        The 3D globe is the best way to understand sun-synchronous orbits. Notice how the orbital plane stays roughly fixed relative to the Sun while Earth rotates underneath. This is why JPSS satellites always cross the equator at approximately the same local solar time.
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- 3.4 Time Machine -->
+            <section class="guide-section" id="time-machine">
+                <div class="section-header">
+                    <span class="section-number">Section 3.4</span>
+                    <h2>Time Machine</h2>
+                </div>
+                <div class="content-placeholder" id="content-time-machine">
+                    <p>Click the <strong>Time Machine</strong> button at the bottom of the screen to open the playback panel. Set a start time, duration (1, 3, 6, or 24 hours), and playback speed (10x to 3600x). Hit Play and the tracker animates the satellite along its historical track. A scrub bar lets you drag to any point in the window. The day/night terminator updates to match the simulated time.</p>
+                    <p>This is mesmerizing at 300x speed over a 24-hour window -- you watch the satellite weave back and forth across the poles while the Earth rotates beneath it.</p>
+                    <p>The <strong>24h Coverage</strong> tab draws the full 24-hour ground track for the selected satellite. This reveals the characteristic sinusoidal pattern of a polar orbit, and the progressive westward drift of each track as the Earth rotates beneath it. After 24 hours, the tracks nearly tile the globe -- that is the whole point of the JPSS orbit design.</p>
+                    <p>A warning notes that SGP4 accuracy degrades beyond plus or minus 7 days from the TLE epoch.</p>
+                </div>
+            </section>
+
+
+            <!-- 3.5 SIMBAD Deep Sky Search -->
+            <section class="guide-section" id="simbad-search">
+                <div class="section-header">
+                    <span class="section-number">Section 3.5</span>
+                    <h2>SIMBAD Deep Sky Search</h2>
+                </div>
+                <div class="content-placeholder" id="content-simbad">
+                    <p>The Night Sky Viewer's telescope mode queries SIMBAD (operated by CDS Strasbourg) through the backend API to resolve object names, search regions, and retrieve catalog data. When you right-click a star or search for an object, SIMBAD provides the name, type, spectral class, magnitudes, parallax, radial velocity, and angular size that appear in the info panel.</p>
+                    <p>Search by object name, coordinates, or catalog identifier. Returns: object type, coordinates, magnitude, radial velocity, spectral type, proper motion, cross-identifications in other catalogs, and links to bibliography. This connects the visual sky exploration to the professional astronomical literature.</p>
+                </div>
+            </section>
+
+
+            <!-- ══════════════════════════════════════════
+                 Section 4: Keyboard Shortcuts
+                 ══════════════════════════════════════════ -->
+            <section class="guide-section" id="keyboard-shortcuts">
+                <div class="section-header">
+                    <span class="section-number">Section 4</span>
+                    <h2>Keyboard Shortcuts</h2>
+                </div>
+                <div class="content-placeholder" id="content-shortcuts-intro">
+                    <p>Quick-reference keyboard shortcuts for the Night Sky Viewer and NOAA Orbit Tracker. The planetarium supports mouse drag to pan and scroll wheel to zoom. The Orbit Tracker has its own set of keys for navigation and playback.</p>
+                </div>
+
+                <table class="shortcuts-table">
+                    <thead>
+                        <tr>
+                            <th>Key</th>
+                            <th>Action</th>
+                            <th>Context</th>
+                        </tr>
+                    </thead>
+                    <tbody id="content-shortcuts-table">
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">R</span></td>
+                            <td>Toggle red light mode</td>
+                            <td>Night Sky</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">T</span></td>
+                            <td>Open telescope view</td>
+                            <td>Night Sky</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">Esc</span></td>
+                            <td>Close telescope modal</td>
+                            <td>Telescope</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">F</span></td>
+                            <td>Toggle fullscreen telescope</td>
+                            <td>Telescope</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell">
+                                <span class="hotkey-combo">
+                                    <span class="hotkey">+</span>
+                                    <span class="hotkey-plus">/</span>
+                                    <span class="hotkey">-</span>
+                                </span>
+                            </td>
+                            <td>Zoom in / out</td>
+                            <td>Telescope</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell">
+                                <span class="hotkey-combo">
+                                    <span class="hotkey">&larr;</span>
+                                    <span class="hotkey">&rarr;</span>
+                                </span>
+                            </td>
+                            <td>Step time forward / backward</td>
+                            <td>Night Sky</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">N</span></td>
+                            <td>Reset to current time (Now)</td>
+                            <td>Night Sky</td>
+                        </tr>
+                        <!-- NOAA Orbit Tracker shortcuts -->
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">Space</span></td>
+                            <td>Play / Pause animation</td>
+                            <td>Orbit Tracker</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell">
+                                <span class="hotkey-combo">
+                                    <span class="hotkey">+</span>
+                                    <span class="hotkey-plus">/</span>
+                                    <span class="hotkey">-</span>
+                                </span>
+                            </td>
+                            <td>Zoom in / out</td>
+                            <td>Orbit Tracker</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">0</span></td>
+                            <td>Reset zoom</td>
+                            <td>Orbit Tracker</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">R</span></td>
+                            <td>Refresh satellite data</td>
+                            <td>Orbit Tracker</td>
+                        </tr>
+                        <tr>
+                            <td class="shortcut-key-cell"><span class="hotkey">M</span></td>
+                            <td>Toggle map projection (Polar / Flat)</td>
+                            <td>Orbit Tracker</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="callout-warning">
+                    <div class="callout-body" id="content-shortcuts-note">
+                        Some shortcuts may conflict with browser defaults. The app captures keys only when the main content area has focus. Click on the star map, telescope view, or orbit tracker first if shortcuts are not responding.
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ══════════════════════════════════════════
+                 Section 5: Credits & Data Sources
+                 ══════════════════════════════════════════ -->
+            <section class="guide-section" id="credits">
+                <div class="section-header">
+                    <span class="section-number">Section 5</span>
+                    <h2>Credits & Data Sources</h2>
+                </div>
+                <div class="content-placeholder" id="content-credits">
+                    <p>This project stands on the shoulders of extraordinary open-source work and open data:</p>
+                    <p><strong>VirtualSky</strong> by Stuart Lowe, Las Cumbres Observatory. The planetarium engine that renders the interactive sky.</p>
+                    <p><strong>Aladin Lite</strong> by the Centre de Donnees astronomiques de Strasbourg (CDS). The telescope viewer that streams HiPS sky survey tiles. The same technology used by professional astronomers worldwide.</p>
+                    <p><strong>Skyfield</strong> by Brandon Rhodes. The Python library that computes satellite positions, rise/set times, and twilight calculations on the backend.</p>
+                    <p><strong>CelesTrak</strong> maintained by Dr. T.S. Kelso. The source for current Two-Line Element sets that make satellite tracking possible.</p>
+                    <p><strong>SIMBAD</strong> by CDS Strasbourg. The astronomical database that resolves object names and provides catalog data for the telescope info panel.</p>
+                    <p><strong>SGP4</strong> orbital propagation, based on the work of David Vallado. The algorithm that predicts where a satellite will be given its TLE.</p>
+                    <p><strong>Data sources</strong>: NASA (Hubble, Fermi, GALEX), ESA, NOAA (JPSS satellite operations), EUMETSAT, Sloan Digital Sky Survey, PanSTARRS (University of Hawaii), 2MASS (UMass/IPAC), ROSAT, the Digitized Sky Survey (STScI/AAO/UK-PPARC).</p>
+                    <p><strong>Chart.js</strong> for the rise/set altitude plots and weather charts. <strong>D3.js</strong> for the orbital map projections. <strong>globe.gl</strong> for the 3D Earth view.</p>
+                </div>
+
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Source</th>
+                            <th>License / Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="content-credits-table">
+                        <tr>
+                            <td>VirtualSky</td>
+                            <td>Stuart Lowe, Las Cumbres Observatory</td>
+                            <td>Open source planetarium engine</td>
+                        </tr>
+                        <tr>
+                            <td>Aladin Lite</td>
+                            <td>Centre de Donnees astronomiques de Strasbourg (CDS)</td>
+                            <td>HiPS sky survey viewer</td>
+                        </tr>
+                        <tr>
+                            <td>Sky Survey Data</td>
+                            <td>CDS HiPS servers; STScI (DSS); SDSS; PanSTARRS (UH); NASA (Hubble, Fermi, GALEX); 2MASS (UMass/IPAC); ROSAT</td>
+                            <td>Public astronomical data</td>
+                        </tr>
+                        <tr>
+                            <td>Satellite TLEs</td>
+                            <td>NOAA / CelesTrak (Dr. T.S. Kelso)</td>
+                            <td>Public domain orbital elements</td>
+                        </tr>
+                        <tr>
+                            <td>SIMBAD</td>
+                            <td>CDS Strasbourg</td>
+                            <td>Astronomical object database</td>
+                        </tr>
+                        <tr>
+                            <td>Skyfield</td>
+                            <td>Brandon Rhodes</td>
+                            <td>Python astronomy library (MIT)</td>
+                        </tr>
+                        <tr>
+                            <td>SGP4</td>
+                            <td>David Vallado</td>
+                            <td>Orbital propagation algorithm</td>
+                        </tr>
+                        <tr>
+                            <td>Chart.js / D3.js / globe.gl</td>
+                            <td>Open source visualization libraries</td>
+                            <td>Charts, map projections, 3D globe</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+
+            <!-- ── Guide Footer ── -->
+            <div class="guide-footer">
+                <p>Night Sky Viewer & NOAA Orbit Tracker — Equipment Manual TM-NSV-2026-001</p>
+                <p>Powered by <a href="https://slowe.github.io/VirtualSky/" target="_blank">VirtualSky</a>,
+                   <a href="https://aladin.cds.unistra.fr/AladinLite/" target="_blank">Aladin Lite</a>, and
+                   <a href="https://cds.u-strasbg.fr/" target="_blank">CDS Strasbourg</a></p>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ── Section Navigation Dots (right edge) ── -->
+    <div class="section-nav-dots" id="section-nav-dots">
+        <div class="section-nav-dot" data-target="welcome" data-label="Welcome"></div>
+        <div class="section-nav-dot" data-target="getting-started" data-label="Getting Started"></div>
+        <div class="section-nav-dot" data-target="planetarium" data-label="Planetarium"></div>
+        <div class="section-nav-dot" data-target="telescope" data-label="Telescope"></div>
+        <div class="section-nav-dot" data-target="sky-surveys" data-label="Sky Surveys"></div>
+        <div class="section-nav-dot" data-target="observation-planner" data-label="Planner"></div>
+        <div class="section-nav-dot" data-target="twilight-bar" data-label="Twilight"></div>
+        <div class="section-nav-dot" data-target="red-light-mode" data-label="Red Light"></div>
+        <div class="section-nav-dot" data-target="live-tracking" data-label="Live Tracking"></div>
+        <div class="section-nav-dot" data-target="constellation-view" data-label="Constellation"></div>
+        <div class="section-nav-dot" data-target="globe-3d" data-label="3D Globe"></div>
+        <div class="section-nav-dot" data-target="time-machine" data-label="Time Machine"></div>
+        <div class="section-nav-dot" data-target="simbad-search" data-label="SIMBAD"></div>
+        <div class="section-nav-dot" data-target="keyboard-shortcuts" data-label="Shortcuts"></div>
+        <div class="section-nav-dot" data-target="credits" data-label="Credits"></div>
+    </div>
+
+    <!-- ── Back to Top Button ── -->
+    <button class="back-to-top" id="back-to-top" title="Back to top">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </button>
+
+    <!-- ══════════════════════════════════════════════════
+         Guide Interactivity Script
+         Handles: TOC highlighting, smooth scroll, dots,
+         mobile sidebar toggle, back-to-top visibility
+         ══════════════════════════════════════════════════ -->
+    <script>
+    (function() {
+        'use strict';
+
+        // ── Smooth scroll for all anchor links ──
+        document.querySelectorAll('a[href^="#"], .section-nav-dot[data-target]').forEach(function(el) {
+            el.addEventListener('click', function(e) {
+                var targetId = el.getAttribute('href')
+                    ? el.getAttribute('href').substring(1)
+                    : el.getAttribute('data-target');
+                var target = document.getElementById(targetId);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Close mobile sidebar if open
+                    document.getElementById('guide-toc').classList.remove('open');
+                    document.getElementById('toc-overlay').classList.remove('visible');
+                }
+            });
+        });
+
+        // ── Intersection Observer for active TOC + dots ──
+        var sections = document.querySelectorAll('.guide-section');
+        var tocLinks = document.querySelectorAll('.toc-nav a');
+        var navDots = document.querySelectorAll('.section-nav-dot');
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    var id = entry.target.id;
+
+                    // Update TOC links
+                    tocLinks.forEach(function(link) {
+                        link.classList.toggle('active', link.getAttribute('data-section') === id);
+                    });
+
+                    // Update nav dots
+                    navDots.forEach(function(dot) {
+                        dot.classList.toggle('active', dot.getAttribute('data-target') === id);
+                    });
+                }
+            });
+        }, {
+            rootMargin: '-10% 0px -70% 0px',
+            threshold: 0
+        });
+
+        sections.forEach(function(section) {
+            observer.observe(section);
+        });
+
+        // ── Back to top button visibility ──
+        var backToTop = document.getElementById('back-to-top');
+        window.addEventListener('scroll', function() {
+            backToTop.classList.toggle('visible', window.scrollY > 400);
+        }, { passive: true });
+
+        backToTop.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ── Mobile sidebar toggle ──
+        var tocToggle = document.getElementById('toc-toggle');
+        var guideToc = document.getElementById('guide-toc');
+        var tocOverlay = document.getElementById('toc-overlay');
+
+        tocToggle.addEventListener('click', function() {
+            guideToc.classList.toggle('open');
+            tocOverlay.classList.toggle('visible');
+        });
+
+        tocOverlay.addEventListener('click', function() {
+            guideToc.classList.remove('open');
+            tocOverlay.classList.remove('visible');
+        });
+    })();
+    </script>
+
+</body>
+</html>

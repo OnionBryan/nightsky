@@ -1,0 +1,1092 @@
+/* ═══════════════════════════════════════════════════════
+   Night Sky Viewer — Equipment Manual / Guide Page
+   "Observatory Brass" theme extension
+   Styled after 1980s technical equipment manuals:
+   heavy section dividers, monospaced reference tables,
+   cross-hatched diagrams, margin annotations.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Guide Layout Shell ── */
+.guide-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-primary);
+}
+
+/* ── Sticky Sidebar Table of Contents ── */
+.guide-toc {
+    position: sticky;
+    top: 0;
+    width: 280px;
+    min-width: 280px;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+    z-index: 50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--bg-secondary);
+}
+
+.guide-toc::-webkit-scrollbar { width: 4px; }
+.guide-toc::-webkit-scrollbar-track { background: var(--bg-secondary); }
+.guide-toc::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+.guide-toc::-webkit-scrollbar-thumb:hover { background: var(--amber-dim); }
+
+.toc-header {
+    padding: 0 1.25rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0.75rem;
+}
+
+.toc-header h2 {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--amber);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.toc-header .toc-subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.563rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.toc-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc-nav li {
+    margin: 0;
+}
+
+.toc-nav a {
+    display: block;
+    padding: 0.4rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.688rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+}
+
+.toc-nav a:hover {
+    color: var(--amber);
+    background: var(--amber-glow);
+    border-left-color: var(--amber-dim);
+}
+
+.toc-nav a.active {
+    color: var(--amber);
+    border-left-color: var(--amber);
+    background: var(--amber-glow);
+}
+
+/* Indented sub-items */
+.toc-nav .toc-sub a {
+    padding-left: 2.25rem;
+    font-size: 0.625rem;
+    color: var(--text-muted);
+}
+
+.toc-nav .toc-sub a:hover {
+    color: var(--amber-dim);
+}
+
+.toc-nav .toc-sub a.active {
+    color: var(--amber-dim);
+    border-left-color: var(--amber-dim);
+}
+
+/* Section group labels in TOC */
+.toc-group-label {
+    display: block;
+    padding: 0.75rem 1.25rem 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+}
+
+.toc-group-label::before {
+    content: '// ';
+    color: var(--amber-dim);
+    opacity: 0.5;
+}
+
+/* ── Main Content Column ── */
+.guide-main {
+    flex: 1;
+    max-width: 860px;
+    padding: 2.5rem 3rem 4rem;
+    margin: 0 auto;
+}
+
+/* ── Guide Header (top of page) ── */
+.guide-page-header {
+    text-align: center;
+    padding-bottom: 2.5rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+
+.guide-page-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        var(--amber-dim),
+        var(--amber),
+        var(--amber-dim),
+        transparent
+    );
+    opacity: 0.4;
+}
+
+.guide-page-header h1 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}
+
+.guide-page-header .edition-line {
+    font-family: var(--font-mono);
+    font-size: 0.688rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+}
+
+.guide-page-header .manual-number {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.563rem;
+    color: var(--amber-dim);
+    border: 1px solid var(--border-accent);
+    padding: 0.2rem 0.625rem;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* ── Section Styling ── */
+.guide-section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 2rem;
+}
+
+.guide-section:last-child {
+    margin-bottom: 0;
+}
+
+/* Major section header — the big divider lines like 80s manuals */
+.section-header {
+    position: relative;
+    padding: 1.25rem 0 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header::before {
+    content: '';
+    display: block;
+    height: 3px;
+    background: linear-gradient(90deg,
+        var(--amber) 0%,
+        var(--amber-dim) 40%,
+        var(--border-color) 100%
+    );
+    margin-bottom: 1rem;
+    border-radius: 1px;
+}
+
+.section-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+}
+
+.section-header .section-number {
+    font-family: var(--font-mono);
+    font-size: 0.688rem;
+    font-weight: 600;
+    color: var(--amber-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+/* Sub-section header */
+.subsection-header {
+    position: relative;
+    padding: 0.75rem 0 0.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.subsection-header::before {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg,
+        var(--amber-dim) 0%,
+        var(--border-color) 60%,
+        transparent 100%
+    );
+    margin-bottom: 0.75rem;
+    opacity: 0.6;
+}
+
+.subsection-header h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.01em;
+}
+
+.subsection-header .subsection-ref {
+    font-family: var(--font-mono);
+    font-size: 0.563rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 0.125rem;
+}
+
+/* ── Content Placeholder Blocks ── */
+.content-placeholder {
+    background: var(--bg-card);
+    border: 1px dashed var(--border-accent);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    min-height: 80px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* ── Feature Cards ── */
+.feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--amber-dim);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.feature-card:hover {
+    border-color: var(--amber);
+    box-shadow: var(--shadow-md), 0 0 0 1px var(--amber-glow);
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+        var(--amber),
+        var(--amber-dim),
+        transparent
+    );
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.feature-card-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 0.625rem;
+}
+
+.feature-card-body {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Key feature highlight card (for Telescope View) */
+.feature-card.key-feature {
+    border-color: var(--amber);
+    border-width: 2px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--blue-subtle) 100%);
+    box-shadow: var(--shadow-md), 0 0 20px var(--amber-glow);
+}
+
+.feature-card.key-feature::before {
+    height: 3px;
+    background: var(--amber);
+}
+
+.key-feature-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.563rem;
+    font-weight: 600;
+    color: #000;
+    background: var(--amber);
+    padding: 0.125rem 0.5rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.5rem;
+}
+
+/* ── Hotkey Badges (Keyboard Shortcut Pills) ── */
+.hotkey {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-hover);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0.125rem 0.4rem;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    box-shadow: 0 1px 0 var(--border-color);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.hotkey + .hotkey {
+    margin-left: 0.2rem;
+}
+
+/* Hotkey in a reference table row */
+.hotkey-combo {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.hotkey-plus {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--text-muted);
+}
+
+/* ── Keyboard Shortcuts Reference Table ── */
+.shortcuts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.shortcuts-table thead th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.563rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 2px solid var(--amber-dim);
+    background: var(--bg-secondary);
+}
+
+.shortcuts-table tbody td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    vertical-align: middle;
+}
+
+.shortcuts-table tbody tr:hover {
+    background: var(--amber-glow);
+}
+
+.shortcuts-table tbody tr:hover td {
+    color: var(--text-primary);
+}
+
+.shortcuts-table .shortcut-key-cell {
+    white-space: nowrap;
+    width: 140px;
+}
+
+/* ── Step-by-Step Instructions ── */
+.steps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    position: relative;
+}
+
+/* Vertical connecting line */
+.steps-list::before {
+    content: '';
+    position: absolute;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    left: 14px;
+    width: 1px;
+    background: linear-gradient(
+        to bottom,
+        var(--amber-dim),
+        var(--border-color)
+    );
+}
+
+.step-item {
+    position: relative;
+    padding: 0.75rem 0 0.75rem 2.75rem;
+}
+
+.step-item + .step-item {
+    border-top: none;
+}
+
+/* Step number circle */
+.step-number {
+    position: absolute;
+    left: 0;
+    top: 0.625rem;
+    width: 28px;
+    height: 28px;
+    background: var(--bg-card);
+    border: 2px solid var(--amber-dim);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.688rem;
+    font-weight: 600;
+    color: var(--amber);
+    z-index: 2;
+    transition: all 0.2s;
+}
+
+.step-item:hover .step-number {
+    border-color: var(--amber);
+    background: var(--amber);
+    color: #000;
+    box-shadow: 0 0 8px var(--amber-glow);
+}
+
+.step-content {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.step-content strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* ── Pro Tip Callout Box ── */
+.pro-tip {
+    background: linear-gradient(135deg, var(--blue-subtle) 0%, var(--bg-card) 100%);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    position: relative;
+}
+
+.pro-tip::before {
+    content: 'PRO TIP';
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.563rem;
+    font-weight: 600;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.375rem;
+}
+
+.pro-tip-body {
+    font-family: var(--font-body);
+    font-size: 0.813rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ── Warning Callout ── */
+.callout-warning {
+    background: linear-gradient(135deg, #1a1200 0%, var(--bg-card) 100%);
+    border-left: 3px solid var(--warning);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+}
+
+.callout-warning::before {
+    content: 'NOTE';
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.563rem;
+    font-weight: 600;
+    color: var(--warning);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.375rem;
+}
+
+.callout-warning .callout-body {
+    font-family: var(--font-body);
+    font-size: 0.813rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ── Diagram / Figure Placeholder ── */
+.figure-placeholder {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.figure-placeholder .figure-label {
+    font-family: var(--font-mono);
+    font-size: 0.563rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.figure-placeholder .figure-description {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.figure-caption {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 0.375rem;
+    letter-spacing: 0.03em;
+}
+
+/* ── Section Navigation Dots (right edge) ── */
+.section-nav-dots {
+    position: fixed;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    z-index: 100;
+}
+
+.section-nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color);
+    border: 1px solid var(--border-hover);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.section-nav-dot:hover {
+    background: var(--amber-dim);
+    border-color: var(--amber-dim);
+    transform: scale(1.4);
+}
+
+.section-nav-dot.active {
+    background: var(--amber);
+    border-color: var(--amber);
+    box-shadow: 0 0 6px var(--amber-glow);
+}
+
+/* Tooltip on hover */
+.section-nav-dot::before {
+    content: attr(data-label);
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.563rem;
+    color: var(--amber);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-accent);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.section-nav-dot:hover::before {
+    opacity: 1;
+}
+
+/* ── Survey Comparison Cards ── */
+.survey-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.875rem;
+    margin: 1.25rem 0;
+}
+
+.survey-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.survey-card:hover {
+    border-color: var(--amber-dim);
+    transform: translateY(-2px);
+}
+
+.survey-card-name {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.survey-card-body {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.survey-card-meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.survey-tag {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--text-muted);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-color);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* ── Back to Top Button ── */
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--amber-dim);
+    border-radius: 50%;
+    color: var(--amber);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.back-to-top:hover {
+    background: var(--amber);
+    color: #000;
+    border-color: var(--amber);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg), 0 0 12px var(--amber-glow);
+}
+
+/* ── Guide Footer ── */
+.guide-footer {
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
+    position: relative;
+}
+
+.guide-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        var(--amber-dim),
+        transparent
+    );
+    opacity: 0.4;
+}
+
+.guide-footer p {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+}
+
+.guide-footer a {
+    color: var(--amber-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.guide-footer a:hover {
+    color: var(--amber);
+}
+
+/* ── Header Bar (fixed top) ── */
+.guide-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.625rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.guide-topbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        var(--amber-dim) 20%,
+        var(--amber) 50%,
+        var(--amber-dim) 80%,
+        transparent 100%
+    );
+    opacity: 0.4;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.topbar-back {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 0.35rem 0.625rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+}
+
+.topbar-back:hover {
+    color: var(--amber);
+    border-color: var(--amber-dim);
+    background: var(--bg-card);
+}
+
+.topbar-back svg {
+    flex-shrink: 0;
+}
+
+.topbar-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--amber);
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.topbar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.625rem;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.688rem;
+    transition: all 0.2s;
+}
+
+.topbar-link:hover {
+    color: var(--amber);
+    border-color: var(--amber-dim);
+}
+
+/* ── Mobile sidebar toggle ── */
+.toc-toggle {
+    display: none;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    padding: 0.35rem 0.5rem;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.toc-toggle:hover {
+    color: var(--amber);
+    border-color: var(--amber-dim);
+}
+
+/* ── Cross-reference Links ── */
+.xref {
+    color: var(--amber-dim);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--amber-dim);
+    transition: all 0.2s;
+    font-family: var(--font-mono);
+    font-size: 0.813rem;
+}
+
+.xref:hover {
+    color: var(--amber);
+    border-bottom-color: var(--amber);
+}
+
+/* ── Inline Code / Parameter Names ── */
+.param {
+    font-family: var(--font-mono);
+    font-size: 0.8em;
+    color: var(--amber);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-color);
+    padding: 0.05rem 0.35rem;
+    border-radius: 3px;
+}
+
+/* ── Specification Tables (80s tech manual style) ── */
+.spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    margin: 1.25rem 0;
+    border: 1px solid var(--border-accent);
+}
+
+.spec-table thead th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.563rem;
+    font-weight: 600;
+    color: var(--amber-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 2px solid var(--amber-dim);
+    background: var(--bg-secondary);
+}
+
+.spec-table tbody td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.spec-table tbody td:first-child {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.spec-table tbody tr:hover {
+    background: var(--amber-glow);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+    .guide-main {
+        padding: 2rem 2rem 3rem;
+    }
+
+    .section-nav-dots {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .toc-toggle {
+        display: block;
+    }
+
+    .guide-toc {
+        position: fixed;
+        left: -300px;
+        top: 0;
+        height: 100vh;
+        z-index: 300;
+        transition: left 0.3s ease;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .guide-toc.open {
+        left: 0;
+    }
+
+    .toc-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 250;
+    }
+
+    .toc-overlay.visible {
+        display: block;
+    }
+
+    .guide-main {
+        padding: 1.5rem 1rem 2rem;
+        max-width: 100%;
+    }
+
+    .guide-page-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.375rem;
+    }
+
+    .survey-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .guide-main {
+        padding: 1rem 0.75rem 1.5rem;
+    }
+
+    .guide-page-header h1 {
+        font-size: 1.375rem;
+    }
+
+    .topbar-title {
+        font-size: 0.813rem;
+    }
+
+    .feature-card {
+        padding: 1rem;
+    }
+
+    .step-item {
+        padding-left: 2.25rem;
+    }
+
+    .shortcuts-table {
+        font-size: 0.688rem;
+    }
+}
+
+/* ── Print Styles ── */
+@media print {
+    .guide-toc,
+    .guide-topbar,
+    .section-nav-dots,
+    .back-to-top,
+    .toc-toggle,
+    .toc-overlay {
+        display: none !important;
+    }
+
+    .guide-main {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .feature-card {
+        break-inside: avoid;
+    }
+
+    .guide-section {
+        break-before: page;
+    }
+}

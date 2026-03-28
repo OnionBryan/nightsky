@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  noaa21:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: noaa21-orbit-nightsky
+    ports:
+      - "5050:5050"   # Orbit Backend API
+      - "5051:5051"   # Night Sky Backend API
+      - "8080:8080"   # Orbit Frontend
+      - "8081:8081"   # Night Sky Frontend
+    restart: unless-stopped
+    healthcheck:
+      test: >
+        curl -f http://localhost:5050/api/current &&
+        curl -f http://localhost:5051/api/nightsky/health
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

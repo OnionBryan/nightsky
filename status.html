@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Sky &amp; JPSS Tracker — Status</title>
+    <style>
+        /* Observatory Brass palette — inline, zero deps */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+            background: #000;
+            color: #d4cfc0;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.25rem 0.75rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1 {
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #c8a456;
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: #8a7139;
+            font-size: 0.75rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .card {
+            background: #0c0c0c;
+            border: 1px solid #1a1a18;
+            border-radius: 6px;
+            padding: 0.75rem 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            transition: border-color 0.3s;
+        }
+
+        .card:hover {
+            border-color: #2a2a25;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #c8a456;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot.up {
+            background: #5a9e6f;
+            box-shadow: 0 0 6px rgba(90, 158, 111, 0.6);
+        }
+
+        .dot.down {
+            background: #a04040;
+            box-shadow: 0 0 6px rgba(160, 64, 64, 0.5);
+        }
+
+        .dot.checking {
+            background: #8a7139;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .card-port {
+            font-size: 0.65rem;
+            color: #555045;
+            font-family: 'Menlo', 'Courier New', monospace;
+        }
+
+        .card-status {
+            font-size: 0.7rem;
+            color: #8a8577;
+        }
+
+        .card-status .ms {
+            color: #e8c466;
+            font-family: 'Menlo', 'Courier New', monospace;
+            font-size: 0.65rem;
+        }
+
+        .card-link {
+            display: inline-block;
+            font-size: 0.65rem;
+            color: #c8a456;
+            text-decoration: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card-link.visible {
+            opacity: 1;
+        }
+
+        .card-link:hover {
+            color: #e8c466;
+            text-decoration: underline;
+        }
+
+        .refresh-bar {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.6rem;
+            color: #555045;
+            letter-spacing: 0.06em;
+        }
+
+        .refresh-bar .countdown {
+            color: #8a7139;
+            font-family: 'Menlo', 'Courier New', monospace;
+        }
+
+        footer {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            text-align: center;
+            font-size: 0.6rem;
+            color: #333025;
+        }
+
+        footer a {
+            color: #8a7139;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #c8a456;
+        }
+
+        /* Brass separator line */
+        .sep {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #332e20, transparent);
+            margin: 0.8rem auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Night Sky &amp; JPSS Tracker</h1>
+    <p class="subtitle">Service Health</p>
+    <div class="sep"></div>
+
+    <div class="grid" id="grid">
+        <!-- Cards injected by JS -->
+    </div>
+
+    <div class="refresh-bar">
+        Auto-refresh in <span class="countdown" id="countdown">5</span>s
+    </div>
+
+    <footer>
+        Night Sky Viewer &amp; JPSS Constellation Tracker
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var SERVICES = [
+            { name: 'Orbit API',         port: 5050, path: '/',    type: 'api'  },
+            { name: 'Night Sky API',     port: 5051, path: '/',    type: 'api'  },
+            { name: 'Satellite Viewer',  port: 8080, path: '/',    type: 'ui'   },
+            { name: 'Night Sky Viewer',  port: 8081, path: '/',    type: 'ui'   }
+        ];
+
+        var INTERVAL = 5;
+        var grid     = document.getElementById('grid');
+        var cdEl     = document.getElementById('countdown');
+        var timer    = INTERVAL;
+
+        /* Build card DOM once using safe DOM methods */
+        SERVICES.forEach(function (svc) {
+            var card = document.createElement('div');
+            card.className = 'card';
+            card.id = 'card-' + svc.port;
+
+            var header = document.createElement('div');
+            header.className = 'card-header';
+
+            var nameSpan = document.createElement('span');
+            nameSpan.className = 'card-name';
+            nameSpan.textContent = svc.name;
+
+            var dot = document.createElement('span');
+            dot.className = 'dot checking';
+            dot.id = 'dot-' + svc.port;
+
+            header.appendChild(nameSpan);
+            header.appendChild(dot);
+
+            var portSpan = document.createElement('span');
+            portSpan.className = 'card-port';
+            portSpan.textContent = 'localhost:' + svc.port;
+
+            var statusSpan = document.createElement('span');
+            statusSpan.className = 'card-status';
+            statusSpan.id = 'status-' + svc.port;
+            statusSpan.textContent = 'Checking...';
+
+            var link = document.createElement('a');
+            link.className = 'card-link';
+            link.id = 'link-' + svc.port;
+            link.href = 'http://localhost:' + svc.port;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.textContent = 'Open \u2192';
+
+            card.appendChild(header);
+            card.appendChild(portSpan);
+            card.appendChild(statusSpan);
+            card.appendChild(link);
+            grid.appendChild(card);
+        });
+
+        /* Probe a single service */
+        function probe(svc) {
+            var dot    = document.getElementById('dot-' + svc.port);
+            var status = document.getElementById('status-' + svc.port);
+            var link   = document.getElementById('link-' + svc.port);
+            var url    = 'http://localhost:' + svc.port + svc.path;
+            var t0     = performance.now();
+
+            dot.className = 'dot checking';
+            status.textContent = 'Checking...';
+
+            fetch(url, { mode: 'no-cors', cache: 'no-store' })
+                .then(function () {
+                    var ms = Math.round(performance.now() - t0);
+                    dot.className = 'dot up';
+
+                    /* Build status with response time */
+                    while (status.firstChild) status.removeChild(status.firstChild);
+                    status.appendChild(document.createTextNode('Up \u2014 '));
+                    var msSpan = document.createElement('span');
+                    msSpan.className = 'ms';
+                    msSpan.textContent = ms + ' ms';
+                    status.appendChild(msSpan);
+
+                    link.classList.add('visible');
+                })
+                .catch(function () {
+                    dot.className = 'dot down';
+                    status.textContent = 'Down';
+                    link.classList.remove('visible');
+                });
+        }
+
+        /* Check all services */
+        function checkAll() {
+            SERVICES.forEach(probe);
+            timer = INTERVAL;
+        }
+
+        /* Countdown tick */
+        function tick() {
+            timer--;
+            if (timer <= 0) {
+                checkAll();
+            }
+            cdEl.textContent = timer;
+        }
+
+        /* Initial check + interval */
+        checkAll();
+        setInterval(tick, 1000);
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPSS Constellation Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h1>JPSS Constellation Tracker</h1>
+                <div class="satellite-selector" id="satellite-selector">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            <div class="tab-container">
+                <button class="tab-btn active" data-mode="live">Live Tracking</button>
+                <button class="tab-btn" data-mode="constellation">Constellation</button>
+                <button class="tab-btn" data-mode="coverage">24h Coverage</button>
+                <button class="tab-btn" data-mode="globe">3D Globe</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="map-container"></div>
+            <div id="globe-container"></div>
+
+            <!-- Orbital Info Panel (top-left) -->
+            <div class="panel info-panel">
+                <h3>Orbital Parameters</h3>
+                <div class="info-row">
+                    <span class="info-label">Inclination</span>
+                    <span class="info-value" id="info-inclination">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Altitude</span>
+                    <span class="info-value" id="info-altitude">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Period</span>
+                    <span class="info-value" id="info-period">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Orbit</span>
+                    <span class="info-value accent" id="info-orbit">--</span>
+                </div>
+            </div>
+
+            <!-- Current Position Panel (top-right) -->
+            <div class="panel position-panel">
+                <h3>Current Position</h3>
+                <div class="info-row">
+                    <span class="info-label">Latitude</span>
+                    <span class="info-value" id="pos-lat">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Longitude</span>
+                    <span class="info-value" id="pos-lon">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Altitude</span>
+                    <span class="info-value" id="pos-alt">--</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Velocity</span>
+                    <span class="info-value accent" id="pos-vel">--</span>
+                </div>
+            </div>
+
+            <!-- Zoom Controls (right side) -->
+            <div class="panel zoom-panel">
+                <button class="icon-btn" id="btn-zoom-in" title="Zoom In (+)">+</button>
+                <button class="icon-btn" id="btn-zoom-out" title="Zoom Out (-)">−</button>
+                <button class="icon-btn" id="btn-zoom-reset" title="Reset (0)">⟲</button>
+                <div class="zoom-divider"></div>
+                <button class="icon-btn projection-toggle" id="btn-toggle-projection" title="Toggle Polar / Flat Map (M)">P</button>
+            </div>
+
+            <!-- Legend (bottom-left) -->
+            <div class="panel legend-panel">
+                <h3>Legend</h3>
+                <div id="satellite-legend">
+                    <!-- Populated by JS for constellation mode -->
+                    <div class="legend-item">
+                        <span class="legend-dot satellite"></span>
+                        <span id="legend-sat-name">Satellite Position</span>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-line track"></span>
+                    <span>Ground Track</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-rect swath"></span>
+                    <span>VIIRS Swath (3060km)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-line velocity"></span>
+                    <span>Velocity Vector</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-rect night"></span>
+                    <span>Night Side</span>
+                </div>
+                <div class="legend-toggles">
+                    <button class="toggle-btn active" id="btn-toggle-swath">Swath</button>
+                    <button class="toggle-btn active" id="btn-toggle-velocity">Vector</button>
+                    <button class="toggle-btn active" id="btn-toggle-terminator">Day/Night</button>
+                </div>
+            </div>
+
+            <!-- Time & Controls (bottom-right) -->
+            <div class="panel time-panel">
+                <div id="time-display">-- UTC</div>
+                <div id="coord-display" class="coord-display">-- --</div>
+                <div class="control-buttons">
+                    <button class="control-btn" id="btn-play">Pause</button>
+                    <button class="control-btn" id="btn-speed">1x</button>
+                    <button class="control-btn" id="btn-refresh">Refresh</button>
+                </div>
+                <div class="shortcuts-hint">
+                    Space: play/pause | +/-: zoom | 0: reset | R: refresh | M: map
+                </div>
+            </div>
+
+            <!-- Playback Panel (Time Machine) -->
+            <div id="playback-panel" class="playback-panel hidden">
+                <div class="playback-row">
+                    <span class="playback-label">Start</span>
+                    <input type="datetime-local" id="pb-start" class="pb-input" />
+                    <span class="playback-label">Duration</span>
+                    <select id="pb-duration" class="pb-select">
+                        <option value="60">1 hr</option>
+                        <option value="180">3 hr</option>
+                        <option value="360" selected>6 hr</option>
+                        <option value="1440">24 hr</option>
+                    </select>
+                    <span class="playback-label">Speed</span>
+                    <select id="pb-speed" class="pb-select">
+                        <option value="10">10x</option>
+                        <option value="60" selected>60x</option>
+                        <option value="300">300x</option>
+                        <option value="3600">3600x</option>
+                    </select>
+                    <button id="pb-play" class="control-btn">&#9654; Play</button>
+                    <button id="pb-stop" class="control-btn">&#9632; Stop</button>
+                    <span id="pb-simtime" class="pb-simtime">--</span>
+                    <span class="pb-warn" title="SGP4 accuracy degrades beyond ±7 days of TLE epoch">&#9888; &plusmn;7d accuracy</span>
+                </div>
+                <input type="range" id="pb-scrub" class="pb-scrub" min="0" max="1000" value="0" />
+            </div>
+            <button id="playback-toggle" class="playback-toggle-btn" title="Open Time Machine">&#9200; Time Machine</button>
+
+            <!-- Loading Overlay -->
+            <div id="loading-overlay">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading...</div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-message"></div>
+        </main>
+    </div>
+
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+    <!-- globe.gl (3D WebGL Earth, bundles Three.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/globe.gl@2.30.0/dist/globe.gl.min.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/projection.js"></script>
+    <script src="js/orbit-renderer.js"></script>
+    <script src="js/spotlight.js"></script>
+    <script src="js/terminator.js"></script>
+    <script src="js/animation.js"></script>
+    <script src="js/globe.js"></script>
+    <script src="js/playback.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
