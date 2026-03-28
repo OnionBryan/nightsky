@@ -77,44 +77,46 @@ body {
 /* Satellite Selector */
 .satellite-selector {
     display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
 }
 
-.sat-btn {
-    padding: 5px 12px;
+.sat-select {
+    padding: 5px 10px;
     border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     font-family: inherit;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     cursor: pointer;
     border-radius: 4px;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    min-width: 160px;
 }
 
-.sat-btn:hover {
+.sat-select:focus {
+    outline: none;
     border-color: var(--accent);
+}
+
+.sat-select optgroup {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.7rem;
+}
+
+.sat-select option {
+    background: var(--bg-secondary);
     color: var(--text-primary);
+    padding: 2px 6px;
 }
 
-.sat-btn.active {
-    background: rgba(0, 212, 255, 0.15);
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.sat-btn .sat-dot {
-    width: 8px;
-    height: 8px;
+.sat-dot-current {
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-}
-
-.sat-btn.active .sat-dot {
+    display: inline-block;
     box-shadow: 0 0 6px currentColor;
+    flex-shrink: 0;
 }
 
 /* Tabs */

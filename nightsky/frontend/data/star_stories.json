@@ -1,0 +1,308 @@
+[
+  {
+    "name": "Sirius",
+    "alternateNames": ["Alpha Canis Majoris", "Dog Star", "HIP 32349"],
+    "ra": 101.287,
+    "dec": -16.716,
+    "magnitude": -1.46,
+    "spectralType": "A1V",
+    "distance": "8.6 ly",
+    "constellation": "Canis Major",
+    "story": "The brightest star in Earth's night sky, Sirius is a binary system just 8.6 light-years away. Its companion Sirius B was the first white dwarf ever discovered in 1862, a stellar corpse that has already completed its evolution.",
+    "culture_notes": {
+      "greek": "The 'Dog Star' of Orion's faithful hunting hound. Ancient Greeks believed its rising with the Sun brought the scorching 'dog days' of summer, and its name means 'scorching' in Greek.",
+      "arabic": "Called ash-Shi'ra al-'Abur, the star that crossed the Milky Way to be near Orion. Her weeping sister Procyon stayed behind on the near side.",
+      "polynesian": "Known as Rehua in Maori tradition, one of the highest chiefs in the heavens. In Hawaiian navigation, Sirius (A'a) is a key directional star in the star compass.",
+      "chinese": "Part of the celestial market enclosure. In Chinese astronomy, Sirius was associated with a celestial wolf that threatened the lunar mansions."
+    }
+  },
+  {
+    "name": "Canopus",
+    "alternateNames": ["Alpha Carinae", "Suhail", "HIP 30438"],
+    "ra": 95.987,
+    "dec": -52.696,
+    "magnitude": -0.74,
+    "spectralType": "F0II",
+    "distance": "310 ly",
+    "constellation": "Carina",
+    "story": "The second brightest star in the sky, Canopus is a yellow-white supergiant 10,000 times more luminous than the Sun. Invisible from most of Europe, it is used as a calibration reference for spacecraft navigation, including JPSS weather satellites.",
+    "culture_notes": {
+      "greek": "Named for the pilot of Menelaus's ship returning from the Trojan War. When Canopus died on the Egyptian coast, the bright star appearing low on the southern horizon was named in his honor.",
+      "arabic": "Called Suhail, a name still widely used. In pre-Islamic star lore, Suhail was a man banished to the south when his bride Sirius's family objected to their marriage.",
+      "polynesian": "Called Atutahi in Maori tradition, a high-ranking chief star that stands alone, never joining the Milky Way. A key navigation reference throughout Polynesia."
+    }
+  },
+  {
+    "name": "Rigil Kentaurus",
+    "alternateNames": ["Alpha Centauri", "Alpha Centauri A", "HIP 71683", "Toliman"],
+    "ra": 219.902,
+    "dec": -60.834,
+    "magnitude": -0.27,
+    "spectralType": "G2V",
+    "distance": "4.37 ly",
+    "constellation": "Centaurus",
+    "story": "The closest star system to Earth at 4.37 light-years. Alpha Centauri is actually a triple system: two Sun-like stars orbiting each other, plus Proxima Centauri, which hosts at least one confirmed exoplanet in the habitable zone.",
+    "culture_notes": {
+      "greek": "Part of the centaur Chiron, the wise teacher of heroes including Achilles, Heracles, and Asclepius. The name means 'foot of the centaur.'",
+      "arabic": "Known as Rijl al-Qinturis, the foot of the centaur, following the Greek tradition."
+    }
+  },
+  {
+    "name": "Arcturus",
+    "alternateNames": ["Alpha Bootis", "HIP 69673", "Bear Guardian"],
+    "ra": 213.915,
+    "dec": 19.182,
+    "magnitude": -0.05,
+    "spectralType": "K1.5III",
+    "distance": "36.7 ly",
+    "constellation": "Bootes",
+    "story": "The brightest star in the northern celestial hemisphere, Arcturus is an orange giant about 25 times the Sun's diameter. Moving at 122 km/s through the galaxy, it is just passing through the solar neighborhood and will be gone in about half a million years.",
+    "culture_notes": {
+      "greek": "The 'Bear Guardian' (Arktouros) who watches over the Great Bear (Ursa Major). Some myths identify him as Arcas, son of Callisto, placed in the sky to forever guard his mother.",
+      "arabic": "Called as-Simak ar-Ramih, 'the uplifted one of the lancer.' Arab astronomers used Arcturus and Spica as key reference points for measuring stellar positions.",
+      "chinese": "Called Da Jiao ('Great Horn'), the principal star of the eastern palace of the Azure Dragon. In Japan, called Mugi-boshi ('wheat star') because its appearance signaled the wheat harvest."
+    }
+  },
+  {
+    "name": "Vega",
+    "alternateNames": ["Alpha Lyrae", "HIP 91262", "Wega"],
+    "ra": 279.235,
+    "dec": 38.784,
+    "magnitude": 0.03,
+    "spectralType": "A0V",
+    "distance": "25.0 ly",
+    "constellation": "Lyra",
+    "story": "The original 'zero magnitude' calibration star for the brightness scale. Vega was the northern pole star around 12,000 BCE and will be again around 13,700 CE. It spins so fast it bulges 23% wider at the equator than the poles.",
+    "culture_notes": {
+      "greek": "The lyre of Orpheus, whose music could charm all living things and even move stones. After Orpheus was killed by the Maenads, Zeus placed his lyre among the stars.",
+      "arabic": "From an-Nasr al-Waqi' meaning 'the swooping vulture.' The Arabs saw Vega and its surrounding stars as a vulture with folded wings, contrasting with Altair, the 'flying eagle.'",
+      "chinese": "Zhi Nu, the Weaver Girl -- one of the most beloved star stories in East Asia. She and the Cowherd (Altair) are separated lovers allowed to meet once a year when magpies form a bridge across the Milky Way."
+    }
+  },
+  {
+    "name": "Capella",
+    "alternateNames": ["Alpha Aurigae", "HIP 24608", "Goat Star"],
+    "ra": 79.172,
+    "dec": 45.998,
+    "magnitude": 0.08,
+    "spectralType": "G8III",
+    "distance": "42.9 ly",
+    "constellation": "Auriga",
+    "story": "Actually a system of four stars in two binary pairs. The primary pair are two yellow giants orbiting each other every 104 days, each about 10 times the Sun's diameter. Circumpolar from latitudes above 44 degrees north.",
+    "culture_notes": {
+      "greek": "The 'Little She-Goat,' identified with Amalthea who nursed the infant Zeus on Crete. One of Amalthea's horns broke off and became the cornucopia, the horn of plenty.",
+      "arabic": "Called al-'Ayyuq, possibly meaning 'the goat.' Arabic astronomers recognized it as one of the brightest stars and included it in their precise star catalogs."
+    }
+  },
+  {
+    "name": "Rigel",
+    "alternateNames": ["Beta Orionis", "HIP 24436"],
+    "ra": 78.634,
+    "dec": -8.202,
+    "magnitude": 0.13,
+    "spectralType": "B8Ia",
+    "distance": "863 ly",
+    "constellation": "Orion",
+    "story": "A blue-white supergiant about 120,000 times more luminous than the Sun. If placed at Sirius's distance, it would shine as bright as the full Moon. At 863 light-years, it is the most distant first-magnitude star commonly tracked.",
+    "culture_notes": {
+      "greek": "The left foot of Orion the Hunter. Despite being 'Beta' Orionis, Rigel is brighter than Alpha (Betelgeuse) most of the time.",
+      "arabic": "From Rijl Jauzah al-Yusra meaning 'the left foot of the central one' (Orion). The familiar name is a shortened Arabic term."
+    }
+  },
+  {
+    "name": "Procyon",
+    "alternateNames": ["Alpha Canis Minoris", "HIP 37279"],
+    "ra": 114.826,
+    "dec": 5.225,
+    "magnitude": 0.34,
+    "spectralType": "F5IV-V",
+    "distance": "11.5 ly",
+    "constellation": "Canis Minor",
+    "story": "Part of the Winter Triangle with Sirius and Betelgeuse. A binary system with a white dwarf companion (Procyon B) and one of our nearest stellar neighbors at just 11.5 light-years away.",
+    "culture_notes": {
+      "greek": "The name means 'before the dog' (pro-kyon) because it rises just before Sirius, the Dog Star. Associated with the lesser of Orion's two hunting dogs.",
+      "arabic": "Called ash-Shi'ra ash-Shamiyyah ('the Syrian Shi'ra'), the sister of Sirius who stayed on the near side of the Milky Way and wept for the separation."
+    }
+  },
+  {
+    "name": "Achernar",
+    "alternateNames": ["Alpha Eridani", "HIP 7588"],
+    "ra": 24.429,
+    "dec": -57.237,
+    "magnitude": 0.46,
+    "spectralType": "B6Vep",
+    "distance": "139 ly",
+    "constellation": "Eridanus",
+    "story": "The flattest star known -- spinning so rapidly at 250 km/s that its equatorial diameter is 56% larger than its polar diameter. It marks the southern end of the constellation Eridanus, the great celestial river.",
+    "culture_notes": {
+      "arabic": "From Akhir an-Nahr meaning 'the end of the river,' marking the southern terminus of Eridanus, the great celestial river."
+    }
+  },
+  {
+    "name": "Betelgeuse",
+    "alternateNames": ["Alpha Orionis", "HIP 27989"],
+    "ra": 88.793,
+    "dec": 7.407,
+    "magnitude": 0.50,
+    "spectralType": "M1-2Ia-Iab",
+    "distance": "700 ly",
+    "constellation": "Orion",
+    "story": "A red supergiant so large that if placed at the center of our solar system, its surface would extend past Jupiter's orbit. It dimmed dramatically in 2019 due to a surface mass ejection, and is expected to explode as a supernova within the next 100,000 years.",
+    "culture_notes": {
+      "greek": "The right shoulder of Orion the great hunter, killed by a scorpion sent by Gaia and placed among the stars opposite Scorpius so the two enemies never appear together.",
+      "arabic": "From Yad al-Jawza' meaning 'the hand of the central one' (Orion). The corruption through medieval Latin produced the familiar name."
+    }
+  },
+  {
+    "name": "Hadar",
+    "alternateNames": ["Beta Centauri", "HIP 68702", "Agena"],
+    "ra": 210.956,
+    "dec": -60.373,
+    "magnitude": 0.61,
+    "spectralType": "B1III",
+    "distance": "390 ly",
+    "constellation": "Centaurus",
+    "story": "A triple star system with a blue giant primary 12,000 times more luminous than the Sun. One of the two Southern Pointer stars that help locate the Southern Cross, appearing on multiple national flags.",
+    "culture_notes": {
+      "arabic": "Hadar may derive from an Arabic word meaning 'ground' or 'presence.'"
+    }
+  },
+  {
+    "name": "Altair",
+    "alternateNames": ["Alpha Aquilae", "HIP 97649"],
+    "ra": 297.696,
+    "dec": 8.868,
+    "magnitude": 0.76,
+    "spectralType": "A7V",
+    "distance": "16.7 ly",
+    "constellation": "Aquila",
+    "story": "One of the closest visible stars at 16.7 light-years. Altair rotates in only 8.9 hours (the Sun takes 25 days), making it visibly oblate. It was the first star ever imaged as a resolved disk by interferometry in 2007.",
+    "culture_notes": {
+      "greek": "Part of the Summer Triangle with Vega and Deneb, in the constellation of the Eagle.",
+      "arabic": "From an-Nasr at-Ta'ir meaning 'the flying eagle,' in contrast to Vega the 'swooping eagle.' The eagle constellation was recognized across many cultures.",
+      "chinese": "Niu Lang, the Cowherd -- the other half of the great love story with the Weaver Girl (Vega). The two flanking stars are his two children, central to the Tanabata/Qixi festivals."
+    }
+  },
+  {
+    "name": "Acrux",
+    "alternateNames": ["Alpha Crucis", "HIP 60718"],
+    "ra": 186.650,
+    "dec": -63.099,
+    "magnitude": 0.77,
+    "spectralType": "B0.5IV",
+    "distance": "320 ly",
+    "constellation": "Crux",
+    "story": "A multiple star system at the base of the Southern Cross, the most important navigation constellation in Polynesian wayfinding. Appears on the flags of Australia, New Zealand, Brazil, Samoa, and Papua New Guinea.",
+    "culture_notes": {
+      "polynesian": "The Southern Cross (Te Punga in Maori, 'the anchor') was the single most important navigation constellation in Polynesian wayfinding. Its orientation indicates latitude."
+    }
+  },
+  {
+    "name": "Aldebaran",
+    "alternateNames": ["Alpha Tauri", "HIP 21421", "Eye of Taurus"],
+    "ra": 68.980,
+    "dec": 16.509,
+    "magnitude": 0.86,
+    "spectralType": "K5III",
+    "distance": "65.3 ly",
+    "constellation": "Taurus",
+    "story": "The angry red eye of Taurus the Bull. An orange giant 44 times the Sun's diameter, Aldebaran appears to be part of the Hyades cluster but is actually a foreground star at half the distance. It hosts a confirmed exoplanet of about 6 Jupiter masses.",
+    "culture_notes": {
+      "arabic": "Al-Dabaran means 'the follower' -- it follows the Pleiades cluster across the sky, as if herding them.",
+      "greek": "One of the four Royal Stars of ancient Persia (with Regulus, Antares, and Fomalhaut), known as Tascheter, the Watcher of the East."
+    }
+  },
+  {
+    "name": "Antares",
+    "alternateNames": ["Alpha Scorpii", "HIP 80763", "Rival of Mars"],
+    "ra": 247.352,
+    "dec": -26.432,
+    "magnitude": 1.06,
+    "spectralType": "M1.5Iab",
+    "distance": "600 ly",
+    "constellation": "Scorpius",
+    "story": "A red supergiant about 700 times the Sun's diameter. If placed at the center of the Solar System, it would engulf the orbit of Mars. Has a hot blue companion star visible in telescopes.",
+    "culture_notes": {
+      "greek": "The name means 'rival of Ares (Mars)' because its reddish color resembles the planet. The heart of Scorpius, placed opposite Orion so the two enemies never meet.",
+      "arabic": "Called Qalb al-Aqrab, 'the heart of the scorpion.'",
+      "chinese": "Called Xin, one of the four great constellations marking the seasons. Its appearance at dusk in late spring signaled the approach of summer."
+    }
+  },
+  {
+    "name": "Spica",
+    "alternateNames": ["Alpha Virginis", "HIP 65474"],
+    "ra": 201.298,
+    "dec": -11.161,
+    "magnitude": 0.97,
+    "spectralType": "B1III-IV",
+    "distance": "260 ly",
+    "constellation": "Virgo",
+    "story": "A close binary where two blue giants orbit each other every 4 days, so close they distort each other into egg shapes. Hipparchus's observation that Spica's position had shifted led to the discovery of the precession of the equinoxes around 130 BCE.",
+    "culture_notes": {
+      "greek": "'Ear of grain' -- the spike of wheat held by Virgo, the harvest maiden. Associated with Demeter/Ceres and the bounty of agriculture.",
+      "arabic": "Called as-Simak al-A'zal ('the unarmed Simak'), paired with Arcturus ('the lancer'). The distinction: Arcturus carries a lance, but Spica is unarmed."
+    }
+  },
+  {
+    "name": "Pollux",
+    "alternateNames": ["Beta Geminorum", "HIP 37826"],
+    "ra": 116.329,
+    "dec": 28.026,
+    "magnitude": 1.14,
+    "spectralType": "K0IIIb",
+    "distance": "33.8 ly",
+    "constellation": "Gemini",
+    "story": "The closest giant star to Earth and confirmed host of an exoplanet (Pollux b, about 2.3 Jupiter masses). Despite being labeled 'Beta' Geminorum, it is actually brighter than Castor (Alpha).",
+    "culture_notes": {
+      "greek": "The immortal twin, son of Zeus. When his mortal brother Castor was killed, Pollux begged Zeus to let them share immortality, alternating between Olympus and Hades.",
+      "arabic": "Part of a much larger lion figure in pre-Islamic Arab sky lore, where Castor and Pollux formed one of the lion's paws."
+    }
+  },
+  {
+    "name": "Fomalhaut",
+    "alternateNames": ["Alpha Piscis Austrini", "HIP 113368"],
+    "ra": 344.413,
+    "dec": -29.622,
+    "magnitude": 1.16,
+    "spectralType": "A3V",
+    "distance": "25.1 ly",
+    "constellation": "Piscis Austrinus",
+    "story": "Famous for its prominent debris disk imaged by Hubble in 2004. 'Fomalhaut b' was announced as one of the first directly imaged exoplanets, later reclassified as a dust cloud from a collision between two planetesimals.",
+    "culture_notes": {
+      "arabic": "From Fam al-Hut meaning 'the mouth of the Southern Fish.' One of the very few first-magnitude stars with a purely Arabic name still in common use.",
+      "greek": "Called Hastorang in Persian tradition, the Watcher of the South and one of the four Royal Stars guarding the winter solstice around 2500 BCE."
+    }
+  },
+  {
+    "name": "Deneb",
+    "alternateNames": ["Alpha Cygni", "HIP 102098"],
+    "ra": 310.358,
+    "dec": 45.280,
+    "magnitude": 1.25,
+    "spectralType": "A2Iae",
+    "distance": "2,600 ly",
+    "constellation": "Cygnus",
+    "story": "By far the most luminous star visible to the naked eye from northern latitudes -- about 196,000 times the Sun's luminosity. If placed at Sirius's distance, it would shine as bright as a half Moon. One vertex of the Summer Triangle.",
+    "culture_notes": {
+      "arabic": "From Dhanab ad-Dajajah meaning 'the tail of the hen' (Cygnus the Swan).",
+      "greek": "The tail of the Swan, which in myth is Zeus in disguise visiting Leda, queen of Sparta. This union produced the twins Castor and Pollux, and Helen of Troy.",
+      "chinese": "Part of the celestial bridge where the Weaver Girl and Cowherd meet. Deneb and the nearby stars of Cygnus represent the magpie bridge spanning the Milky Way."
+    }
+  },
+  {
+    "name": "Regulus",
+    "alternateNames": ["Alpha Leonis", "HIP 49669", "Cor Leonis"],
+    "ra": 152.093,
+    "dec": 11.967,
+    "magnitude": 1.40,
+    "spectralType": "B8IVn",
+    "distance": "79.3 ly",
+    "constellation": "Leo",
+    "story": "Regulus spins so fast (once every 15.9 hours) that it is 32% wider at the equator than the poles. If it rotated just 16% faster, it would tear itself apart. Located very close to the ecliptic, it is frequently occulted by the Moon.",
+    "culture_notes": {
+      "greek": "'Little King' or 'Prince,' the heart of Leo the Lion, the king of beasts. One of the four Royal Stars of Persia, known as Venant, the Watcher of the North.",
+      "arabic": "Called Qalb al-Asad ('heart of the lion').",
+      "chinese": "Known as Xuan Yuan Shi Si, the fourteenth star of the Yellow Emperor asterism, associated with the legendary first emperor of China."
+    }
+  }
+]

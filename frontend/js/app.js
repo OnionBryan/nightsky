@@ -112,20 +112,53 @@ class App {
         const selector = document.getElementById('satellite-selector');
         if (!selector) return;
 
-        selector.innerHTML = '';
+        while (selector.firstChild) selector.removeChild(selector.firstChild);
 
+        const categories = {
+            jpss: 'JPSS (NOAA/NASA)',
+            metop: 'MetOp (EUMETSAT)',
+            eos: 'EOS (NASA)',
+            landsat: 'Landsat (USGS)',
+            sentinel: 'Sentinel (ESA)',
+            fy3: 'FY-3 (China)',
+            station: 'Space Stations',
+            telescope: 'Telescopes'
+        };
+
+        const select = document.createElement('select');
+        select.id = 'sat-select';
+        select.className = 'sat-select';
+
+        const grouped = {};
         this.satellites.forEach(sat => {
-            const btn = document.createElement('button');
-            btn.className = `sat-btn ${sat.key === this.currentSatellite ? 'active' : ''}`;
-            btn.dataset.satellite = sat.key;
-            btn.innerHTML = `
-                <span class="sat-dot" style="background: ${sat.color}"></span>
-                <span>${sat.name}</span>
-            `;
-
-            btn.addEventListener('click', () => this.selectSatellite(sat.key));
-            selector.appendChild(btn);
+            const cat = sat.category || 'other';
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(sat);
         });
+
+        for (const [catKey, catLabel] of Object.entries(categories)) {
+            if (!grouped[catKey]) continue;
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = catLabel;
+            grouped[catKey].forEach(sat => {
+                const opt = document.createElement('option');
+                opt.value = sat.key;
+                opt.textContent = sat.name;
+                opt.selected = sat.key === this.currentSatellite;
+                optgroup.appendChild(opt);
+            });
+            select.appendChild(optgroup);
+        }
+
+        select.addEventListener('change', () => this.selectSatellite(select.value));
+
+        const dot = document.createElement('span');
+        dot.className = 'sat-dot-current';
+        const currentSat = this.satellites.find(s => s.key === this.currentSatellite);
+        if (currentSat) dot.style.background = currentSat.color;
+
+        selector.appendChild(dot);
+        selector.appendChild(select);
     }
 
     async selectSatellite(satKey) {
@@ -134,9 +167,11 @@ class App {
         this.currentSatellite = satKey;
 
         // Update selector UI
-        document.querySelectorAll('.sat-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.satellite === satKey);
-        });
+        const selectEl = document.getElementById('sat-select');
+        if (selectEl) selectEl.value = satKey;
+        const dot = document.querySelector('.sat-dot-current');
+        const satInfo = this.satellites.find(s => s.key === satKey);
+        if (dot && satInfo) dot.style.background = satInfo.color;
 
         // Refresh data
         this.showLoading(true, `Loading ${this.getSatelliteName(satKey)}...`);

@@ -14,32 +14,191 @@ import json
 
 CELESTRAK_BASE = "https://celestrak.org/NORAD/elements/gp.php"
 
-# JPSS Polar Orbiting Satellite Constellation
+# Earth Observation Satellite Catalog
 SATELLITE_CATALOG = {
+    # === JPSS Constellation (NOAA/NASA) ===
     "noaa21": {
         "norad_id": 54234,
         "name": "NOAA-21",
         "alt_name": "JPSS-2",
         "launch_year": 2022,
-        "color": "#ff6b6b",  # Coral red
-        "swath_km": 3060
+        "color": "#ff6b6b",
+        "swath_km": 3060,
+        "category": "jpss",
+        "operator": "NOAA"
     },
     "noaa20": {
         "norad_id": 43013,
         "name": "NOAA-20",
         "alt_name": "JPSS-1",
         "launch_year": 2017,
-        "color": "#4ecdc4",  # Teal
-        "swath_km": 3060
+        "color": "#4ecdc4",
+        "swath_km": 3060,
+        "category": "jpss",
+        "operator": "NOAA"
     },
     "suominpp": {
         "norad_id": 37849,
         "name": "Suomi NPP",
         "alt_name": "NPP",
         "launch_year": 2011,
-        "color": "#ffe66d",  # Yellow
-        "swath_km": 3060
-    }
+        "color": "#ffe66d",
+        "swath_km": 3060,
+        "category": "jpss",
+        "operator": "NOAA/NASA"
+    },
+
+    # === MetOp (EUMETSAT) — JPSS morning-orbit partners ===
+    "metopb": {
+        "norad_id": 38771,
+        "name": "MetOp-B",
+        "alt_name": "MetOp 2",
+        "launch_year": 2012,
+        "color": "#7c8cf8",
+        "swath_km": 2900,
+        "category": "metop",
+        "operator": "EUMETSAT"
+    },
+    "metopc": {
+        "norad_id": 43689,
+        "name": "MetOp-C",
+        "alt_name": "MetOp 3",
+        "launch_year": 2018,
+        "color": "#9ba8ff",
+        "swath_km": 2900,
+        "category": "metop",
+        "operator": "EUMETSAT"
+    },
+
+    # === NASA EOS (Earth Observing System) ===
+    "terra": {
+        "norad_id": 25994,
+        "name": "Terra",
+        "alt_name": "EOS AM-1",
+        "launch_year": 1999,
+        "color": "#e67e22",
+        "swath_km": 2330,
+        "category": "eos",
+        "operator": "NASA"
+    },
+    "aqua": {
+        "norad_id": 27424,
+        "name": "Aqua",
+        "alt_name": "EOS PM-1",
+        "launch_year": 2002,
+        "color": "#3498db",
+        "swath_km": 2330,
+        "category": "eos",
+        "operator": "NASA"
+    },
+    "aura": {
+        "norad_id": 28376,
+        "name": "Aura",
+        "alt_name": "EOS Chem-1",
+        "launch_year": 2004,
+        "color": "#9b59b6",
+        "swath_km": 2600,
+        "category": "eos",
+        "operator": "NASA"
+    },
+
+    # === Landsat (USGS/NASA) ===
+    "landsat8": {
+        "norad_id": 39084,
+        "name": "Landsat 8",
+        "alt_name": "LDCM",
+        "launch_year": 2013,
+        "color": "#27ae60",
+        "swath_km": 185,
+        "category": "landsat",
+        "operator": "USGS/NASA"
+    },
+    "landsat9": {
+        "norad_id": 49260,
+        "name": "Landsat 9",
+        "alt_name": "Landsat 9",
+        "launch_year": 2021,
+        "color": "#2ecc71",
+        "swath_km": 185,
+        "category": "landsat",
+        "operator": "USGS/NASA"
+    },
+
+    # === Sentinel (ESA Copernicus) ===
+    "sentinel3a": {
+        "norad_id": 41335,
+        "name": "Sentinel-3A",
+        "alt_name": "S3A",
+        "launch_year": 2016,
+        "color": "#e74c3c",
+        "swath_km": 1270,
+        "category": "sentinel",
+        "operator": "ESA"
+    },
+    "sentinel3b": {
+        "norad_id": 43437,
+        "name": "Sentinel-3B",
+        "alt_name": "S3B",
+        "launch_year": 2018,
+        "color": "#c0392b",
+        "swath_km": 1270,
+        "category": "sentinel",
+        "operator": "ESA"
+    },
+
+    # === FY-3 (China Meteorological Administration) ===
+    "fy3d": {
+        "norad_id": 43010,
+        "name": "FY-3D",
+        "alt_name": "Fengyun 3D",
+        "launch_year": 2017,
+        "color": "#f1c40f",
+        "swath_km": 2900,
+        "category": "fy3",
+        "operator": "CMA"
+    },
+    "fy3e": {
+        "norad_id": 49008,
+        "name": "FY-3E",
+        "alt_name": "Fengyun 3E",
+        "launch_year": 2021,
+        "color": "#f39c12",
+        "swath_km": 2900,
+        "category": "fy3",
+        "operator": "CMA"
+    },
+
+    # === Famous Satellites ===
+    "iss": {
+        "norad_id": 25544,
+        "name": "ISS",
+        "alt_name": "Zarya",
+        "launch_year": 1998,
+        "color": "#ffffff",
+        "swath_km": 0,
+        "category": "station",
+        "operator": "International"
+    },
+    "hubble": {
+        "norad_id": 20580,
+        "name": "Hubble",
+        "alt_name": "HST",
+        "launch_year": 1990,
+        "color": "#d4a456",
+        "swath_km": 0,
+        "category": "telescope",
+        "operator": "NASA/ESA"
+    },
+    "tiangong": {
+        "norad_id": 48274,
+        "name": "Tiangong",
+        "alt_name": "CSS",
+        "launch_year": 2021,
+        "color": "#ff4757",
+        "swath_km": 0,
+        "category": "station",
+        "operator": "CNSA"
+    },
 }
 
 # Default satellite
@@ -241,7 +400,10 @@ def get_constellation_info() -> list:
             "name": info["name"],
             "norad_id": info["norad_id"],
             "color": info["color"],
-            "launch_year": info["launch_year"]
+            "launch_year": info["launch_year"],
+            "category": info.get("category", "jpss"),
+            "operator": info.get("operator", ""),
+            "swath_km": info.get("swath_km", 0)
         }
         for key, info in SATELLITE_CATALOG.items()
     ]
