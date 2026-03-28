@@ -14,6 +14,9 @@ class App {
         this.animation = null;
         this.globe3d = null;
         this.playback = null;
+        this.gibs = null;
+        this.fireOverlay = null;
+        this.heatmap = null;
 
         this.currentMode = 'live';
         this.currentSatellite = 'noaa21';
@@ -23,6 +26,8 @@ class App {
         this.currentPosition = null;
         this.constellationData = [];
         this.polarCrossings = null;
+        this.showTimeTicks = true;
+        this.showSwathStrip = true;
 
         // Playback state
         this._pbTrack = null;
@@ -32,6 +37,7 @@ class App {
 
     async init() {
         this.showLoading(true, 'Initializing...');
+        this._hashDebounce = null;
 
         try {
             // Initialize projection
@@ -57,6 +63,15 @@ class App {
             this.playback = new PlaybackController();
             this.playback.onTimeChange = (t) => this._onPlaybackTick(t);
 
+            // Initialize GIBS imagery overlay
+            this.gibs = new GIBSOverlay(container, this.projection);
+
+            // Initialize FIRMS fire overlay
+            this.fireOverlay = new FireOverlay(this.projection, API_BASE);
+
+            // Initialize coverage heatmap (canvas overlay)
+            this.heatmap = new CoverageHeatmap(this.projection);
+
             // Setup spotlight callbacks
             this.spotlight.onSatelliteClick = (data) => this.showSatelliteInfo(data);
 
@@ -64,6 +79,14 @@ class App {
 
             // Fetch available satellites
             await this.fetchSatellites();
+
+            // --- Restore state from URL hash (before building UI) ---
+            const hashState = this._parseHash();
+            if (hashState) {
+                if (hashState.satellite) this.currentSatellite = hashState.satellite;
+                if (hashState.mode) this.currentMode = hashState.mode;
+            }
+
             this.setupSatelliteSelector();
 
             await this.fetchOrbitInfo();
@@ -82,6 +105,22 @@ class App {
             this.setupCoordinateDisplay();
             this.updateInfoPanel();
             this.updateLegend();
+
+            // --- Apply remaining hash state after UI is ready ---
+            if (hashState) {
+                if (hashState.mode && hashState.mode !== 'live') {
+                    this.switchMode(hashState.mode);
+                }
+                if (hashState.proj === 'equirectangular') {
+                    await this.toggleProjection();
+                }
+            }
+
+            // Listen for hash changes (user edits URL or clicks shared link)
+            window.addEventListener('hashchange', () => {
+                const state = this._parseHash();
+                if (state) this._applyHash(state);
+            });
 
             this.showLoading(false);
 
@@ -184,6 +223,7 @@ class App {
         this.updateInfoPanel();
         this.updateLegend();
 
+        this._scheduleHashUpdate();
         this.showLoading(false);
     }
 
@@ -309,12 +349,26 @@ class App {
 
         // Update spotlight with satellite color
         const nextPos = futurePositions[0];
-        this.spotlight.setColor(this.getSatelliteColor(this.currentSatellite));
+        const satColor = this.getSatelliteColor(this.currentSatellite);
+        this.spotlight.setColor(satColor);
         this.spotlight.update(
             { lon: pos.longitude, lat: pos.latitude },
             nextPos ? { lon: nextPos.lon, lat: nextPos.lat } : null,
             pos
         );
+
+        // Draw swath strip along the full track (past + future)
+        if (this.showSwathStrip && this.trackData && this.trackData.length > 1) {
+            const halfWidth = this.orbitInfo ? (this.orbitInfo.swath_km || 3060) / 2 : 1530;
+            this.orbitRenderer.drawSwathStrip(this.trackData, halfWidth, satColor);
+        } else {
+            this.orbitRenderer.clearSwathStrip();
+        }
+
+        // Draw time tick marks along the track
+        if (this.showTimeTicks && this.trackData) {
+            this.orbitRenderer.drawTimeTicks(this.trackData);
+        }
 
         // Update displays
         this.updatePositionDisplay(pos);
@@ -523,6 +577,10 @@ class App {
         if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => this.projection.zoomOut());
         if (zoomResetBtn) zoomResetBtn.addEventListener('click', () => this.projection.resetZoom());
 
+        // Share button
+        const shareBtn = document.getElementById('btn-share');
+        if (shareBtn) shareBtn.addEventListener('click', () => this._shareUrl());
+
         // Toggle buttons
         const toggleSwathBtn = document.getElementById('btn-toggle-swath');
         const toggleVelocityBtn = document.getElementById('btn-toggle-velocity');
@@ -530,7 +588,9 @@ class App {
         if (toggleSwathBtn) {
             toggleSwathBtn.addEventListener('click', () => {
                 const on = this.spotlight.toggleSwath();
+                this.showSwathStrip = on;
                 toggleSwathBtn.classList.toggle('active', on);
+                if (!on) this.orbitRenderer.clearSwathStrip();
             });
         }
 
@@ -541,11 +601,35 @@ class App {
             });
         }
 
+        // Time Ticks toggle
+        const toggleTicksBtn = document.getElementById('btn-toggle-ticks');
+        if (toggleTicksBtn) {
+            toggleTicksBtn.addEventListener('click', () => {
+                this.showTimeTicks = !this.showTimeTicks;
+                toggleTicksBtn.classList.toggle('active', this.showTimeTicks);
+                if (!this.showTimeTicks) this.orbitRenderer.clearTimeTicks();
+            });
+        }
+
         const toggleTerminatorBtn = document.getElementById('btn-toggle-terminator');
         if (toggleTerminatorBtn) {
             toggleTerminatorBtn.addEventListener('click', () => {
                 const on = this.terminator.toggle();
                 toggleTerminatorBtn.classList.toggle('active', on);
+            });
+        }
+
+        // GIBS imagery toggle and controls
+        this._setupGibsListeners();
+
+        // FIRMS Active Fire toggle
+        const toggleFiresBtn = document.getElementById('btn-toggle-fires');
+        if (toggleFiresBtn) {
+            toggleFiresBtn.addEventListener('click', async () => {
+                const on = await this.fireOverlay.toggle();
+                toggleFiresBtn.classList.toggle('active', on);
+                const firesLegend = document.getElementById('fires-legend-item');
+                if (firesLegend) firesLegend.style.display = on ? '' : 'none';
             });
         }
 
@@ -690,6 +774,7 @@ class App {
 
     switchMode(mode) {
         this.currentMode = mode;
+        this._scheduleHashUpdate();
 
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.mode === mode);
@@ -707,6 +792,13 @@ class App {
             this.spotlight.clear();
             this.orbitRenderer.clearTrails();
             this.projection.getLayer('markers').selectAll('.constellation-sat').remove();
+        }
+
+        // Hide heatmap canvas when leaving coverage mode
+        if (mode !== 'coverage' && this.heatmap) {
+            this.heatmap.hide();
+            this.heatmap.clear();
+            this.heatmap.removeLegend();
         }
 
         if (mode === 'live') {
@@ -756,6 +848,11 @@ class App {
         // Force an immediate visual update (terminator, satellite, etc.)
         this.orbitRenderer.clearHistory();
         if (this.terminator) this.terminator.update();
+
+        // Redraw fire overlay for new projection
+        if (this.fireOverlay) this.fireOverlay.redraw();
+
+        this._scheduleHashUpdate();
     }
 
     updateConstellationLegend() {
@@ -776,28 +873,17 @@ class App {
     }
 
     async drawCoverage() {
-        this.showLoading(true, `Loading 24h coverage for ${this.getSatelliteName(this.currentSatellite)}...`);
+        this.showLoading(true, `Loading 24h coverage heatmap for ${this.getSatelliteName(this.currentSatellite)}...`);
 
         try {
-            const response = await fetch(`${API_BASE}/track?satellite=${this.currentSatellite}&duration=1440&step=60`);
-            const data = await response.json();
-
-            const color = this.getSatelliteColor(this.currentSatellite);
-            // Parse hex to rgba
-            const r = parseInt(color.slice(1, 3), 16);
-            const g = parseInt(color.slice(3, 5), 16);
-            const b = parseInt(color.slice(5, 7), 16);
-
-            this.orbitRenderer.drawGroundTrack(data.positions, {
-                className: 'coverage-track',
-                stroke: `rgba(${r}, ${g}, ${b}, 0.5)`,
-                strokeWidth: 1.5,
-                opacity: 1
-            });
+            await this.heatmap.fetch(this.currentSatellite, 24, 2);
+            this.heatmap.show();
+            this.heatmap.render();
+            this.heatmap.drawLegend(this.heatmap.data.max_passes);
 
             this.showLoading(false);
         } catch (error) {
-            console.error('Failed to fetch coverage:', error);
+            console.error('Failed to fetch coverage heatmap:', error);
             this.showLoading(false);
         }
     }
@@ -934,6 +1020,106 @@ class App {
             errorEl.classList.add('visible');
         }
         this.showLoading(false);
+    }
+
+    // ---- Shareable URLs / Deep Linking ----
+
+    /**
+     * Parse the URL hash into a state object.
+     * Format: #sat=noaa21&mode=live&proj=polar
+     */
+    _parseHash() {
+        const hash = window.location.hash.slice(1);
+        if (!hash) return null;
+
+        const params = new URLSearchParams(hash);
+        const state = {};
+
+        if (params.has('sat'))  state.satellite = params.get('sat');
+        if (params.has('mode')) state.mode = params.get('mode');
+        if (params.has('proj')) state.proj = params.get('proj');
+
+        return state;
+    }
+
+    /**
+     * Write the current app state into the URL hash.
+     * Uses replaceState to avoid polluting browser history.
+     */
+    _updateHash() {
+        const params = new URLSearchParams();
+        params.set('sat', this.currentSatellite);
+        params.set('mode', this.currentMode);
+
+        const proj = this.projection.projectionType === 'equirectangular'
+            ? 'equirectangular' : 'polar';
+        params.set('proj', proj);
+
+        window.history.replaceState(null, '', '#' + params.toString());
+    }
+
+    /**
+     * Debounced hash update (100 ms). Call after any state change.
+     */
+    _scheduleHashUpdate() {
+        if (this._hashDebounce) clearTimeout(this._hashDebounce);
+        this._hashDebounce = setTimeout(() => this._updateHash(), 100);
+    }
+
+    /**
+     * Apply a parsed hash state object to the running app.
+     * Used when the user navigates to a shared link or edits the hash.
+     */
+    async _applyHash(state) {
+        if (!state) return;
+
+        if (state.satellite && state.satellite !== this.currentSatellite) {
+            await this.selectSatellite(state.satellite);
+        }
+        if (state.mode && state.mode !== this.currentMode) {
+            this.switchMode(state.mode);
+        }
+        if (state.proj) {
+            const currentProj = this.projection.projectionType;
+            if (state.proj !== currentProj) {
+                await this.toggleProjection();
+            }
+        }
+    }
+
+    /**
+     * Copy the current shareable URL to the clipboard and show a tooltip.
+     */
+    async _shareUrl() {
+        // Ensure hash is up-to-date before copying
+        this._updateHash();
+        const url = window.location.href;
+
+        try {
+            await navigator.clipboard.writeText(url);
+        } catch (_) {
+            // Fallback for non-HTTPS or older browsers
+            const ta = document.createElement('textarea');
+            ta.value = url;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+
+        // Show tooltip
+        const tip = document.getElementById('share-tooltip');
+        if (tip) {
+            tip.classList.remove('visible');
+            // Force reflow so the animation restarts
+            void tip.offsetWidth;
+            tip.classList.add('visible');
+            tip.addEventListener('animationend', () => {
+                tip.classList.remove('visible');
+            }, { once: true });
+        }
     }
 }
 

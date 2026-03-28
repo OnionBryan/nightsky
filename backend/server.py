@@ -15,7 +15,11 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from datetime import datetime, timezone, timedelta
 from dateutil.parser import parse as parse_datetime
+import math
 import requests as http_requests  # renamed to avoid conflict with flask.request
+import csv
+import os
+from io import StringIO
 
 from tle_fetcher import (
     fetch_tle, get_orbital_params, SATELLITE_CATALOG, DEFAULT_SATELLITE,
@@ -32,6 +36,39 @@ _tle_data = {}     # keyed by satellite key
 _last_refresh = {}  # keyed by satellite key
 
 REFRESH_INTERVAL_HOURS = 6  # Refresh TLE every 6 hours
+
+# Coverage heatmap cache: keyed by (sat_key, hours, grid_size)
+_heatmap_cache = {}  # {cache_key: {"data": ..., "computed_at": datetime, "tle_epoch": str}}
+
+# ============================================
+# FIRMS Active Fire Data
+# ============================================
+FIRMS_MAP_KEY = os.environ.get('FIRMS_MAP_KEY', 'DEMO_KEY')
+FIRMS_BASE = 'https://firms.modaps.eosdis.nasa.gov/api/area/csv'
+FIRMS_SOURCE_MAP = {
+    "noaa21": "VIIRS_NOAA21_NRT",
+    "noaa20": "VIIRS_NOAA20_NRT",
+    "suominpp": "VIIRS_SNPP_NRT",
+}
+
+# Simple in-memory cache: { key: (timestamp, data) }
+_fires_cache = {}
+FIRES_CACHE_TTL = 900  # 15 minutes in seconds
+FIRES_MAX_POINTS = 5000
+
+
+def _get_fires_cached(key: str):
+    """Return cached data if still fresh, else None."""
+    if key in _fires_cache:
+        ts, data = _fires_cache[key]
+        if (datetime.now(timezone.utc) - ts).total_seconds() < FIRES_CACHE_TTL:
+            return data
+    return None
+
+
+def _set_fires_cached(key: str, data):
+    """Store data in cache with current timestamp."""
+    _fires_cache[key] = (datetime.now(timezone.utc), data)
 
 
 def get_propagator(sat_key: str = DEFAULT_SATELLITE) -> OrbitPropagator:
@@ -79,7 +116,8 @@ def index():
             "/api/track",
             "/api/orbit-info",
             "/api/swath",
-            "/api/constellation/current"
+            "/api/constellation/current",
+            "/api/fires"
         ]
     })
 
@@ -335,6 +373,145 @@ def api_coverage():
     })
 
 
+def _haversine_km(lat1, lon1, lat2, lon2):
+    """Haversine distance in km between two lat/lon points (degrees)."""
+    R = 6371.0
+    rlat1, rlon1, rlat2, rlon2 = (math.radians(v) for v in (lat1, lon1, lat2, lon2))
+    dlat = rlat2 - rlat1
+    dlon = rlon2 - rlon1
+    a = math.sin(dlat / 2) ** 2 + math.cos(rlat1) * math.cos(rlat2) * math.sin(dlon / 2) ** 2
+    return R * 2 * math.asin(math.sqrt(a))
+
+
+def _compute_coverage_grid(positions, half_width_km, grid_size):
+    """
+    Build a {(lat_idx, lon_idx): pass_count} grid from propagated positions.
+
+    For each position, marks all grid cells whose centers fall within
+    half_width_km of the sub-satellite point.
+    """
+    R = 6371.0
+    angular_radius = half_width_km / R * (180.0 / math.pi)  # ~13.85 deg for 1530 km
+    n_lat = int(180 / grid_size)
+    n_lon = int(360 / grid_size)
+    grid = {}
+
+    for pos in positions:
+        plat = pos["latitude"]
+        plon = pos["longitude"]
+
+        lat_min = max(-90.0, plat - angular_radius - grid_size)
+        lat_max = min(90.0, plat + angular_radius + grid_size)
+
+        lat_idx_lo = max(0, int((lat_min + 90) / grid_size))
+        lat_idx_hi = min(n_lat - 1, int((lat_max + 90) / grid_size))
+
+        for lat_idx in range(lat_idx_lo, lat_idx_hi + 1):
+            cell_lat = -90.0 + lat_idx * grid_size + grid_size / 2.0
+
+            # Longitude range narrows at high latitudes
+            cos_lat = math.cos(math.radians(cell_lat))
+            if cos_lat > 0.001:
+                lon_range = angular_radius / cos_lat
+            else:
+                lon_range = 180.0  # near poles, check all longitudes
+
+            lon_min = plon - lon_range - grid_size
+            lon_max = plon + lon_range + grid_size
+
+            lon_idx_lo = int((lon_min + 180) / grid_size) % n_lon
+            lon_idx_hi = int((lon_max + 180) / grid_size) % n_lon
+
+            # Handle wrapping around the antimeridian
+            if lon_idx_lo <= lon_idx_hi:
+                lon_range_iter = range(lon_idx_lo, lon_idx_hi + 1)
+            else:
+                lon_range_iter = list(range(lon_idx_lo, n_lon)) + list(range(0, lon_idx_hi + 1))
+
+            for lon_idx in lon_range_iter:
+                cell_lon = -180.0 + lon_idx * grid_size + grid_size / 2.0
+                dist = _haversine_km(plat, plon, cell_lat, cell_lon)
+                if dist <= half_width_km:
+                    key = (lat_idx, lon_idx)
+                    grid[key] = grid.get(key, 0) + 1
+
+    return grid, n_lat, n_lon
+
+
+@app.route("/api/coverage-heatmap")
+def api_coverage_heatmap():
+    """
+    Return grid-based coverage heatmap data.
+
+    Propagates the satellite for the requested duration, then counts
+    how many swath passes cover each grid cell.
+
+    Query params:
+        satellite: satellite key (default: noaa21)
+        hours: hours of coverage (default: 24, max: 48)
+        grid: cell size in degrees (default: 2, min: 1, max: 5)
+    """
+    sat_key = request.args.get("satellite", DEFAULT_SATELLITE)
+    if sat_key not in SATELLITE_CATALOG:
+        sat_key = DEFAULT_SATELLITE
+
+    hours = request.args.get("hours", default=24, type=int)
+    hours = max(1, min(48, hours))
+    grid_size = request.args.get("grid", default=2, type=int)
+    grid_size = max(1, min(5, grid_size))
+
+    sat_info = SATELLITE_CATALOG[sat_key]
+    swath_km = sat_info.get("swath_km", 3060)
+    half_width_km = swath_km / 2.0
+
+    # Check cache -- reuse if same params and TLE hasn't changed
+    prop = get_propagator(sat_key)
+    tle_epoch_str = prop.tle_epoch.isoformat()
+    cache_key = (sat_key, hours, grid_size)
+
+    if cache_key in _heatmap_cache:
+        cached = _heatmap_cache[cache_key]
+        if cached["tle_epoch"] == tle_epoch_str:
+            return jsonify(cached["data"])
+
+    # Propagate at 30-second steps
+    now = datetime.now(timezone.utc)
+    end = now + timedelta(hours=hours)
+    positions = prop.generate_track(now, end, step_seconds=30)
+
+    # Build grid
+    grid, n_lat, n_lon = _compute_coverage_grid(positions, half_width_km, grid_size)
+
+    # Format output cells
+    cells = []
+    max_count = 0
+    for (lat_idx, lon_idx), count in grid.items():
+        cell_lat = -90.0 + lat_idx * grid_size + grid_size / 2.0
+        cell_lon = -180.0 + lon_idx * grid_size + grid_size / 2.0
+        cells.append({"lat": round(cell_lat, 1), "lon": round(cell_lon, 1), "passes": count})
+        if count > max_count:
+            max_count = count
+
+    result = {
+        "grid_size": grid_size,
+        "hours": hours,
+        "satellite": sat_key,
+        "swath_km": swath_km,
+        "max_passes": max_count,
+        "cell_count": len(cells),
+        "cells": cells
+    }
+
+    # Cache the result
+    _heatmap_cache[cache_key] = {
+        "data": result,
+        "computed_at": now,
+        "tle_epoch": tle_epoch_str
+    }
+
+    return jsonify(result)
+
+
 @app.route("/api/constellation/current")
 def api_constellation_current():
     """Return current positions for all satellites in the constellation."""
@@ -369,6 +546,89 @@ def api_constellation_current():
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "count": len(results)
     })
+
+
+# ============================================
+# NASA FIRMS Active Fire Overlay
+# ============================================
+
+@app.route("/api/fires")
+def api_fires():
+    """
+    Proxy NASA FIRMS active fire data with caching and filtering.
+
+    Query params:
+        hours: time window label (default: 24, accepted: 24/48)
+        satellite: satellite key for FIRMS source (default: noaa21)
+    """
+    sat_key = request.args.get("satellite", "noaa21")
+    days = 1
+    hours_param = request.args.get("hours", default=24, type=int)
+    if hours_param > 24:
+        days = 2
+
+    source = FIRMS_SOURCE_MAP.get(sat_key, "VIIRS_NOAA21_NRT")
+    cache_key = f"fires_{source}_world_{days}"
+
+    cached = _get_fires_cached(cache_key)
+    if cached:
+        return jsonify(cached)
+
+    url = f"{FIRMS_BASE}/{FIRMS_MAP_KEY}/{source}/world/{days}"
+
+    try:
+        resp = http_requests.get(url, timeout=30)
+        resp.raise_for_status()
+    except http_requests.exceptions.Timeout:
+        return jsonify({"error": "FIRMS API timed out", "fires": [], "count": 0}), 504
+    except http_requests.exceptions.RequestException as e:
+        return jsonify({"error": f"FIRMS request failed: {str(e)}", "fires": [], "count": 0}), 502
+
+    # Parse CSV response
+    confidence_order = {"low": 0, "nominal": 1, "high": 2}
+    fires = []
+
+    try:
+        reader = csv.DictReader(StringIO(resp.text))
+        for row in reader:
+            conf = row.get("confidence", "low").strip()
+            if confidence_order.get(conf, 0) < 1:
+                continue  # skip 'low' confidence
+
+            try:
+                lat = float(row.get("latitude", 0))
+                lon = float(row.get("longitude", 0))
+                brightness = float(row.get("bright_ti4", 0))
+                frp = float(row.get("frp", 0))
+            except (ValueError, TypeError):
+                continue
+
+            fires.append({
+                "lat": lat,
+                "lon": lon,
+                "brightness": brightness,
+                "confidence": conf,
+                "frp": frp,
+                "acq_date": row.get("acq_date", ""),
+                "acq_time": row.get("acq_time", ""),
+                "daynight": row.get("daynight", ""),
+            })
+
+            if len(fires) >= FIRES_MAX_POINTS:
+                break
+    except Exception as e:
+        return jsonify({"error": f"Failed to parse FIRMS CSV: {str(e)}", "fires": [], "count": 0}), 500
+
+    result = {
+        "fires": fires,
+        "count": len(fires),
+        "source": source,
+        "day_range": days,
+        "cached": False
+    }
+
+    _set_fires_cached(cache_key, result)
+    return jsonify(result)
 
 
 # ============================================

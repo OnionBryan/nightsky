@@ -381,6 +381,38 @@ body {
     letter-spacing: 0.5px;
 }
 
+/* Share button */
+.icon-btn.share-btn {
+    position: relative;
+}
+
+.share-tooltip {
+    display: none;
+    position: absolute;
+    right: 44px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.share-tooltip.visible {
+    display: block;
+    animation: shareTooltipFade 1.8s ease-out forwards;
+}
+
+@keyframes shareTooltipFade {
+    0%   { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
 /* Legend */
 .legend-item {
     display: flex;

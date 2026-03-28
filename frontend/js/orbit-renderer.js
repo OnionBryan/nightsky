@@ -170,8 +170,259 @@ class OrbitRenderer {
         this.trackLayer.selectAll('.trail-segment, .prediction-track').remove();
     }
 
+    clearTimeTicks() {
+        const layer = this.projection.getLayer('labels');
+        layer.selectAll('.time-tick').remove();
+    }
+
     clear() {
         this.trackLayer.selectAll('*').remove();
+        this.clearTimeTicks();
+        this.clearSwathStrip();
+    }
+
+    // ─── Geodesic helper functions for swath strip computation ───
+
+    /**
+     * Compute forward bearing (initial azimuth) from point 1 to point 2.
+     * @returns bearing in radians
+     */
+    _forwardBearing(lat1, lon1, lat2, lon2) {
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const lat1r = lat1 * Math.PI / 180;
+        const lat2r = lat2 * Math.PI / 180;
+
+        const y = Math.sin(dLon) * Math.cos(lat2r);
+        const x = Math.cos(lat1r) * Math.sin(lat2r) -
+                  Math.sin(lat1r) * Math.cos(lat2r) * Math.cos(dLon);
+
+        return Math.atan2(y, x);
+    }
+
+    /**
+     * Compute destination point given start, bearing, and distance.
+     * Uses the Vincenty "direct" (great-circle) formula.
+     * @returns {lat, lon} in degrees
+     */
+    _destinationPoint(lat, lon, bearing, distKm) {
+        const R = 6371;
+        const d = distKm / R;
+        const lat1 = lat * Math.PI / 180;
+        const lon1 = lon * Math.PI / 180;
+
+        const lat2 = Math.asin(
+            Math.sin(lat1) * Math.cos(d) +
+            Math.cos(lat1) * Math.sin(d) * Math.cos(bearing)
+        );
+        const lon2 = lon1 + Math.atan2(
+            Math.sin(bearing) * Math.sin(d) * Math.cos(lat1),
+            Math.cos(d) - Math.sin(lat1) * Math.sin(lat2)
+        );
+
+        return {
+            lat: lat2 * 180 / Math.PI,
+            lon: lon2 * 180 / Math.PI
+        };
+    }
+
+    // ─── Swath Strip ───
+
+    /**
+     * Draw the VIIRS (or other sensor) swath as a polygon strip that follows
+     * the ground track, rather than a simple geodesic circle at the current
+     * position.  The strip extends +-halfWidthKm perpendicular to the velocity
+     * vector at every track point.
+     *
+     * @param {Array} positions - track points [{lat, lon, ...}, ...]
+     * @param {number} halfWidthKm - half-swath-width in km (default 1530 for VIIRS)
+     * @param {string} color - base colour in hex (default satellite colour)
+     */
+    drawSwathStrip(positions, halfWidthKm = 1530, color = '#00d4ff') {
+        const swathLayer = this.projection.getLayer('swath');
+        swathLayer.selectAll('.swath-strip').remove();
+
+        if (!positions || positions.length < 2) return;
+        if (halfWidthKm <= 0) return;
+
+        // Split at antimeridian before computing edges
+        const segments = this.splitAtDiscontinuities(positions);
+
+        // Parse hex to rgba
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+
+        segments.forEach(segment => {
+            if (segment.length < 2) return;
+
+            const leftEdge = [];
+            const rightEdge = [];
+
+            for (let i = 0; i < segment.length; i++) {
+                const p = segment[i];
+                let bearing;
+
+                if (i < segment.length - 1) {
+                    bearing = this._forwardBearing(
+                        p.lat, p.lon,
+                        segment[i + 1].lat, segment[i + 1].lon
+                    );
+                } else {
+                    bearing = this._forwardBearing(
+                        segment[i - 1].lat, segment[i - 1].lon,
+                        p.lat, p.lon
+                    );
+                }
+
+                const leftB = bearing - Math.PI / 2;
+                const rightB = bearing + Math.PI / 2;
+
+                const left = this._destinationPoint(p.lat, p.lon, leftB, halfWidthKm);
+                const right = this._destinationPoint(p.lat, p.lon, rightB, halfWidthKm);
+
+                leftEdge.push([left.lon, left.lat]);
+                rightEdge.push([right.lon, right.lat]);
+            }
+
+            // Form closed polygon: left forward, right reversed
+            const reversedRight = rightEdge.slice().reverse();
+            const coords = leftEdge.concat(reversedRight);
+            coords.push(leftEdge[0]); // close ring
+
+            const polygon = {
+                type: 'Polygon',
+                coordinates: [coords]
+            };
+
+            swathLayer.append('path')
+                .datum(polygon)
+                .attr('class', 'swath-strip')
+                .attr('d', this.path)
+                .style('fill', `rgba(${r}, ${g}, ${b}, 0.10)`)
+                .style('stroke', `rgba(${r}, ${g}, ${b}, 0.35)`)
+                .style('stroke-width', 0.5);
+        });
+    }
+
+    /**
+     * Remove any existing swath strip polygons.
+     */
+    clearSwathStrip() {
+        const swathLayer = this.projection.getLayer('swath');
+        swathLayer.selectAll('.swath-strip').remove();
+    }
+
+    // ─── Time Tick Marks ───
+
+    /**
+     * Draw UTC time labels along the ground track at regular intervals.
+     *
+     * @param {Array} trackData - positions with time field [{lat, lon, time, ...}]
+     * @param {number} intervalMinutes - spacing between ticks (default 10)
+     */
+    drawTimeTicks(trackData, intervalMinutes = 10) {
+        const layer = this.projection.getLayer('labels');
+        layer.selectAll('.time-tick').remove();
+
+        if (!trackData || trackData.length < 2) return;
+
+        // ── Select tick positions: points nearest N-minute boundaries ──
+        const ticks = [];
+        for (const p of trackData) {
+            const dt = new Date(p.time);
+            const min = dt.getUTCMinutes();
+            const sec = dt.getUTCSeconds();
+
+            if (min % intervalMinutes === 0 && sec < 30) {
+                const label = `${String(dt.getUTCHours()).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+                if (!ticks.length || ticks[ticks.length - 1].label !== label) {
+                    ticks.push({ lat: p.lat, lon: p.lon, time: dt, label });
+                }
+            }
+        }
+
+        if (ticks.length === 0) return;
+
+        // ── Render ticks with overlap avoidance ──
+        let lastRenderedPos = null;
+        const minDist = 30; // minimum pixel distance between rendered labels
+
+        ticks.forEach((tick, i) => {
+            const pos = this.projection.project(tick.lon, tick.lat);
+            if (!pos) return;
+
+            // Skip if too close to the previous rendered tick
+            if (lastRenderedPos) {
+                const dx = pos[0] - lastRenderedPos[0];
+                const dy = pos[1] - lastRenderedPos[1];
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                // Use a larger threshold near the poles where tracks compress
+                const threshold = Math.abs(tick.lat) > 75 ? 40 : minDist;
+                if (dist < threshold) return;
+            }
+
+            // Compute bearing in screen space for perpendicular orientation
+            const bearing = this._getScreenBearing(ticks, i);
+            const perpAngle = bearing + Math.PI / 2;
+            const tickLen = 6;
+
+            const group = layer.append('g')
+                .attr('class', 'time-tick')
+                .attr('transform', `translate(${pos[0]}, ${pos[1]})`);
+
+            // Perpendicular tick mark
+            group.append('line')
+                .attr('x1', -Math.cos(perpAngle) * tickLen)
+                .attr('y1', -Math.sin(perpAngle) * tickLen)
+                .attr('x2', Math.cos(perpAngle) * tickLen)
+                .attr('y2', Math.sin(perpAngle) * tickLen)
+                .style('stroke', '#778da9')
+                .style('stroke-width', 1.5);
+
+            // Time label offset perpendicular to track
+            group.append('text')
+                .attr('x', Math.cos(perpAngle) * 12)
+                .attr('y', Math.sin(perpAngle) * 12)
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'central')
+                .style('fill', '#aab8c8')
+                .style('font-size', '9px')
+                .style('font-family', "'SF Mono', 'Fira Code', monospace")
+                .text(tick.label);
+
+            // Tooltip with full timestamp
+            group.append('title')
+                .text(tick.time.toUTCString());
+
+            lastRenderedPos = pos;
+        });
+    }
+
+    /**
+     * Compute the track bearing in *screen* (projected) coordinates so that
+     * tick marks are oriented perpendicular to the visual path on the map.
+     * @private
+     */
+    _getScreenBearing(ticks, index) {
+        let prev = null, next = null;
+
+        if (index > 0) {
+            prev = this.projection.project(ticks[index - 1].lon, ticks[index - 1].lat);
+        }
+        if (index < ticks.length - 1) {
+            next = this.projection.project(ticks[index + 1].lon, ticks[index + 1].lat);
+        }
+
+        if (prev && next) {
+            return Math.atan2(next[1] - prev[1], next[0] - prev[0]);
+        } else if (next) {
+            const cur = this.projection.project(ticks[index].lon, ticks[index].lat);
+            return cur ? Math.atan2(next[1] - cur[1], next[0] - cur[0]) : 0;
+        } else if (prev) {
+            const cur = this.projection.project(ticks[index].lon, ticks[index].lat);
+            return cur ? Math.atan2(cur[1] - prev[1], cur[0] - prev[0]) : 0;
+        }
+        return 0;
     }
 
     /**

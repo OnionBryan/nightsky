@@ -78,6 +78,14 @@
                 <button class="icon-btn" id="btn-zoom-reset" title="Reset (0)">⟲</button>
                 <div class="zoom-divider"></div>
                 <button class="icon-btn projection-toggle" id="btn-toggle-projection" title="Toggle Polar / Flat Map (M)">P</button>
+                <div class="zoom-divider"></div>
+                <button class="icon-btn share-btn" id="btn-share" title="Copy shareable link">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="3" r="2"/><circle cx="12" cy="13" r="2"/><circle cx="4" cy="8" r="2"/>
+                        <line x1="5.7" y1="9.1" x2="10.3" y2="11.9"/><line x1="10.3" y1="4.1" x2="5.7" y2="6.9"/>
+                    </svg>
+                    <span class="share-tooltip" id="share-tooltip">Link copied!</span>
+                </button>
             </div>
 
             <!-- Legend (bottom-left) -->
@@ -110,6 +118,25 @@
                     <button class="toggle-btn active" id="btn-toggle-swath">Swath</button>
                     <button class="toggle-btn active" id="btn-toggle-velocity">Vector</button>
                     <button class="toggle-btn active" id="btn-toggle-terminator">Day/Night</button>
+                    <button class="toggle-btn" id="btn-toggle-fires" title="Show NASA FIRMS active fire detections">Fires</button>
+                </div>
+                <div class="legend-item" id="fires-legend-item" style="display:none">
+                    <span class="legend-dot" style="background: #ff6b00; box-shadow: 0 0 6px #ff2200; width: 8px; height: 8px;"></span>
+                    <span>FIRMS Active Fires</span>
+                </div>
+                <div class="zoom-divider" style="margin:6px 0"></div>
+                <h3>GIBS Imagery</h3>
+                <div class="legend-toggles">
+                    <button class="toggle-btn" id="btn-toggle-gibs" title="Show NASA GIBS satellite imagery (equirectangular only)">Imagery</button>
+                </div>
+                <div class="gibs-controls" id="gibs-controls" style="display:none">
+                    <select id="gibs-layer-select" class="pb-select gibs-select">
+                        <option value="VIIRS_SNPP_CorrectedReflectance_TrueColor">VIIRS SNPP True Color</option>
+                        <option value="VIIRS_NOAA20_CorrectedReflectance_TrueColor">VIIRS NOAA-20 True Color</option>
+                        <option value="MODIS_Terra_CorrectedReflectance_TrueColor">MODIS Terra True Color</option>
+                        <option value="VIIRS_SNPP_DayNightBand_AtSensor_M15">VIIRS Day/Night Band</option>
+                    </select>
+                    <input type="date" id="gibs-date" class="pb-input gibs-date" title="Imagery date" />
                 </div>
             </div>
 
@@ -180,6 +207,9 @@
     <script src="js/animation.js"></script>
     <script src="js/globe.js"></script>
     <script src="js/playback.js"></script>
+    <script src="js/heatmap.js"></script>
+    <script src="js/gibs.js"></script>
+    <script src="js/fires.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

@@ -69,6 +69,57 @@ class NumpyJSONProvider(DefaultJSONProvider):
 
 app.json = NumpyJSONProvider(app)
 
+# In-memory cache for weather endpoint: { key: (data, timestamp) }
+_weather_cache = {}
+
+
+def _compute_astronomy_score(cloud, seeing, transparency, humidity, wind):
+    """
+    Compute a composite astronomy observing score (0-100).
+
+    Weights: cloud cover 40%, seeing 25%, transparency 20%, humidity 10%, wind 5%.
+    Each component is normalized to 0-100 where 100 = best conditions.
+    """
+    if cloud is None:
+        return None
+
+    # Cloud score: 0% cloud = 100, 100% cloud = 0
+    cloud_score = max(0, 100 - float(cloud))
+
+    # Seeing score: 1 = superb (100), 8 = terrible (0)
+    if seeing is not None and 1 <= seeing <= 8:
+        seeing_score = max(0.0, (8 - float(seeing)) / 7.0 * 100.0)
+    else:
+        seeing_score = 50.0  # neutral if unavailable
+
+    # Transparency score: 1 = excellent (100), 8 = terrible (0)
+    if transparency is not None and 1 <= transparency <= 8:
+        transp_score = max(0.0, (8 - float(transparency)) / 7.0 * 100.0)
+    else:
+        transp_score = 50.0  # neutral if unavailable
+
+    # Humidity score: 0% = 100, 100% = 0 (dew risk)
+    if humidity is not None:
+        hum_score = max(0.0, 100.0 - float(humidity))
+    else:
+        hum_score = 50.0
+
+    # Wind score: 0 km/h = 100, 30+ km/h = 0
+    if wind is not None:
+        wind_score = max(0.0, 100.0 - (float(wind) / 30.0) * 100.0)
+    else:
+        wind_score = 50.0
+
+    composite = (
+        cloud_score * 0.40
+        + seeing_score * 0.25
+        + transp_score * 0.20
+        + hum_score * 0.10
+        + wind_score * 0.05
+    )
+    return int(round(max(0, min(100, composite))))
+
+
 # Register external API proxy endpoints (aurora, satellites, light pollution)
 from external_apis import external_apis
 app.register_blueprint(external_apis)
@@ -1025,6 +1076,263 @@ def riseset():
         return jsonify({'error': str(e)}), 500
 
 
+@app.route('/api/nightsky/weather', methods=['GET'])
+def weather():
+    """
+    Get weather/cloud forecast for astronomical observing.
+
+    Combines Open-Meteo hourly forecast (cloud cover, visibility, wind, temp)
+    with 7Timer astro API (seeing, transparency) into a single response with
+    a composite astronomy_score per hour.
+
+    Query params:
+    - lat: Latitude
+    - lon: Longitude
+
+    Returns:
+    {
+        "hourly": [
+            {
+                "time": "2026-03-27T20:00",
+                "cloud_cover": 22,
+                "cloud_cover_low": 0,
+                "cloud_cover_mid": 10,
+                "cloud_cover_high": 15,
+                "visibility_m": 24140,
+                "humidity": 72,
+                "dew_point_c": 3.2,
+                "temp_c": 6.8,
+                "wind_kmh": 8,
+                "wind_dir": 270,
+                "wind_gusts_kmh": 15,
+                "seeing_label": "Good",
+                "transparency_label": "Average",
+                "astronomy_score": 78
+            }, ...
+        ],
+        "summary": {
+            "best_window": { "start": "22:00", "end": "03:00", "score": 85 },
+            "overall": "Good"
+        },
+        "fetched_at": "2026-03-27T18:30:00"
+    }
+    """
+    import time as _time
+    import requests as _requests
+    from datetime import datetime as dt_cls
+
+    try:
+        lat = float(request.args.get('lat', 0))
+        lon = float(request.args.get('lon', 0))
+    except ValueError:
+        return jsonify({'error': 'lat and lon must be numbers'}), 400
+
+    # --- Cache check (30 min) ---
+    cache_key = f'weather_{round(lat, 2)}_{round(lon, 2)}'
+    now = _time.time()
+    if cache_key in _weather_cache:
+        cached_data, cached_ts = _weather_cache[cache_key]
+        if now - cached_ts < 1800:  # 30 minutes
+            return jsonify(cached_data)
+
+    # --- Fetch Open-Meteo ---
+    open_meteo_data = None
+    try:
+        om_url = (
+            'https://api.open-meteo.com/v1/forecast'
+            f'?latitude={lat}&longitude={lon}'
+            '&hourly=cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,'
+            'visibility,relative_humidity_2m,dew_point_2m,temperature_2m,'
+            'wind_speed_10m,wind_direction_10m,wind_gusts_10m'
+            '&timezone=auto&forecast_days=2'
+        )
+        om_resp = _requests.get(om_url, timeout=10)
+        om_resp.raise_for_status()
+        open_meteo_data = om_resp.json()
+    except Exception as e:
+        print(f"Open-Meteo fetch error: {e}")
+
+    if not open_meteo_data or 'hourly' not in open_meteo_data:
+        return jsonify({'error': 'Failed to fetch weather data from Open-Meteo'}), 502
+
+    # --- Fetch 7Timer astro (may fail -- that's ok) ---
+    seven_timer_data = None
+    try:
+        st_url = (
+            f'https://www.7timer.info/bin/astro.php'
+            f'?lon={lon}&lat={lat}&ac=0&unit=metric&output=json&tzshift=0'
+        )
+        st_resp = _requests.get(st_url, timeout=8)
+        st_resp.raise_for_status()
+        seven_timer_data = st_resp.json()
+    except Exception as e:
+        print(f"7Timer fetch error (non-fatal): {e}")
+
+    # --- 7Timer scale mappings ---
+    SEEING_LABELS = {
+        1: ('< 0.5"', 'Superb'),
+        2: ('0.5-0.75"', 'Excellent'),
+        3: ('0.75-1"', 'Good'),
+        4: ('1-1.25"', 'Average'),
+        5: ('1.25-1.5"', 'Below avg'),
+        6: ('1.5-2"', 'Poor'),
+        7: ('2-2.5"', 'Bad'),
+        8: ('> 2.5"', 'Terrible'),
+    }
+
+    TRANSPARENCY_LABELS = {
+        1: 'Excellent',
+        2: 'Above avg',
+        3: 'Average',
+        4: 'Below avg',
+        5: 'Poor',
+        6: 'Bad',
+        7: 'Very bad',
+        8: 'Terrible',
+    }
+
+    # Build a lookup from 7Timer: map init + timepoint -> seeing/transparency
+    st_lookup = {}
+    if seven_timer_data and 'dataseries' in seven_timer_data:
+        init_str = seven_timer_data.get('init', '')
+        if len(init_str) >= 10:
+            try:
+                init_dt = dt_cls.strptime(init_str[:10], '%Y%m%d%H')
+                from datetime import timedelta
+                for dp in seven_timer_data['dataseries']:
+                    tp = int(dp.get('timepoint', 0))
+                    forecast_dt = init_dt + timedelta(hours=tp)
+                    # Key by ISO hour string (round to nearest 3h block)
+                    key = forecast_dt.strftime('%Y-%m-%dT%H:00')
+                    st_lookup[key] = {
+                        'seeing': int(dp.get('seeing', 0)),
+                        'transparency': int(dp.get('transparency', 0)),
+                    }
+            except Exception as e:
+                print(f"7Timer parse error: {e}")
+
+    # --- Merge into hourly response (next 48h from Open-Meteo) ---
+    om_hourly = open_meteo_data['hourly']
+    times = om_hourly.get('time', [])
+
+    hourly_out = []
+    for i, t in enumerate(times):
+        cloud = om_hourly.get('cloud_cover', [None])[i] if i < len(om_hourly.get('cloud_cover', [])) else None
+        cloud_low = om_hourly.get('cloud_cover_low', [None])[i] if i < len(om_hourly.get('cloud_cover_low', [])) else None
+        cloud_mid = om_hourly.get('cloud_cover_mid', [None])[i] if i < len(om_hourly.get('cloud_cover_mid', [])) else None
+        cloud_high = om_hourly.get('cloud_cover_high', [None])[i] if i < len(om_hourly.get('cloud_cover_high', [])) else None
+        vis = om_hourly.get('visibility', [None])[i] if i < len(om_hourly.get('visibility', [])) else None
+        hum = om_hourly.get('relative_humidity_2m', [None])[i] if i < len(om_hourly.get('relative_humidity_2m', [])) else None
+        dew = om_hourly.get('dew_point_2m', [None])[i] if i < len(om_hourly.get('dew_point_2m', [])) else None
+        temp = om_hourly.get('temperature_2m', [None])[i] if i < len(om_hourly.get('temperature_2m', [])) else None
+        wind = om_hourly.get('wind_speed_10m', [None])[i] if i < len(om_hourly.get('wind_speed_10m', [])) else None
+        wind_dir = om_hourly.get('wind_direction_10m', [None])[i] if i < len(om_hourly.get('wind_direction_10m', [])) else None
+        wind_gust = om_hourly.get('wind_gusts_10m', [None])[i] if i < len(om_hourly.get('wind_gusts_10m', [])) else None
+
+        # Match 7Timer data: find the closest 3h block
+        seeing_label = None
+        transparency_label = None
+        seeing_val = None
+        transparency_val = None
+
+        # 7Timer has 3h resolution; find nearest key
+        try:
+            hour_dt = dt_cls.strptime(t, '%Y-%m-%dT%H:%M')
+            # Round to nearest 3h
+            rounded_h = (hour_dt.hour // 3) * 3
+            rounded_key = hour_dt.strftime('%Y-%m-%d') + f'T{rounded_h:02d}:00'
+            st_entry = st_lookup.get(rounded_key)
+            if st_entry:
+                seeing_val = st_entry['seeing']
+                transparency_val = st_entry['transparency']
+                if seeing_val in SEEING_LABELS:
+                    seeing_label = SEEING_LABELS[seeing_val][1]
+                if transparency_val in TRANSPARENCY_LABELS:
+                    transparency_label = TRANSPARENCY_LABELS[transparency_val]
+        except Exception:
+            pass
+
+        # --- Composite astronomy score (0-100) ---
+        # Weights: cloud 40%, seeing 25%, transparency 20%, humidity 10%, wind 5%
+        score = _compute_astronomy_score(
+            cloud, seeing_val, transparency_val, hum, wind
+        )
+
+        entry = {
+            'time': t,
+            'cloud_cover': int(cloud) if cloud is not None else None,
+            'cloud_cover_low': int(cloud_low) if cloud_low is not None else None,
+            'cloud_cover_mid': int(cloud_mid) if cloud_mid is not None else None,
+            'cloud_cover_high': int(cloud_high) if cloud_high is not None else None,
+            'visibility_m': float(vis) if vis is not None else None,
+            'humidity': int(hum) if hum is not None else None,
+            'dew_point_c': float(dew) if dew is not None else None,
+            'temp_c': float(temp) if temp is not None else None,
+            'wind_kmh': float(wind) if wind is not None else None,
+            'wind_dir': int(wind_dir) if wind_dir is not None else None,
+            'wind_gusts_kmh': float(wind_gust) if wind_gust is not None else None,
+            'seeing_label': seeing_label,
+            'transparency_label': transparency_label,
+            'astronomy_score': score,
+        }
+        hourly_out.append(entry)
+
+    # --- Summary: find best observing window ---
+    best_start = None
+    best_end = None
+    best_score = 0
+    # Sliding window: find the best contiguous 3+ hour block
+    for i in range(len(hourly_out)):
+        if hourly_out[i]['astronomy_score'] is not None and hourly_out[i]['astronomy_score'] >= 50:
+            window_scores = []
+            j = i
+            while j < len(hourly_out) and hourly_out[j]['astronomy_score'] is not None and hourly_out[j]['astronomy_score'] >= 50:
+                window_scores.append(hourly_out[j]['astronomy_score'])
+                j += 1
+            if len(window_scores) >= 2:
+                avg = sum(window_scores) / len(window_scores)
+                if avg > best_score:
+                    best_score = int(round(avg))
+                    best_start = hourly_out[i]['time']
+                    best_end = hourly_out[j - 1]['time']
+
+    # Overall rating
+    night_scores = [h['astronomy_score'] for h in hourly_out if h['astronomy_score'] is not None]
+    if night_scores:
+        avg_all = sum(night_scores) / len(night_scores)
+        if avg_all >= 75:
+            overall = 'Excellent'
+        elif avg_all >= 60:
+            overall = 'Good'
+        elif avg_all >= 40:
+            overall = 'Fair'
+        elif avg_all >= 20:
+            overall = 'Poor'
+        else:
+            overall = 'Bad'
+    else:
+        overall = 'Unknown'
+
+    summary = {
+        'best_window': {
+            'start': best_start,
+            'end': best_end,
+            'score': best_score,
+        } if best_start else None,
+        'overall': overall,
+    }
+
+    result = {
+        'hourly': hourly_out,
+        'summary': summary,
+        'timezone': open_meteo_data.get('timezone', ''),
+        'fetched_at': dt_cls.utcnow().strftime('%Y-%m-%dT%H:%M:%S') + 'Z',
+    }
+
+    _weather_cache[cache_key] = (result, now)
+    return jsonify(result)
+
+
 @app.route('/api/nightsky/health', methods=['GET'])
 def health():
     """Health check endpoint."""
@@ -1056,6 +1364,9 @@ if __name__ == '__main__':
     print("    GET  /api/nightsky/geostationary/arc?lat=<lat>&lon=<lon> - Full arc")
     print("    GET  /api/nightsky/geostationary/lookup?lat=<lat>&lon=<lon>&sat_lon=<lon>")
     print("    GET  /api/nightsky/geostationary/satellites - List all GEO sats")
+    print()
+    print("  Weather:")
+    print("    GET  /api/nightsky/weather?lat=<lat>&lon=<lon> - Weather/cloud forecast")
     print()
     print("  Configuration:")
     print("    GET  /api/nightsky/options - Available options")
