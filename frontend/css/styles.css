@@ -497,6 +497,44 @@ body {
     color: var(--accent);
 }
 
+/* GIBS Imagery Controls */
+.gibs-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.gibs-select {
+    width: 100%;
+    font-size: 0.65rem;
+    padding: 3px 4px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.gibs-date {
+    width: 100%;
+    font-size: 0.65rem;
+    padding: 3px 4px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.gibs-date::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+}
+
+#gibs-canvas {
+    opacity: 1;
+}
+
 /* Loading */
 #loading-overlay {
     position: absolute;

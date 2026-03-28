@@ -72,6 +72,13 @@ class App {
             // Initialize coverage heatmap (canvas overlay)
             this.heatmap = new CoverageHeatmap(this.projection);
 
+            // Re-render heatmap canvas on zoom/pan so it stays aligned with SVG
+            this.projection.onZoom = () => {
+                if (this.heatmap && this.heatmap.visible) {
+                    this.heatmap.render();
+                }
+            };
+
             // Setup spotlight callbacks
             this.spotlight.onSatelliteClick = (data) => this.showSatelliteInfo(data);
 
@@ -852,7 +859,64 @@ class App {
         // Redraw fire overlay for new projection
         if (this.fireOverlay) this.fireOverlay.redraw();
 
+        // Re-render heatmap for new projection if coverage tab is active
+        if (this.heatmap && this.heatmap.visible && this.heatmap.data) {
+            this.heatmap.render();
+            this.heatmap.drawLegend(this.heatmap.data.max_passes);
+        }
+
+        // Refresh GIBS overlay for the new projection
+        if (this.gibs) {
+            this.gibs.render();
+            if (newType === 'polar' && this.gibs.visible) {
+                this.gibs.hide();
+                const gibsBtn = document.getElementById('btn-toggle-gibs');
+                if (gibsBtn) gibsBtn.classList.remove('active');
+                const gibsCtrl = document.getElementById('gibs-controls');
+                if (gibsCtrl) gibsCtrl.style.display = 'none';
+            }
+        }
+
         this._scheduleHashUpdate();
+    }
+
+    /** Wire up GIBS imagery toggle, layer selector, and date picker */
+    _setupGibsListeners() {
+        const toggleGibsBtn = document.getElementById('btn-toggle-gibs');
+        const gibsControls = document.getElementById('gibs-controls');
+        const gibsLayerSelect = document.getElementById('gibs-layer-select');
+        const gibsDate = document.getElementById('gibs-date');
+
+        if (toggleGibsBtn && this.gibs) {
+            if (gibsDate) gibsDate.value = this.gibs.date;
+
+            toggleGibsBtn.addEventListener('click', () => {
+                // Auto-switch to equirectangular if toggling on in polar mode
+                if (!this.gibs.visible && this.projection.projectionType !== 'equirectangular') {
+                    this.toggleProjection().then(() => {
+                        const on = this.gibs.toggle();
+                        toggleGibsBtn.classList.toggle('active', on);
+                        if (gibsControls) gibsControls.style.display = on ? 'flex' : 'none';
+                    });
+                } else {
+                    const on = this.gibs.toggle();
+                    toggleGibsBtn.classList.toggle('active', on);
+                    if (gibsControls) gibsControls.style.display = on ? 'flex' : 'none';
+                }
+            });
+        }
+
+        if (gibsLayerSelect && this.gibs) {
+            gibsLayerSelect.addEventListener('change', () => {
+                this.gibs.setLayer(gibsLayerSelect.value);
+            });
+        }
+
+        if (gibsDate && this.gibs) {
+            gibsDate.addEventListener('change', () => {
+                this.gibs.setDate(gibsDate.value);
+            });
+        }
     }
 
     updateConstellationLegend() {
@@ -876,7 +940,7 @@ class App {
         this.showLoading(true, `Loading 24h coverage heatmap for ${this.getSatelliteName(this.currentSatellite)}...`);
 
         try {
-            await this.heatmap.fetch(this.currentSatellite, 24, 2);
+            await this.heatmap.fetchData(this.currentSatellite, 24, 2);
             this.heatmap.show();
             this.heatmap.render();
             this.heatmap.drawLegend(this.heatmap.data.max_passes);
@@ -974,6 +1038,17 @@ class App {
                 future[0] ? { lon: future[0].lon, lat: future[0].lat } : null,
                 pos
             );
+            // Swath strip + time ticks during playback
+            const pbAll = past.concat(future);
+            if (this.showSwathStrip && pbAll.length > 1) {
+                const hw = this.orbitInfo ? (this.orbitInfo.swath_km || 3060) / 2 : 1530;
+                this.orbitRenderer.drawSwathStrip(pbAll, hw, color);
+            } else {
+                this.orbitRenderer.clearSwathStrip();
+            }
+            if (this.showTimeTicks && pbAll.length > 0) {
+                this.orbitRenderer.drawTimeTicks(pbAll);
+            }
             // Update terminator to simulated time
             if (this.terminator) this.terminator.update(simTime);
         }

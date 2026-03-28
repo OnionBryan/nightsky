@@ -21,6 +21,7 @@ class PolarProjection {
         this.currentTransform = d3.zoomIdentity;
         this.projectionType = 'polar';  // 'polar' or 'equirectangular'
         this._topoJsonUrl = 'data/world-110m.json';  // cached for reloads
+        this.onZoom = null;  // callback(transform) for canvas overlay sync
 
         this.layers = {
             base: null,
@@ -109,6 +110,7 @@ class PolarProjection {
             .on('zoom', (event) => {
                 this.currentTransform = event.transform;
                 this.g.attr('transform', event.transform);
+                if (this.onZoom) this.onZoom(event.transform);
             })
             .on('start', () => {
                 this.svg.style('cursor', 'grabbing');

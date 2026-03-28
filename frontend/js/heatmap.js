@@ -75,9 +75,9 @@ class CoverageHeatmap {
 
     /* ---- data fetching ---- */
 
-    async fetch(satellite = 'noaa21', hours = 24, gridSize = 2) {
+    async fetchData(satellite = 'noaa21', hours = 24, gridSize = 2) {
         const url = `${API_BASE}/coverage-heatmap?satellite=${satellite}&hours=${hours}&grid=${gridSize}`;
-        const resp = await fetch(url);
+        const resp = await window.fetch(url);
         if (!resp.ok) throw new Error(`Heatmap fetch failed: ${resp.status}`);
         this.data = await resp.json();
         return this.data;

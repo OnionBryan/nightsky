@@ -7,6 +7,8 @@ Endpoints:
     GET /api/track - Ground track positions
     GET /api/orbit-info - Orbital parameters
     GET /api/swath - Current swath polygon
+    GET /api/coverage-heatmap - Grid-based coverage heatmap (pass counts)
+    GET /api/fires - NASA FIRMS active fire detections (proxied + cached)
     GET /api/simbad/region - Query objects in a sky region
     GET /api/simbad/resolve - Resolve object name to coordinates
 """
@@ -117,6 +119,7 @@ def index():
             "/api/orbit-info",
             "/api/swath",
             "/api/constellation/current",
+            "/api/coverage-heatmap",
             "/api/fires"
         ]
     })
@@ -463,6 +466,18 @@ def api_coverage_heatmap():
     sat_info = SATELLITE_CATALOG[sat_key]
     swath_km = sat_info.get("swath_km", 3060)
     half_width_km = swath_km / 2.0
+
+    # Satellites with no swath (ISS, Hubble, etc.) return empty grid
+    if swath_km <= 0:
+        return jsonify({
+            "grid_size": grid_size,
+            "hours": hours,
+            "satellite": sat_key,
+            "swath_km": 0,
+            "max_passes": 0,
+            "cell_count": 0,
+            "cells": []
+        })
 
     # Check cache -- reuse if same params and TLE hasn't changed
     prop = get_propagator(sat_key)
