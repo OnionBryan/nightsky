@@ -1,0 +1,283 @@
+syntax = "proto3";
+
+package orbit.v1;
+
+option go_package = "noaa21_orbit/api/proto/orbit/v1;orbitv1";
+
+service OrbitScience {
+  rpc ListSatellites (ListSatellitesRequest) returns (ListSatellitesResponse);
+  rpc GetTLE (GetTLERequest) returns (GetTLEResponse);
+  rpc GetCurrentPosition (GetCurrentPositionRequest) returns (PositionResponse);
+  rpc GetTrack (GetTrackRequest) returns (TrackResponse);
+  rpc GetOrbitInfo (GetOrbitInfoRequest) returns (OrbitInfoResponse);
+  rpc GetSwath (GetSwathRequest) returns (SwathResponse);
+  rpc GetPolarCrossings (GetPolarCrossingsRequest) returns (PolarCrossingsResponse);
+  rpc GetCoverageHeatmap (GetCoverageHeatmapRequest) returns (CoverageHeatmapResponse);
+  rpc GetFires (GetFiresRequest) returns (GetFiresResponse);
+
+  // Astronomy proxies (SIMBAD + HiPS cutouts) — JSON blob for Flask parity
+  rpc SimbadRegion (SimbadRegionRequest) returns (JsonBlob);
+  rpc SimbadResolve (SimbadResolveRequest) returns (JsonBlob);
+  rpc ListSurveys (ListSurveysRequest) returns (JsonBlob);
+  rpc GetCutout (GetCutoutRequest) returns (JsonBlob);
+  rpc GetCutoutMulti (GetCutoutMultiRequest) returns (JsonBlob);
+  rpc GetSitePasses (GetSitePassesRequest) returns (GetSitePassesResponse);
+}
+
+message ListSatellitesRequest {}
+
+message SatelliteMetadata {
+  string key = 1;
+  string name = 2;
+  int32 norad_id = 3;
+  string color = 4;
+  int32 launch_year = 5;
+  string category = 6;
+  string operator = 7;
+  float swath_km = 8;
+}
+
+message ListSatellitesResponse {
+  repeated SatelliteMetadata satellites = 1;
+  string default_satellite = 2;
+}
+
+message GetTLERequest {
+  string satellite = 1; // e.g., "noaa21"
+}
+
+message OrbitalParams {
+  double inclination_deg = 1;
+  double raan_deg = 2;
+  double eccentricity = 3;
+  double arg_perigee_deg = 4;
+  double mean_anomaly_deg = 5;
+  double mean_motion = 6;
+  int32 orbit_number = 7;
+}
+
+message GetTLEResponse {
+  string satellite_key = 1;
+  string name = 2;
+  int32 norad_id = 3;
+  string tle_line1 = 4;
+  string tle_line2 = 5;
+  string epoch = 6;
+  double age_hours = 7;
+  string source = 8;
+  OrbitalParams orbital_params = 9;
+}
+
+message GetCurrentPositionRequest {
+  string satellite = 1;
+  optional string at = 2; // ISO8601 string or empty for current time
+}
+
+message PositionResponse {
+  double latitude = 1;
+  double longitude = 2;
+  double altitude_km = 3;
+  double velocity_km_s = 4;
+  int32 orbit_number = 5;
+  string satellite_key = 6;
+  string satellite_name = 7;
+  string color = 8;
+  string timestamp = 9;
+}
+
+message GetTrackRequest {
+  string satellite = 1;
+  string start = 2; // ISO8601
+  string end = 3;   // ISO8601
+  int32 duration_minutes = 4;
+  int32 step_seconds = 5;
+}
+
+message TrackPosition {
+  double lat = 1;
+  double lon = 2;
+  double alt = 3;
+  string time = 4;
+}
+
+message TrackResponse {
+  repeated TrackPosition positions = 1;
+  int32 step_seconds = 2;
+  int32 total_points = 3;
+  string start = 4;
+  string end = 5;
+}
+
+message GetOrbitInfoRequest {
+  string satellite = 1;
+}
+
+message OrbitInfoResponse {
+  double inclination_deg = 1;
+  double eccentricity = 2;
+  double mean_motion_rev_day = 3;
+  double period_minutes = 4;
+  double altitude_km = 5;
+  string tle_epoch = 6;
+  double tle_age_hours = 7;
+  int32 current_orbit_number = 8;
+  string satellite_key = 9;
+  string satellite_name = 10;
+  string color = 11;
+  double swath_km = 12;
+  string tle_source = 13;
+}
+
+message GetSwathRequest {
+  string satellite = 1;
+  double radius_km = 2;
+}
+
+message Point {
+  double lat = 1;
+  double lon = 2;
+}
+
+message SwathResponse {
+  Point center = 1;
+  double radius_km = 2;
+  repeated Point polygon = 3; // using Point instead of array array to fit protobuf cleanly, Go edge maps it to frontend JSON
+  string timestamp = 4;
+}
+
+message GetPolarCrossingsRequest {
+  string satellite = 1;
+  int32 hours = 2;
+}
+
+message Crossing {
+  string time = 1;
+  double longitude = 2;
+}
+
+message PolarCrossingsResponse {
+  repeated Crossing ascending_nodes = 1;
+  repeated Crossing descending_nodes = 2;
+}
+
+message GetCoverageHeatmapRequest {
+  string satellite = 1;
+  int32 hours = 2;
+  int32 grid_size = 3;
+}
+
+message HeatmapCell {
+  double lat = 1;
+  double lon = 2;
+  int32 passes = 3;
+}
+
+message CoverageHeatmapResponse {
+  int32 grid_size = 1;
+  int32 hours = 2;
+  string satellite = 3;
+  double swath_km = 4;
+  int32 max_passes = 5;
+  int32 cell_count = 6;
+  repeated HeatmapCell cells = 7;
+}
+
+// --- NASA FIRMS active fires ---
+
+message GetFiresRequest {
+  string satellite = 1; // catalog key; maps to VIIRS_*_NRT source
+  int32 hours = 2;      // 24 or 48 (maps to 1- or 2-day FIRMS world dump)
+}
+
+message FirePoint {
+  double lat = 1;
+  double lon = 2;
+  double brightness = 3;
+  string confidence = 4; // "nominal" | "high" (low filtered out)
+  double frp = 5;
+  string acq_date = 6;
+  string acq_time = 7;
+  string daynight = 8;
+}
+
+message GetFiresResponse {
+  repeated FirePoint fires = 1;
+  int32 count = 2;
+  string source = 3;
+  int32 day_range = 4;
+  bool cached = 5;
+  string error = 6; // non-empty when upstream/parse failed; fires may be empty
+}
+
+// Generic Flask-compatible JSON body (SIMBAD / cutouts have nested shapes).
+message JsonBlob {
+  string json = 1;
+  string error = 2;
+  int32 status_code = 3;
+}
+
+message SimbadRegionRequest {
+  double ra = 1;
+  double dec = 2;
+  double radius = 3; // degrees, default 1.0
+  int32 limit = 4;   // default 20
+}
+
+message SimbadResolveRequest {
+  string name = 1;
+}
+
+message ListSurveysRequest {}
+
+message GetCutoutRequest {
+  double ra = 1;
+  double dec = 2;
+  double fov = 3;
+  string survey = 4;
+  int32 width = 5;
+  int32 height = 6;
+  string format = 7;
+}
+
+message GetCutoutMultiRequest {
+  double ra = 1;
+  double dec = 2;
+  double fov = 3;
+  string surveys = 4; // comma-separated keys
+}
+
+// Ground-site pass prediction
+message GetSitePassesRequest {
+  string satellite = 1;
+  double lat = 2;
+  double lon = 3;
+  double site_alt_km = 4;
+  double hours = 5;              // look-ahead window (default 24)
+  double min_elevation_deg = 6;  // AOS/LOS threshold (default 10)
+  int32 step_seconds = 7;        // sample step (default 30)
+  optional string start = 8;     // ISO8601 UTC; empty = now
+}
+
+message SitePass {
+  string aos = 1;
+  string los = 2;
+  double max_elevation = 3;
+  string max_elevation_time = 4;
+  int32 duration_seconds = 5;
+  double duration_minutes = 6;
+  optional bool sat_sunlit_at_max = 7;
+  bool site_daylight_at_max = 8;
+  double site_solar_elevation_at_max = 9;
+  bool visual_pass_candidate = 10;
+}
+
+message GetSitePassesResponse {
+  string satellite = 1;
+  double lat = 2;
+  double lon = 3;
+  double min_elevation_deg = 4;
+  string window_start = 5;
+  string window_end = 6;
+  repeated SitePass passes = 7;
+  int32 count = 8;
+}

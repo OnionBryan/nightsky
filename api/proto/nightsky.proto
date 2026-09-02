@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package nightsky.v1;
+
+option go_package = "noaa21_orbit/api/proto/nightsky/v1;nightskyv1";
+
+// NightskyScience backs the Night Sky Viewer JSON API (port 5051 frontend).
+// Complex Flask-shaped payloads travel as JSON strings so the Go edge can
+// re-emit byte-identical response bodies without maintaining parallel schemas.
+service NightskyScience {
+  rpc Health (HealthRequest) returns (HealthResponse);
+
+  rpc Geocode (GeocodeRequest) returns (JsonResponse);
+  rpc Options (Empty) returns (JsonResponse);
+  rpc Planets (LatLonRequest) returns (JsonResponse);
+  rpc Moon (LatLonRequest) returns (JsonResponse);
+  rpc LocationInfo (LatLonRequest) returns (JsonResponse);
+
+  rpc GeostationaryVisible (GeoVisibleRequest) returns (JsonResponse);
+  rpc GeostationaryArc (GeoArcRequest) returns (JsonResponse);
+  rpc GeostationaryLookup (GeoLookupRequest) returns (JsonResponse);
+  rpc GeostationaryList (CategoryRequest) returns (JsonResponse);
+
+  rpc Twilight (LatLonRequest) returns (JsonResponse);
+  rpc RiseSet (RiseSetRequest) returns (JsonResponse);
+  rpc Weather (LatLonRequest) returns (JsonResponse);
+
+  rpc GenerateSky (GenerateSkyRequest) returns (ImageResponse);
+
+  rpc AuroraKp (LatLonRequest) returns (JsonResponse);
+  rpc LightPollution (LatLonRequest) returns (JsonResponse);
+  rpc SatelliteTLE (SatelliteTLERequest) returns (JsonResponse);
+
+  // Planner-facing aliases / session composition
+  rpc Ephemeris (EphemerisRequest) returns (JsonResponse);
+  rpc SessionGoNoGo (SessionGoNoGoRequest) returns (JsonResponse);
+}
+
+message Empty {}
+
+message HealthRequest {}
+
+message HealthResponse {
+  string status = 1;
+  string service = 2;
+}
+
+// Flask-compatible JSON blob for the HTTP edge to write as the response body.
+message JsonResponse {
+  string json = 1;       // JSON object/array text (empty if hard failure)
+  string error = 2;      // optional machine-readable error
+  int32 status_code = 3; // HTTP status to emit (200, 400, 404, 502, …)
+}
+
+message LatLonRequest {
+  double lat = 1;
+  double lon = 2;
+}
+
+message GeocodeRequest {
+  string q = 1;
+}
+
+message GeoVisibleRequest {
+  double lat = 1;
+  double lon = 2;
+  string category = 3;
+  double min_elevation = 4; // default 5 if 0
+}
+
+message GeoArcRequest {
+  double lat = 1;
+  double lon = 2;
+  int32 points = 3; // default 72 if 0
+}
+
+message GeoLookupRequest {
+  double lat = 1;
+  double lon = 2;
+  double sat_lon = 3;
+}
+
+message CategoryRequest {
+  string category = 1;
+}
+
+message RiseSetRequest {
+  double lat = 1;
+  double lon = 2;
+  string object = 3; // sun, moon, mars, …
+}
+
+message SatelliteTLERequest {
+  string group = 1;
+  string norad_id = 2;
+}
+
+message GenerateSkyRequest {
+  // Raw JSON body matching POST /api/nightsky/generate
+  string request_json = 1;
+}
+
+message ImageResponse {
+  bytes data = 1;
+  string content_type = 2; // image/png, image/jpeg, image/svg+xml
+  string error = 3;
+  int32 status_code = 4;
+}
+
+message EphemerisRequest {
+  string name = 1; // object name: mars, moon, M31, etc.
+  double lat = 2;
+  double lon = 3;
+}
+
+message SessionGoNoGoRequest {
+  double lat = 1;
+  double lon = 2;
+}
