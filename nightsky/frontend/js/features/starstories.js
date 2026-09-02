@@ -331,14 +331,17 @@
         stats.className = 'ss-stats';
 
         var magSpan = document.createElement('span');
-        magSpan.textContent = 'mag ' + star.magnitude;
+        magSpan.setAttribute('data-label', 'Magnitude');
+        magSpan.textContent = star.magnitude;
         stats.appendChild(magSpan);
 
         var specSpan = document.createElement('span');
+        specSpan.setAttribute('data-label', 'Class');
         specSpan.textContent = star.spectralType;
         stats.appendChild(specSpan);
 
         var distSpan = document.createElement('span');
+        distSpan.setAttribute('data-label', 'Distance');
         distSpan.textContent = star.distance;
         stats.appendChild(distSpan);
 
@@ -549,138 +552,166 @@
     function injectStyles() {
         var css = '' +
         '.ss-popup {' +
-            'background: #0c0c0c;' +
-            'border: 1px solid #8a7139;' +
-            'border-radius: 6px;' +
-            'width: 290px;' +
-            'max-width: 90vw;' +
+            'background: rgba(12, 12, 12, 0.65);' +
+            'backdrop-filter: blur(24px);' +
+            '-webkit-backdrop-filter: blur(24px);' +
+            'border: 1px solid rgba(200, 164, 86, 0.25);' +
+            'border-radius: 16px;' +
+            'width: 380px;' +
+            'max-width: 92vw;' +
             'font-family: "DM Sans", sans-serif;' +
             'color: #d4cfc0;' +
-            'box-shadow: 0 4px 24px rgba(0,0,0,0.7), 0 0 1px #8a7139;' +
+            'box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05);' +
             'overflow: hidden;' +
-            'animation: ss-fadeIn 0.15s ease-out;' +
+            'animation: ss-slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);' +
         '}' +
-
-        '@keyframes ss-fadeIn {' +
-            'from { opacity: 0; transform: translateY(6px); }' +
-            'to   { opacity: 1; transform: translateY(0); }' +
+        '@keyframes ss-slideUp {' +
+            'from { opacity: 0; transform: translateY(24px) scale(0.96); }' +
+            'to   { opacity: 1; transform: translateY(0) scale(1); }' +
         '}' +
-
         '.ss-header {' +
             'display: flex;' +
             'align-items: center;' +
-            'padding: 8px 10px 4px;' +
-            'border-bottom: 1px solid rgba(138,113,57,0.3);' +
+            'padding: 16px 20px 12px;' +
+            'background: linear-gradient(180deg, rgba(200,164,86,0.12) 0%, transparent 100%);' +
+            'border-bottom: 1px solid rgba(200,164,86,0.1);' +
         '}' +
         '.ss-name {' +
             'font-family: "Playfair Display", serif;' +
-            'font-size: 15px;' +
-            'font-weight: 600;' +
-            'color: #c8a456;' +
+            'font-size: 24px;' +
+            'font-weight: 700;' +
+            'color: #e8c466;' +
+            'text-shadow: 0 2px 12px rgba(200,164,86,0.4);' +
+            'letter-spacing: 0.02em;' +
         '}' +
         '.ss-constellation {' +
+            'font-family: "JetBrains Mono", monospace;' +
             'font-size: 11px;' +
-            'color: #8a8577;' +
-            'margin-left: 8px;' +
+            'color: #c8a456;' +
+            'text-transform: uppercase;' +
+            'letter-spacing: 0.12em;' +
+            'margin-left: 12px;' +
+            'opacity: 0.85;' +
+            'margin-top: 6px;' +
         '}' +
         '.ss-close {' +
-            'background: none;' +
-            'border: none;' +
+            'background: rgba(255,255,255,0.04);' +
+            'border: 1px solid rgba(255,255,255,0.1);' +
+            'border-radius: 50%;' +
+            'width: 28px;' +
+            'height: 28px;' +
             'color: #8a8577;' +
             'font-size: 18px;' +
             'cursor: pointer;' +
-            'padding: 0 2px;' +
-            'line-height: 1;' +
+            'display: flex;' +
+            'align-items: center;' +
+            'justify-content: center;' +
             'margin-left: auto;' +
+            'transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);' +
         '}' +
-        '.ss-close:hover { color: #c8a456; }' +
-
+        '.ss-close:hover { background: rgba(200,164,86,0.2); color: #e8c466; transform: rotate(90deg); border-color: rgba(200,164,86,0.4); }' +
         '.ss-stats {' +
             'display: flex;' +
-            'gap: 10px;' +
-            'padding: 5px 10px;' +
+            'gap: 24px;' +
+            'padding: 12px 20px;' +
             'font-family: "JetBrains Mono", monospace;' +
-            'font-size: 10.5px;' +
-            'color: #8a7139;' +
+            'font-size: 13px;' +
+            'font-weight: 500;' +
+            'color: #c8a456;' +
+            'background: rgba(0,0,0,0.3);' +
         '}' +
-
+        '.ss-stats span { display: flex; flex-direction: column; gap: 2px; }' +
+        '.ss-stats span::before { content: attr(data-label); font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #8a8577; }' +
         '.ss-story {' +
-            'padding: 6px 10px 8px;' +
-            'font-size: 12.5px;' +
-            'line-height: 1.5;' +
-            'color: #d4cfc0;' +
+            'padding: 18px 20px 14px;' +
+            'font-size: 14.5px;' +
+            'line-height: 1.6;' +
+            'color: #eae6d8;' +
             'margin: 0;' +
         '}' +
-
         '.ss-tabs {' +
             'display: flex;' +
-            'gap: 0;' +
-            'border-top: 1px solid rgba(138,113,57,0.2);' +
-            'border-bottom: 1px solid rgba(138,113,57,0.2);' +
+            'gap: 4px;' +
+            'padding: 0 16px;' +
+            'border-bottom: 1px solid rgba(200,164,86,0.15);' +
             'overflow-x: auto;' +
+            'margin-top: 4px;' +
         '}' +
+        '.ss-tabs::-webkit-scrollbar { height: 2px; }' +
+        '.ss-tabs::-webkit-scrollbar-thumb { background: rgba(200,164,86,0.3); }' +
         '.ss-tab-btn {' +
-            'background: none;' +
+            'background: transparent;' +
             'border: none;' +
-            'padding: 5px 8px;' +
-            'font-size: 10.5px;' +
+            'padding: 10px 14px;' +
+            'font-size: 13px;' +
+            'font-weight: 600;' +
             'color: #8a8577;' +
             'cursor: pointer;' +
             'white-space: nowrap;' +
             'border-bottom: 2px solid transparent;' +
             'font-family: "DM Sans", sans-serif;' +
+            'transition: all 0.2s ease;' +
         '}' +
         '.ss-tab-btn:hover { color: #c8a456; }' +
         '.ss-tab-btn.active {' +
-            'color: #c8a456;' +
-            'border-bottom-color: #c8a456;' +
+            'color: #e8c466;' +
+            'border-bottom-color: #e8c466;' +
         '}' +
-
-        '.ss-tab-content { padding: 6px 10px 8px; min-height: 40px; }' +
+        '.ss-tab-content { padding: 18px 20px 24px; min-height: 80px; }' +
         '.ss-tab-pane {' +
             'display: none;' +
-            'font-size: 12px;' +
-            'line-height: 1.5;' +
+            'font-size: 14px;' +
+            'line-height: 1.65;' +
             'color: #d4cfc0;' +
+            'animation: ss-fade 0.4s ease-out;' +
         '}' +
+        '@keyframes ss-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }' +
         '.ss-tab-pane.active { display: block; }' +
-
         '.ss-telescope-btn {' +
             'display: flex;' +
             'align-items: center;' +
-            'gap: 6px;' +
-            'width: calc(100% - 16px);' +
-            'margin: 4px 8px 8px;' +
-            'padding: 6px 10px;' +
-            'background: rgba(138,113,57,0.15);' +
-            'border: 1px solid #8a7139;' +
-            'border-radius: 4px;' +
-            'color: #c8a456;' +
-            'font-size: 11.5px;' +
+            'justify-content: center;' +
+            'gap: 8px;' +
+            'width: calc(100% - 40px);' +
+            'margin: 0 20px 20px;' +
+            'padding: 12px 16px;' +
+            'background: rgba(200,164,86,0.12);' +
+            'border: 1px solid rgba(200,164,86,0.35);' +
+            'border-radius: 10px;' +
+            'color: #e8c466;' +
+            'font-size: 13px;' +
+            'font-weight: 600;' +
+            'letter-spacing: 0.03em;' +
             'font-family: "DM Sans", sans-serif;' +
             'cursor: pointer;' +
-            'transition: background 0.15s;' +
+            'transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);' +
+            'box-shadow: 0 2px 10px rgba(0,0,0,0.2);' +
         '}' +
         '.ss-telescope-btn:hover {' +
-            'background: rgba(200,164,86,0.2);' +
+            'background: rgba(200,164,86,0.25);' +
+            'transform: translateY(-2px);' +
+            'box-shadow: 0 6px 16px rgba(200,164,86,0.25);' +
         '}' +
-        '.ss-telescope-btn svg { flex-shrink: 0; }' +
-
+        '.ss-telescope-btn:active { transform: translateY(0); }' +
         '.ss-popup-simple .ss-story { display: none; }' +
-
         '.redlight .ss-popup {' +
-            'border-color: #6b2020;' +
-            'box-shadow: 0 4px 24px rgba(0,0,0,0.7), 0 0 1px #6b2020;' +
+            'background: rgba(16, 0, 0, 0.85);' +
+            'border-color: rgba(200, 50, 50, 0.4);' +
+            'box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,0,0,0.1);' +
         '}' +
-        '.redlight .ss-name { color: #cc4444; }' +
-        '.redlight .ss-stats { color: #6b2020; }' +
-        '.redlight .ss-tab-btn.active { color: #cc4444; border-bottom-color: #cc4444; }' +
+        '.redlight .ss-name { color: #ff5555; text-shadow: 0 2px 12px rgba(255,50,50,0.4); }' +
+        '.redlight .ss-constellation { color: #cc3333; }' +
+        '.redlight .ss-header { background: linear-gradient(180deg, rgba(200,50,50,0.15) 0%, transparent 100%); border-bottom-color: rgba(200,50,50,0.2); }' +
+        '.redlight .ss-stats { color: #ff5555; background: rgba(255,0,0,0.05); }' +
+        '.redlight .ss-tab-btn { color: #883333; }' +
+        '.redlight .ss-tab-btn:hover { color: #cc4444; }' +
+        '.redlight .ss-tab-btn.active { color: #ff5555; border-bottom-color: #ff5555; }' +
         '.redlight .ss-telescope-btn {' +
-            'border-color: #6b2020;' +
-            'color: #cc4444;' +
-            'background: rgba(107,32,32,0.15);' +
+            'border-color: rgba(200,50,50,0.4);' +
+            'color: #ff5555;' +
+            'background: rgba(200,50,50,0.12);' +
         '}' +
-        '.redlight .ss-telescope-btn:hover { background: rgba(204,68,68,0.15); }';
+        '.redlight .ss-telescope-btn:hover { background: rgba(200,50,50,0.25); box-shadow: 0 6px 16px rgba(255,50,50,0.25); }';
 
         var style = document.createElement('style');
         style.textContent = css;
@@ -689,11 +720,13 @@
 
     // ── Register with NightSky feature system ─────────────────
 
-    window.NightSky.features.register('starstories', {
-        init: init,
-        onLocationChange: onLocationChange,
-        onTimeChange: function() {
-            // Pointers track automatically through VirtualSky's draw cycle
-        }
-    });
+    if (window.NightSky && window.NightSky.features) {
+        window.NightSky.features.register('starstories', {
+            init: init,
+            onLocationChange: onLocationChange,
+            onTimeChange: function() {
+                // Pointers track automatically through VirtualSky's draw cycle
+            }
+        });
+    }
 })();

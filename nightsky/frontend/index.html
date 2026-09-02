@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=2">
+    <link rel="stylesheet" href="css/styles.css?v=5">
     <script src="https://slowe.github.io/VirtualSky/stuquery.min.js"></script>
     <script src="https://slowe.github.io/VirtualSky/virtualsky.min.js"></script>
     <!-- Aladin Lite for telescope view -->
@@ -25,42 +25,19 @@
                 </div>
                 <nav class="header-nav">
                     <button id="redlight-toggle" class="nav-link redlight-btn" title="Toggle red-light mode for night vision">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="5"/>
-                            <line x1="12" y1="1" x2="12" y2="3"/>
-                            <line x1="12" y1="21" x2="12" y2="23"/>
-                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                            <line x1="1" y1="12" x2="3" y2="12"/>
-                            <line x1="21" y1="12" x2="23" y2="12"/>
-                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                        </svg>
-                        Red Light
+                        <span class="plunger">Red Light</span>
+                    </button>
+                    <button id="lore-btn" class="nav-link lore-link" title="Browse the celestial lore library">
+                        <span class="plunger">Lore Library</span>
                     </button>
                     <button id="telescope-btn" class="nav-link telescope-link" title="Open telescope view — browse real sky imagery from NASA, ESA, Hubble">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                        Telescope
+                        <span class="plunger">Telescope</span>
                     </button>
                     <a href="planner.html" class="nav-link planner-link">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                        Observation Planner
+                        <span class="plunger">Observation Planner</span>
                     </a>
                     <a href="guide.html" class="nav-link" title="Equipment Manual — complete guide to all features">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                            <line x1="8" y1="7" x2="16" y2="7"/>
-                            <line x1="8" y1="11" x2="14" y2="11"/>
-                        </svg>
-                        Guide
+                        <span class="plunger">Guide</span>
                     </a>
                 </nav>
             </div>
@@ -89,19 +66,19 @@
                 <div class="control-section">
                     <h3>View Direction</h3>
                     <div class="direction-grid">
-                        <button class="direction-btn" data-az="315">NW</button>
-                        <button class="direction-btn" data-az="0">N</button>
-                        <button class="direction-btn" data-az="45">NE</button>
-                        <button class="direction-btn" data-az="270">W</button>
+                        <button class="direction-btn" data-az="315"><span class="plunger">NW</span></button>
+                        <button class="direction-btn" data-az="0"><span class="plunger">N</span></button>
+                        <button class="direction-btn" data-az="45"><span class="plunger">NE</span></button>
+                        <button class="direction-btn" data-az="270"><span class="plunger">W</span></button>
                         <div class="direction-center">
                             <svg viewBox="0 0 24 24" width="20" height="20">
                                 <circle cx="12" cy="12" r="3" fill="currentColor"/>
                             </svg>
                         </div>
-                        <button class="direction-btn" data-az="90">E</button>
-                        <button class="direction-btn" data-az="225">SW</button>
-                        <button class="direction-btn selected" data-az="180">S</button>
-                        <button class="direction-btn" data-az="135">SE</button>
+                        <button class="direction-btn" data-az="90"><span class="plunger">E</span></button>
+                        <button class="direction-btn" data-az="225"><span class="plunger">SW</span></button>
+                        <button class="direction-btn selected" data-az="180"><span class="plunger">S</span></button>
+                        <button class="direction-btn" data-az="135"><span class="plunger">SE</span></button>
                     </div>
                 </div>
 
@@ -210,11 +187,11 @@
                             <span>Live (real-time)</span>
                         </label>
                         <div class="time-buttons">
-                            <button class="time-btn" id="time-back-day" title="-1 day">-1d</button>
-                            <button class="time-btn" id="time-back-hour" title="-1 hour">-1h</button>
-                            <button class="time-btn" id="time-now" title="Now">Now</button>
-                            <button class="time-btn" id="time-fwd-hour" title="+1 hour">+1h</button>
-                            <button class="time-btn" id="time-fwd-day" title="+1 day">+1d</button>
+                            <button class="time-btn" id="time-back-day" title="-1 day"><span class="plunger">-1d</span></button>
+                            <button class="time-btn" id="time-back-hour" title="-1 hour"><span class="plunger">-1h</span></button>
+                            <button class="time-btn" id="time-now" title="Now"><span class="plunger">Now</span></button>
+                            <button class="time-btn" id="time-fwd-hour" title="+1 hour"><span class="plunger">+1h</span></button>
+                            <button class="time-btn" id="time-fwd-day" title="+1 day"><span class="plunger">+1d</span></button>
                         </div>
                         <div id="current-time" class="current-time"></div>
                     </div>
@@ -282,6 +259,64 @@
                <a href="https://aladin.cds.unistra.fr/AladinLite/" target="_blank">Aladin Lite</a> |
                Click bright stars for stories | Right-click for telescope view</p>
         </footer>
+
+        <!-- Lore Library — observatory catalogue of myths & star names -->
+        <div id="lore-modal" class="modal">
+            <div class="modal-content lore-modal-content">
+                <div class="modal-header lore-modal-header">
+                    <div class="lore-title-block">
+                        <p class="lore-kicker">Observatory Catalogue</p>
+                        <h2>Celestial Lore</h2>
+                    </div>
+                    <div class="modal-header-buttons">
+                        <div class="lore-culture-selector">
+                            <label for="lore-culture-select">Tradition</label>
+                            <select id="lore-culture-select">
+                                <option value="all">All traditions</option>
+                                <option value="greek">Greek &amp; Roman</option>
+                                <option value="chinese">Chinese</option>
+                                <option value="arabic">Arabic &amp; Islamic</option>
+                                <option value="hebrew">Hebrew / Mazzaroth</option>
+                                <option value="african">African</option>
+                                <option value="indigenous">Indigenous</option>
+                                <option value="hindu">Hindu / Vedic</option>
+                                <option value="mesopotamian">Mesopotamian</option>
+                                <option value="egyptian">Egyptian</option>
+                            </select>
+                        </div>
+                        <button class="modal-close" id="lore-modal-close" type="button" aria-label="Close">&times;</button>
+                    </div>
+                </div>
+                <div class="modal-body lore-modal-body">
+                    <div class="lore-layout">
+                        <aside class="lore-sidebar">
+                            <div class="lore-search">
+                                <input type="text" id="lore-search-input" placeholder="Search the catalogue…" autocomplete="off" spellcheck="false">
+                            </div>
+                            <nav class="lore-categories" id="lore-categories" aria-label="Catalogue sections">
+                                <button type="button" class="lore-cat-btn active" data-category="zodiac">Zodiac</button>
+                                <button type="button" class="lore-cat-btn" data-category="constellations">Constellations</button>
+                                <button type="button" class="lore-cat-btn" data-category="planets">Planets</button>
+                                <button type="button" class="lore-cat-btn" data-category="stars">Stars</button>
+                                <button type="button" class="lore-cat-btn" data-category="asterisms">Asterisms</button>
+                                <button type="button" class="lore-cat-btn" data-category="meteorShowers">Meteor Showers</button>
+                            </nav>
+                            <div id="lore-object-list" class="lore-object-list">
+                                <div class="lore-loading">Opening the catalogue…</div>
+                            </div>
+                        </aside>
+                        <div class="lore-content" id="lore-content-area">
+                            <div class="lore-placeholder">
+                                <div class="lore-placeholder-rule"></div>
+                                <h3>Choose an entry</h3>
+                                <p>From the list at left: zodiac, constellations, planets, named stars, asterisms, and showers — with myths as told across traditions.</p>
+                                <div class="lore-placeholder-rule"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Telescope View Modal -->
         <div id="telescope-modal" class="modal">
@@ -388,9 +423,31 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <!-- Feature registry must exist before feature modules (they load before app.js) -->
+    <script>
+    window.NightSky = window.NightSky || {};
+    window.NightSky.features = window.NightSky.features || (function () {
+        var registry = {};
+        return {
+            register: function (name, feature) { registry[name] = feature; },
+            get: function (name) { return registry[name]; },
+            getAll: function () { return registry; },
+            initAll: function () {
+                Object.keys(registry).forEach(function (k) {
+                    var f = registry[k];
+                    if (f && f.init) f.init();
+                });
+            },
+            notifyLocationChange: function () {},
+            notifyTimeChange: function () {}
+        };
+    })();
+    </script>
     <script src="js/features/twilight.js"></script>
     <script src="js/features/riseset.js"></script>
     <script src="js/features/starstories.js"></script>
+    <script src="js/features/planetstories.js"></script>
+    <script src="js/features/lorebrowser.js?v=5"></script>
     <script src="js/features/weather.js"></script>
     <script src="js/features/obslog.js"></script>
     <script src="js/app.js"></script>

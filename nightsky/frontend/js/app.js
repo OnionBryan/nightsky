@@ -15,15 +15,21 @@ const state = {
     currentFov: 0.5      // Aladin field of view in degrees
 };
 
-// Backend API URL
-const API_URL = 'http://localhost:5051';
+// Backend API URL — same origin when UI is served by the Go nightsky edge (:5051)
+const API_URL = (typeof location !== 'undefined' && location.port === '5051')
+    ? ''
+    : 'http://localhost:5051';
 
-// Feature module registry — sidebar panels register here
-window.NightSky = {
-    state: state,
-    features: (() => {
-        const registry = {};
-        return {
+// Feature module registry — sidebar panels register here.
+// Preserve any features that registered before app.js loaded (bootstrap in index.html).
+window.NightSky = (() => {
+    const prior = (window.NightSky && window.NightSky.features && typeof window.NightSky.features.getAll === 'function')
+        ? window.NightSky.features.getAll()
+        : {};
+    const registry = Object.assign({}, prior || {});
+    return {
+        state: state,
+        features: {
             register(name, feature) { registry[name] = feature; },
             get(name) { return registry[name]; },
             getAll() { return registry; },
@@ -34,9 +40,9 @@ window.NightSky = {
             notifyTimeChange() {
                 Object.values(registry).forEach(f => f.onTimeChange && f.onTimeChange());
             }
-        };
-    })()
-};
+        }
+    };
+})();
 
 // Direction names for display
 const DIRECTION_NAMES = {

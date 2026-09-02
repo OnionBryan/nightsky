@@ -1,0 +1,145 @@
+[
+    {
+        "id": "mercury",
+        "name": "Mercury",
+        "type": "planet",
+        "story": "The swift messenger of the gods, moving faster than any other planet.",
+        "renaissance_discovery": "During the Renaissance, Mercury's highly eccentric orbit challenged astronomers. Copernicus struggled to model it accurately with epicycles. Later, Kepler applied his laws of planetary motion, using conic sections and calculus precursors to describe its elliptical path, eventually completely explained by Newtonian mechanics.",
+        "culture_notes": {
+            "greek": "Hermes, the swift-footed messenger.",
+            "roman": "Mercury, god of commerce.",
+            "babylonian": "Nabu, the messenger to the gods.",
+            "chinese": "The Water Star."
+        }
+    },
+    {
+        "id": "venus",
+        "name": "Venus",
+        "type": "planet",
+        "story": "The brightest object in the sky after the Sun and Moon, appearing as the Morning and Evening Star.",
+        "renaissance_discovery": "Galileo's observation of the phases of Venus in 1610 using his telescope provided the first conclusive physical proof of the heliocentric Copernican system. Its near-circular orbit was a key test case for Kepler's elliptical modeling.",
+        "culture_notes": {
+            "greek": "Aphrodite, goddess of love.",
+            "roman": "Venus, goddess of beauty.",
+            "babylonian": "Ishtar, goddess of love and war.",
+            "chinese": "The Metal Star.",
+            "mayan": "Crucial to the Mayan calendar. They tracked its 584-day synodic cycle with extreme precision, aligning major architecture like El Caracol at Chichen Itza to its extreme rising points. Venus was associated with Kukulkan and seen as a powerful, sometimes dangerous entity."
+        }
+    },
+    {
+        "id": "earth",
+        "name": "Earth",
+        "type": "planet",
+        "story": "Our home, the blue marble, the only known cradle of life in the universe.",
+        "renaissance_discovery": "The Copernican Revolution fundamentally shifted Earth from the center of the universe to just another planet orbiting the Sun, a concept mathematically refined by Kepler's laws and physically grounded by Newton's law of universal gravitation.",
+        "culture_notes": {
+            "greek": "Gaia, the mother earth.",
+            "roman": "Terra, the earth goddess.",
+            "babylonian": "Ki, the earth.",
+            "chinese": "The Earth Star (though conceptually different in ancient times)."
+        }
+    },
+    {
+        "id": "mars",
+        "name": "Mars",
+        "type": "planet",
+        "story": "The Red Planet, an object of fascination and the roman god of war.",
+        "renaissance_discovery": "Tycho Brahe's incredibly precise observations of Mars's retrograde motion allowed Johannes Kepler to discover that orbits are ellipses, not perfect circles. Mars's noticeable eccentricity was the key to Kepler's First Law, breaking centuries of Aristotelian dogma.",
+        "culture_notes": {
+            "greek": "Ares, the god of war.",
+            "roman": "Mars, the god of war and agriculture.",
+            "babylonian": "Nergal, god of destruction.",
+            "chinese": "The Fire Star."
+        }
+    },
+    {
+        "id": "jupiter",
+        "name": "Jupiter",
+        "type": "planet",
+        "story": "The largest planet in the solar system, named for the king of the gods.",
+        "renaissance_discovery": "Galileo discovered Jupiter's four largest moons in 1610, showing that objects could orbit something other than Earth. Later, Jupiter's mass and gravitational pull became critical for Newton's orbital calculations and perturbation theory.",
+        "culture_notes": {
+            "greek": "Zeus, king of the gods.",
+            "roman": "Jupiter, chief deity.",
+            "babylonian": "Marduk, the patron deity of Babylon.",
+            "chinese": "The Wood Star.",
+            "vedic": "Known as Brihaspati, the guru of the gods and the lord of sacred speech, associated with wisdom and eloquence."
+        }
+    },
+    {
+        "id": "saturn",
+        "name": "Saturn",
+        "type": "planet",
+        "story": "The ringed jewel of the solar system, representing time and agriculture.",
+        "renaissance_discovery": "Galileo first observed Saturn's rings but couldn't resolve them, calling them 'ears'. Christiaan Huygens later correctly identified them as a flat ring. Newton used Saturn to demonstrate his law of gravitation over massive distances.",
+        "culture_notes": {
+            "greek": "Cronus, titan of time.",
+            "roman": "Saturn, god of agriculture.",
+            "babylonian": "Ninurta, god of agriculture.",
+            "chinese": "The Earth Star."
+        }
+    },
+    {
+        "id": "uranus",
+        "name": "Uranus",
+        "type": "planet",
+        "story": "The first planet discovered with a telescope, rotating on its side.",
+        "renaissance_discovery": "Though discovered post-Renaissance in 1781 by William Herschel, its discovery relied on the Newtonian synthesis and calculus. Its irregular orbit later led to the mathematical prediction of Neptune using perturbation equations.",
+        "culture_notes": {
+            "greek": "Ouranos, the personification of the sky.",
+            "roman": "Caelus, the sky."
+        }
+    },
+    {
+        "id": "neptune",
+        "name": "Neptune",
+        "type": "planet",
+        "story": "The blue giant, discovered through mathematics before it was seen.",
+        "renaissance_discovery": "A triumph of Newtonian mechanics. Le Verrier and Adams used calculus and the laws of planetary motion to predict Neptune's exact location based on irregularities in Uranus's orbit, proving the universal applicability of Newton's laws.",
+        "culture_notes": {
+            "greek": "Poseidon, god of the sea.",
+            "roman": "Neptune, god of the sea."
+        }
+    },
+    {
+        "id": "pluto",
+        "name": "Pluto",
+        "type": "dwarf_planet",
+        "story": "The icy ruler of the Kuiper belt, named for the god of the underworld.",
+        "renaissance_discovery": "Discovered in 1930, Pluto's discovery was the culmination of the search for 'Planet X', a search driven by the same orbital mechanics pioneered by Kepler and Newton during the Renaissance.",
+        "culture_notes": {
+            "greek": "Hades, god of the underworld.",
+            "roman": "Pluto, god of the underworld."
+        }
+    },
+    {
+        "id": "sun",
+        "name": "Sun",
+        "type": "star",
+        "story": "The life-giving star at the center of our solar system.",
+        "renaissance_discovery": "The Renaissance transformed the Sun from a moving orb in Earth's sky to the massive gravitational anchor of the solar system. Newton calculated its relative mass, and Kepler's laws defined how its gravity dictates the elliptical paths of all planets.",
+        "culture_notes": {
+            "greek": "Helios, the sun god.",
+            "roman": "Sol, the sun god.",
+            "babylonian": "Shamash, the sun god and dispenser of justice.",
+            "chinese": "Taiyang, the Great Luminary.",
+            "aboriginal": "In many Australian Aboriginal cultures, the Sun is a woman who wakes up every morning, lights a fire (the dawn), and carries her torch across the sky.",
+            "navajo": "Jóhonaaʼéí, the Sun Bearer, who carries the glowing sun disk across the sky each day on horseback."
+        }
+    },
+    {
+        "id": "moon",
+        "name": "Moon",
+        "type": "moon",
+        "story": "Earth's constant companion, guiding tides and time.",
+        "renaissance_discovery": "Galileo's mapping of the Moon's craters proved celestial bodies were imperfect, earth-like spheres. Newton's Principia used the Moon's orbit to prove that the same gravity causing an apple to fall also keeps the Moon in orbit.",
+        "culture_notes": {
+            "greek": "Selene, goddess of the moon.",
+            "roman": "Luna, goddess of the moon.",
+            "babylonian": "Sin, the moon god.",
+            "chinese": "Chang'e, the moon goddess.",
+            "aboriginal": "Often depicted as a man, occasionally punished for breaking tribal law by being gradually carved away (the phases of the moon), only to heal and return.",
+            "mayan": "Awilix, goddess of the moon, night, and the Underworld, often associated with the jaguar."
+        }
+    }
+]

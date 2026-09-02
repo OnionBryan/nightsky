@@ -11,6 +11,9 @@
  * - Object checklists (Messier, Caldwell)
  */
 
+// Public nightsky edge (same base as weather feature panel)
+const PLANNER_BACKEND = 'http://localhost:5051';
+
 // Application state
 const PlannerState = {
     location: {
@@ -698,21 +701,27 @@ async function calculateEphemeris() {
     const query = Elements.objectSearch?.value?.trim();
     if (!query) return;
 
-    // First try to find in local catalogs
-    let obj = findObjectInCatalogs(query);
+    const lat = PlannerState.location.lat;
+    const lon = PlannerState.location.lon;
 
-    if (!obj) {
-        // Try the backend API
-        try {
-            const resp = await fetch(`/api/ephemeris?name=${encodeURIComponent(query)}&lat=${PlannerState.location.lat}&lon=${PlannerState.location.lon}`);
-            if (resp.ok) {
-                obj = await resp.json();
+    // Prefer edge-backed solar-system ephemeris (rise/set/altitude curve)
+    try {
+        const resp = await fetch(
+            `${PLANNER_BACKEND}/api/ephemeris?name=${encodeURIComponent(query)}&lat=${lat}&lon=${lon}`
+        );
+        if (resp.ok) {
+            const eph = await resp.json();
+            if (eph.found) {
+                renderBackendEphemeris(query, eph);
+                return;
             }
-        } catch (e) {
-            console.error('Ephemeris API error:', e);
         }
+    } catch (e) {
+        console.error('Ephemeris API error:', e);
     }
 
+    // Fall back to local Messier/Caldwell + client Astronomy.js
+    let obj = findObjectInCatalogs(query);
     if (!obj) {
         if (Elements.ephemerisResult) {
             Elements.ephemerisResult.innerHTML = `
@@ -722,34 +731,25 @@ async function calculateEphemeris() {
         return;
     }
 
-    // Calculate rise/transit/set
     let ra = obj.ra;
     let dec = obj.dec;
 
-    // Parse RA if string
     if (typeof ra === 'string') {
         ra = Astronomy.parseCoordinate(ra, 'ra');
     } else if (ra < 24) {
-        ra = ra * 15;  // Convert hours to degrees
+        ra = ra * 15;
     }
-
     if (typeof dec === 'string') {
         dec = Astronomy.parseCoordinate(dec, 'dec');
     }
 
     const rts = Astronomy.calculateRiseTransitSet(
-        ra, dec,
-        PlannerState.location.lat,
-        PlannerState.location.lon,
-        PlannerState.currentDate
+        ra, dec, lat, lon, PlannerState.currentDate
     );
-
-    // Current position
     const jd = Astronomy.dateToJulian(PlannerState.currentDate);
-    const lst = Astronomy.lst(jd, PlannerState.location.lon);
-    const altAz = Astronomy.raDecToAltAz(ra, dec, PlannerState.location.lat, lst);
+    const lst = Astronomy.lst(jd, lon);
+    const altAz = Astronomy.raDecToAltAz(ra, dec, lat, lst);
 
-    // Display results
     if (Elements.ephemerisResult) {
         Elements.ephemerisResult.innerHTML = `
             <div class="ephemeris-object">
@@ -793,10 +793,42 @@ async function calculateEphemeris() {
             </div>
         `;
     }
-
-    // Draw timeline
     if (Elements.ephemerisTimeline && !rts.neverRises) {
         drawEphemerisTimeline(rts, altAz.altitude > 0);
+    }
+}
+
+/** Render rise/set payload from edge /api/ephemeris */
+function renderBackendEphemeris(query, eph) {
+    const name = eph.name || eph.object || query;
+    const maxAlt = eph.max_altitude != null ? eph.max_altitude.toFixed(2) : '--';
+    const fmtIso = (iso) => {
+        if (!iso) return '--';
+        try { return formatTime(new Date(iso)); } catch (_) { return iso; }
+    };
+    if (Elements.ephemerisResult) {
+        Elements.ephemerisResult.innerHTML = `
+            <div class="ephemeris-object">
+                <h3>${name}</h3>
+                <span class="object-type">Edge ephemeris</span>
+            </div>
+            <div class="ephemeris-current">
+                <div>Max altitude: ${maxAlt}°</div>
+                <div class="visibility-status">
+                    ${eph.never_rises ? '<span class="not-visible">Never rises</span>' :
+                      eph.circumpolar ? '<span class="visible">Circumpolar</span>' :
+                      '<span class="visible">Has rise/set</span>'}
+                </div>
+            </div>
+            <div class="ephemeris-times">
+                <div class="time-row"><span class="time-label">Rise:</span>
+                    <span class="time-value">${fmtIso(eph.rise)}</span></div>
+                <div class="time-row"><span class="time-label">Transit:</span>
+                    <span class="time-value">${fmtIso(eph.transit)}</span></div>
+                <div class="time-row"><span class="time-label">Set:</span>
+                    <span class="time-value">${fmtIso(eph.set)}</span></div>
+            </div>
+        `;
     }
 }
 
@@ -1133,7 +1165,7 @@ function toggleCatalogExpand(toggle) {
 }
 
 /**
- * Load weather forecast
+ * Load weather forecast from edge nightsky API (same contract as weather panel).
  */
 async function loadWeather() {
     if (!Elements.weatherContainer) return;
@@ -1141,18 +1173,14 @@ async function loadWeather() {
     Elements.weatherContainer.innerHTML = '<div class="loading">Loading weather...</div>';
 
     try {
-        // Use Open-Meteo API (free, no key required)
+        const lat = PlannerState.location.lat;
+        const lon = PlannerState.location.lon;
         const resp = await fetch(
-            `https://api.open-meteo.com/v1/forecast?` +
-            `latitude=${PlannerState.location.lat}&` +
-            `longitude=${PlannerState.location.lon}&` +
-            `hourly=cloudcover,visibility,relative_humidity_2m&` +
-            `forecast_days=2&timezone=auto`
+            `${PLANNER_BACKEND}/api/nightsky/weather?lat=${lat}&lon=${lon}`
         );
-
-        if (!resp.ok) throw new Error('Weather API error');
-
+        if (!resp.ok) throw new Error('Weather API error ' + resp.status);
         const data = await resp.json();
+        if (data.error && !data.hourly) throw new Error(data.error);
         renderWeatherForecast(data);
     } catch (e) {
         console.error('Weather error:', e);
@@ -1163,49 +1191,51 @@ async function loadWeather() {
 }
 
 /**
- * Render weather forecast
+ * Render weather forecast from edge /api/nightsky/weather JSON.
  */
 function renderWeatherForecast(data) {
-    if (!Elements.weatherContainer || !data.hourly) return;
+    if (!Elements.weatherContainer || !data.hourly || !Array.isArray(data.hourly)) return;
 
-    const hours = data.hourly.time.slice(0, 48);  // Next 48 hours
-    const clouds = data.hourly.cloudcover.slice(0, 48);
-    const humidity = data.hourly.relative_humidity_2m.slice(0, 48);
-
-    // Find good observing windows (low cloud cover)
+    const hours = data.hourly.slice(0, 48);
     const goodWindows = [];
     let inWindow = false;
     let windowStart = null;
 
-    hours.forEach((time, i) => {
-        const hour = new Date(time).getHours();
-        const isNight = hour >= 20 || hour <= 5;  // Rough night hours
-        const isGood = clouds[i] < 30 && isNight;
-
+    hours.forEach((h) => {
+        const cloud = h.cloud_cover;
+        const score = h.astronomy_score;
+        const isGood = (score != null ? score >= 50 : cloud != null && cloud < 30);
         if (isGood && !inWindow) {
-            windowStart = time;
+            windowStart = h.time;
             inWindow = true;
         } else if (!isGood && inWindow) {
-            goodWindows.push({ start: windowStart, end: time });
+            goodWindows.push({ start: windowStart, end: h.time });
             inWindow = false;
         }
     });
 
+    const overall = (data.summary && data.summary.overall) || '—';
+    const best = data.summary && data.summary.best_window;
+
     Elements.weatherContainer.innerHTML = `
+        <div class="weather-summary-line">
+            Overall: <strong>${overall}</strong>
+            ${best ? ` · Best window score ${best.score}` : ''}
+        </div>
         <div class="weather-chart">
-            <div class="chart-title">Cloud Cover (next 48 hours)</div>
+            <div class="chart-title">Cloud cover / astronomy score (edge forecast)</div>
             <div class="chart-bars">
-                ${hours.map((time, i) => {
-                    const cloudPct = clouds[i];
+                ${hours.map((h) => {
+                    const cloudPct = h.cloud_cover != null ? h.cloud_cover : 50;
                     const color = cloudPct < 20 ? '#22c55e' :
                                   cloudPct < 50 ? '#eab308' :
                                   cloudPct < 80 ? '#f97316' : '#ef4444';
-                    const hour = new Date(time).getHours();
-
+                    const tip = `${h.time}: cloud ${cloudPct}%` +
+                        (h.astronomy_score != null ? `, score ${h.astronomy_score}` : '');
                     return `
                         <div class="chart-bar"
                              style="height: ${cloudPct}%; background: ${color}"
-                             title="${new Date(time).toLocaleString()}: ${cloudPct}% clouds">
+                             title="${tip}">
                         </div>
                     `;
                 }).join('')}
@@ -1224,8 +1254,7 @@ function renderWeatherForecast(data) {
                 <div class="windows-title">Good Observing Windows</div>
                 ${goodWindows.map(w => `
                     <div class="window">
-                        ${new Date(w.start).toLocaleString()} -
-                        ${new Date(w.end).toLocaleTimeString()}
+                        ${w.start} – ${w.end}
                     </div>
                 `).join('')}
             </div>

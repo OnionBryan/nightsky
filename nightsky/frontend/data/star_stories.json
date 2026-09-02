@@ -1,7 +1,11 @@
 [
   {
     "name": "Sirius",
-    "alternateNames": ["Alpha Canis Majoris", "Dog Star", "HIP 32349"],
+    "alternateNames": [
+      "Alpha Canis Majoris",
+      "Dog Star",
+      "HIP 32349"
+    ],
     "ra": 101.287,
     "dec": -16.716,
     "magnitude": -1.46,
@@ -18,7 +22,11 @@
   },
   {
     "name": "Canopus",
-    "alternateNames": ["Alpha Carinae", "Suhail", "HIP 30438"],
+    "alternateNames": [
+      "Alpha Carinae",
+      "Suhail",
+      "HIP 30438"
+    ],
     "ra": 95.987,
     "dec": -52.696,
     "magnitude": -0.74,
@@ -34,7 +42,12 @@
   },
   {
     "name": "Rigil Kentaurus",
-    "alternateNames": ["Alpha Centauri", "Alpha Centauri A", "HIP 71683", "Toliman"],
+    "alternateNames": [
+      "Alpha Centauri",
+      "Alpha Centauri A",
+      "HIP 71683",
+      "Toliman"
+    ],
     "ra": 219.902,
     "dec": -60.834,
     "magnitude": -0.27,
@@ -49,7 +62,11 @@
   },
   {
     "name": "Arcturus",
-    "alternateNames": ["Alpha Bootis", "HIP 69673", "Bear Guardian"],
+    "alternateNames": [
+      "Alpha Bootis",
+      "HIP 69673",
+      "Bear Guardian"
+    ],
     "ra": 213.915,
     "dec": 19.182,
     "magnitude": -0.05,
@@ -65,7 +82,11 @@
   },
   {
     "name": "Vega",
-    "alternateNames": ["Alpha Lyrae", "HIP 91262", "Wega"],
+    "alternateNames": [
+      "Alpha Lyrae",
+      "HIP 91262",
+      "Wega"
+    ],
     "ra": 279.235,
     "dec": 38.784,
     "magnitude": 0.03,
@@ -81,7 +102,11 @@
   },
   {
     "name": "Capella",
-    "alternateNames": ["Alpha Aurigae", "HIP 24608", "Goat Star"],
+    "alternateNames": [
+      "Alpha Aurigae",
+      "HIP 24608",
+      "Goat Star"
+    ],
     "ra": 79.172,
     "dec": 45.998,
     "magnitude": 0.08,
@@ -96,7 +121,10 @@
   },
   {
     "name": "Rigel",
-    "alternateNames": ["Beta Orionis", "HIP 24436"],
+    "alternateNames": [
+      "Beta Orionis",
+      "HIP 24436"
+    ],
     "ra": 78.634,
     "dec": -8.202,
     "magnitude": 0.13,
@@ -111,7 +139,10 @@
   },
   {
     "name": "Procyon",
-    "alternateNames": ["Alpha Canis Minoris", "HIP 37279"],
+    "alternateNames": [
+      "Alpha Canis Minoris",
+      "HIP 37279"
+    ],
     "ra": 114.826,
     "dec": 5.225,
     "magnitude": 0.34,
@@ -126,7 +157,10 @@
   },
   {
     "name": "Achernar",
-    "alternateNames": ["Alpha Eridani", "HIP 7588"],
+    "alternateNames": [
+      "Alpha Eridani",
+      "HIP 7588"
+    ],
     "ra": 24.429,
     "dec": -57.237,
     "magnitude": 0.46,
@@ -140,10 +174,13 @@
   },
   {
     "name": "Betelgeuse",
-    "alternateNames": ["Alpha Orionis", "HIP 27989"],
+    "alternateNames": [
+      "Alpha Orionis",
+      "HIP 27989"
+    ],
     "ra": 88.793,
     "dec": 7.407,
-    "magnitude": 0.50,
+    "magnitude": 0.5,
     "spectralType": "M1-2Ia-Iab",
     "distance": "700 ly",
     "constellation": "Orion",
@@ -155,7 +192,11 @@
   },
   {
     "name": "Hadar",
-    "alternateNames": ["Beta Centauri", "HIP 68702", "Agena"],
+    "alternateNames": [
+      "Beta Centauri",
+      "HIP 68702",
+      "Agena"
+    ],
     "ra": 210.956,
     "dec": -60.373,
     "magnitude": 0.61,
@@ -169,7 +210,10 @@
   },
   {
     "name": "Altair",
-    "alternateNames": ["Alpha Aquilae", "HIP 97649"],
+    "alternateNames": [
+      "Alpha Aquilae",
+      "HIP 97649"
+    ],
     "ra": 297.696,
     "dec": 8.868,
     "magnitude": 0.76,
@@ -185,8 +229,11 @@
   },
   {
     "name": "Acrux",
-    "alternateNames": ["Alpha Crucis", "HIP 60718"],
-    "ra": 186.650,
+    "alternateNames": [
+      "Alpha Crucis",
+      "HIP 60718"
+    ],
+    "ra": 186.65,
     "dec": -63.099,
     "magnitude": 0.77,
     "spectralType": "B0.5IV",
@@ -199,8 +246,12 @@
   },
   {
     "name": "Aldebaran",
-    "alternateNames": ["Alpha Tauri", "HIP 21421", "Eye of Taurus"],
-    "ra": 68.980,
+    "alternateNames": [
+      "Alpha Tauri",
+      "HIP 21421",
+      "Eye of Taurus"
+    ],
+    "ra": 68.98,
     "dec": 16.509,
     "magnitude": 0.86,
     "spectralType": "K5III",
@@ -214,7 +265,11 @@
   },
   {
     "name": "Antares",
-    "alternateNames": ["Alpha Scorpii", "HIP 80763", "Rival of Mars"],
+    "alternateNames": [
+      "Alpha Scorpii",
+      "HIP 80763",
+      "Rival of Mars"
+    ],
     "ra": 247.352,
     "dec": -26.432,
     "magnitude": 1.06,
@@ -230,7 +285,10 @@
   },
   {
     "name": "Spica",
-    "alternateNames": ["Alpha Virginis", "HIP 65474"],
+    "alternateNames": [
+      "Alpha Virginis",
+      "HIP 65474"
+    ],
     "ra": 201.298,
     "dec": -11.161,
     "magnitude": 0.97,
@@ -245,7 +303,10 @@
   },
   {
     "name": "Pollux",
-    "alternateNames": ["Beta Geminorum", "HIP 37826"],
+    "alternateNames": [
+      "Beta Geminorum",
+      "HIP 37826"
+    ],
     "ra": 116.329,
     "dec": 28.026,
     "magnitude": 1.14,
@@ -260,7 +321,10 @@
   },
   {
     "name": "Fomalhaut",
-    "alternateNames": ["Alpha Piscis Austrini", "HIP 113368"],
+    "alternateNames": [
+      "Alpha Piscis Austrini",
+      "HIP 113368"
+    ],
     "ra": 344.413,
     "dec": -29.622,
     "magnitude": 1.16,
@@ -275,9 +339,12 @@
   },
   {
     "name": "Deneb",
-    "alternateNames": ["Alpha Cygni", "HIP 102098"],
+    "alternateNames": [
+      "Alpha Cygni",
+      "HIP 102098"
+    ],
     "ra": 310.358,
-    "dec": 45.280,
+    "dec": 45.28,
     "magnitude": 1.25,
     "spectralType": "A2Iae",
     "distance": "2,600 ly",
@@ -291,10 +358,14 @@
   },
   {
     "name": "Regulus",
-    "alternateNames": ["Alpha Leonis", "HIP 49669", "Cor Leonis"],
+    "alternateNames": [
+      "Alpha Leonis",
+      "HIP 49669",
+      "Cor Leonis"
+    ],
     "ra": 152.093,
     "dec": 11.967,
-    "magnitude": 1.40,
+    "magnitude": 1.4,
     "spectralType": "B8IVn",
     "distance": "79.3 ly",
     "constellation": "Leo",
@@ -303,6 +374,511 @@
       "greek": "'Little King' or 'Prince,' the heart of Leo the Lion, the king of beasts. One of the four Royal Stars of Persia, known as Venant, the Watcher of the North.",
       "arabic": "Called Qalb al-Asad ('heart of the lion').",
       "chinese": "Known as Xuan Yuan Shi Si, the fourteenth star of the Yellow Emperor asterism, associated with the legendary first emperor of China."
+    }
+  },
+  {
+    "name": "Polaris",
+    "alternateNames": [
+      "Alpha Ursae Minoris",
+      "North Star",
+      "Pole Star"
+    ],
+    "ra": 37.954,
+    "dec": 89.264,
+    "magnitude": 1.97,
+    "spectralType": "F7Ib",
+    "distance": "433 ly",
+    "constellation": "Ursa Minor",
+    "story": "The current northern pole star. Due to the precession of the equinoxes, it will remain the pole star for several more centuries.",
+    "culture_notes": {
+      "greek": "Known in antiquity as Cynosura ('the dog's tail'). It was not the pole star during classical Greek times.",
+      "arabic": "Called Al-Ruccabah (the knee) or Al-Kaukab al-Shamaliyy (the northern star).",
+      "chinese": "Known as Gouchen Yi (the first star of the Curved Array), representing the celestial emperor.",
+      "indigenous": "In Navajo tradition, it is the 'Central Fire' around which the sky revolves."
+    }
+  },
+  {
+    "name": "Algol",
+    "alternateNames": [
+      "Beta Persei",
+      "Demon Star"
+    ],
+    "ra": 47.042,
+    "dec": 40.955,
+    "magnitude": 2.12,
+    "spectralType": "B8V",
+    "distance": "90 ly",
+    "constellation": "Perseus",
+    "story": "A famous eclipsing binary star whose brightness drops every 2.86 days, earning it a sinister reputation across many cultures.",
+    "culture_notes": {
+      "greek": "Represents the severed head of the gorgon Medusa, held by the hero Perseus.",
+      "arabic": "Ra's al-Ghul ('Head of the Ogre' or 'Ghoul'), from which the name Algol derives.",
+      "chinese": "Da Ling Wu, the fifth star of the Mausoleum, associated with piles of corpses."
+    }
+  },
+  {
+    "name": "Castor",
+    "alternateNames": [
+      "Alpha Geminorum"
+    ],
+    "ra": 113.649,
+    "dec": 31.888,
+    "magnitude": 1.58,
+    "spectralType": "A1V",
+    "distance": "51 ly",
+    "constellation": "Gemini",
+    "story": "A remarkable sextuple star system consisting of three pairs of binary stars.",
+    "culture_notes": {
+      "greek": "The mortal twin of Pollux, known as a great horseman.",
+      "arabic": "Part of the traditional 'two twins', originally seen as one of the forepaws of a giant lion."
+    }
+  },
+  {
+    "name": "Dubhe",
+    "alternateNames": [
+      "Alpha Ursae Majoris"
+    ],
+    "ra": 165.932,
+    "dec": 61.751,
+    "magnitude": 1.79,
+    "spectralType": "K0III",
+    "distance": "123 ly",
+    "constellation": "Ursa Major",
+    "story": "One of the two 'Pointer Stars' in the Big Dipper used to find Polaris.",
+    "culture_notes": {
+      "arabic": "From 'Thahr al-Dubb al-Akbar', meaning 'the back of the Greater Bear'.",
+      "chinese": "Tian Shu (Celestial Pivot), the first star of the Northern Dipper."
+    }
+  },
+  {
+    "name": "Merak",
+    "alternateNames": [
+      "Beta Ursae Majoris"
+    ],
+    "ra": 165.46,
+    "dec": 56.382,
+    "magnitude": 2.37,
+    "spectralType": "A1V",
+    "distance": "79 ly",
+    "constellation": "Ursa Major",
+    "story": "The other 'Pointer Star' in the Big Dipper bowl.",
+    "culture_notes": {
+      "arabic": "Meaning 'the loins' of the bear.",
+      "chinese": "Tian Xuan (Celestial Rotating Jade), the second star of the Northern Dipper."
+    }
+  },
+  {
+    "name": "Mizar",
+    "alternateNames": [
+      "Zeta Ursae Majoris"
+    ],
+    "ra": 200.981,
+    "dec": 54.925,
+    "magnitude": 2.23,
+    "spectralType": "A2V",
+    "distance": "83 ly",
+    "constellation": "Ursa Major",
+    "story": "The first binary star discovered telescopically, and forms a naked-eye visual double with Alcor.",
+    "culture_notes": {
+      "arabic": "Meaning 'apron' or 'waistband'.",
+      "indigenous": "In many Native American myths, Mizar and Alcor are a hunter and his cooking pot, or a woman carrying a child."
+    }
+  },
+  {
+    "name": "Alcor",
+    "alternateNames": [
+      "80 Ursae Majoris"
+    ],
+    "ra": 201.304,
+    "dec": 54.988,
+    "magnitude": 3.99,
+    "spectralType": "A5V",
+    "distance": "82 ly",
+    "constellation": "Ursa Major",
+    "story": "The faint companion to Mizar, used historically as an eye test.",
+    "culture_notes": {
+      "arabic": "Known as Al-Suh\u0101 ('the forgotten one'), used as a test of visual acuity.",
+      "chinese": "Fu (the Assistant) to the Northern Dipper."
+    }
+  },
+  {
+    "name": "Bellatrix",
+    "alternateNames": [
+      "Gamma Orionis"
+    ],
+    "ra": 81.282,
+    "dec": 6.349,
+    "magnitude": 1.64,
+    "spectralType": "B2III",
+    "distance": "250 ly",
+    "constellation": "Orion",
+    "story": "A massive, hot blue-white star marking Orion's left shoulder.",
+    "culture_notes": {
+      "greek": "Latin for 'female warrior' or 'Amazon Star'.",
+      "arabic": "Al-Najid ('the conqueror')."
+    }
+  },
+  {
+    "name": "Alnilam",
+    "alternateNames": [
+      "Epsilon Orionis"
+    ],
+    "ra": 84.053,
+    "dec": -1.201,
+    "magnitude": 1.69,
+    "spectralType": "B0Ia",
+    "distance": "2000 ly",
+    "constellation": "Orion",
+    "story": "The bright central star of Orion's Belt, an incredibly luminous blue supergiant.",
+    "culture_notes": {
+      "arabic": "Al-Nizam ('string of pearls').",
+      "polynesian": "Part of the 'string of the children' (cat's cradle) in Hawaiian tradition."
+    }
+  },
+  {
+    "name": "Schedar",
+    "alternateNames": [
+      "Alpha Cassiopeiae"
+    ],
+    "ra": 10.127,
+    "dec": 56.537,
+    "magnitude": 2.24,
+    "spectralType": "K0III",
+    "distance": "228 ly",
+    "constellation": "Cassiopeia",
+    "story": "An orange giant marking the right vertex of the 'W' asterism of Cassiopeia.",
+    "culture_notes": {
+      "arabic": "Sadr ('breast' or 'chest' of the Queen).",
+      "chinese": "Wang Liang Er, part of the celestial charioteer."
+    }
+  },
+  {
+    "name": "Mirfak",
+    "alternateNames": [
+      "Alpha Persei"
+    ],
+    "ra": 51.08,
+    "dec": 49.861,
+    "magnitude": 1.79,
+    "spectralType": "F5Ib",
+    "distance": "510 ly",
+    "constellation": "Perseus",
+    "story": "A yellow-white supergiant and the brightest star in Perseus, surrounded by the Alpha Persei moving group.",
+    "culture_notes": {
+      "arabic": "Mirfaq al-Thurayya ('elbow of the Pleiades')."
+    }
+  },
+  {
+    "name": "Kochab",
+    "alternateNames": [
+      "Beta Ursae Minoris"
+    ],
+    "ra": 222.676,
+    "dec": 74.155,
+    "magnitude": 2.08,
+    "spectralType": "K4III",
+    "distance": "131 ly",
+    "constellation": "Ursa Minor",
+    "story": "Served as the North Pole star along with Pherkad from 1500 BC to 500 AD.",
+    "culture_notes": {
+      "arabic": "Al-Kawkab ('the star'), a remnant of its time as the pole star."
+    }
+  },
+  {
+    "name": "Thuban",
+    "alternateNames": [
+      "Alpha Draconis"
+    ],
+    "ra": 211.097,
+    "dec": 64.375,
+    "magnitude": 3.65,
+    "spectralType": "A0III",
+    "distance": "303 ly",
+    "constellation": "Draco",
+    "story": "Famed for being the North Pole star during the time the Egyptian Pyramids were built (approx 2700 BCE).",
+    "culture_notes": {
+      "arabic": "Thu'ban ('the basilisk' or 'the snake').",
+      "egyptian": "Highly revered as the undying star around which the heavens turned."
+    }
+  },
+  {
+    "name": "Alioth",
+    "alternateNames": [
+      "Epsilon Ursae Majoris"
+    ],
+    "ra": 193.507,
+    "dec": 55.959,
+    "magnitude": 1.76,
+    "spectralType": "A1p",
+    "distance": "81 ly",
+    "constellation": "Ursa Major",
+    "story": "The brightest star in Ursa Major and the third star in the handle of the Big Dipper.",
+    "culture_notes": {
+      "arabic": "Alyat ('fat tail of a sheep').",
+      "chinese": "Yu Heng, the Jade Sight Tube."
+    }
+  },
+  {
+    "name": "Alkaid",
+    "alternateNames": [
+      "Eta Ursae Majoris"
+    ],
+    "ra": 206.885,
+    "dec": 49.313,
+    "magnitude": 1.85,
+    "spectralType": "B3V",
+    "distance": "104 ly",
+    "constellation": "Ursa Major",
+    "story": "The star at the very end of the Big Dipper's handle.",
+    "culture_notes": {
+      "arabic": "Qa'id Banat Na'sh ('the leader of the daughters of the bier'), representing mourners following a coffin.",
+      "chinese": "Yao Guang, the Twinkling Brilliance."
+    }
+  },
+  {
+    "name": "Gacrux",
+    "alternateNames": [
+      "Gamma Crucis"
+    ],
+    "ra": 187.791,
+    "dec": -57.113,
+    "magnitude": 1.63,
+    "spectralType": "M3.5III",
+    "distance": "88 ly",
+    "constellation": "Crux",
+    "story": "A red giant that marks the top of the Southern Cross. It is the nearest M-class giant star to the Sun.",
+    "culture_notes": {
+      "polynesian": "Part of the great anchor (Te Punga) of the Milky Way canoe."
+    }
+  },
+  {
+    "name": "Shaula",
+    "alternateNames": [
+      "Lambda Scorpii"
+    ],
+    "ra": 263.402,
+    "dec": -37.103,
+    "magnitude": 1.62,
+    "spectralType": "B1.5IV",
+    "distance": "700 ly",
+    "constellation": "Scorpius",
+    "story": "The second brightest star in Scorpius, marking the deadly stinger at the tail of the scorpion.",
+    "culture_notes": {
+      "arabic": "Al-Shawlah ('the raised tail' of the scorpion).",
+      "polynesian": "The point of Maui's magic fishhook."
+    }
+  },
+  {
+    "name": "Rasalhague",
+    "alternateNames": [
+      "Alpha Ophiuchi"
+    ],
+    "ra": 263.733,
+    "dec": 12.56,
+    "magnitude": 2.07,
+    "spectralType": "A5III",
+    "distance": "48 ly",
+    "constellation": "Ophiuchus",
+    "story": "The brightest star in Ophiuchus, marking the head of the serpent bearer.",
+    "culture_notes": {
+      "arabic": "Ra's al-Hawwa ('Head of the Snake Charmer')."
+    }
+  },
+  {
+    "name": "Alphecca",
+    "alternateNames": [
+      "Alpha Coronae Borealis"
+    ],
+    "ra": 233.671,
+    "dec": 26.714,
+    "magnitude": 2.22,
+    "spectralType": "A0V",
+    "distance": "75 ly",
+    "constellation": "Corona Borealis",
+    "story": "An eclipsing binary star system marking the brightest jewel in the Northern Crown.",
+    "culture_notes": {
+      "greek": "The central gem in the crown given by Dionysus to Princess Ariadne.",
+      "arabic": "Nayyir al-Fakkah ('the bright star of the broken ring')."
+    }
+  },
+  {
+    "name": "Denebola",
+    "alternateNames": [
+      "Beta Leonis"
+    ],
+    "ra": 177.264,
+    "dec": 14.572,
+    "magnitude": 2.14,
+    "spectralType": "A3V",
+    "distance": "36 ly",
+    "constellation": "Leo",
+    "story": "Marks the tail of the Nemean Lion.",
+    "culture_notes": {
+      "arabic": "Dhanab al-Asad ('tail of the lion').",
+      "chinese": "Wu Di Zuo Yi (the first star of the Seat of the Five Emperors)."
+    }
+  },
+  {
+    "name": "Enif",
+    "alternateNames": [
+      "Epsilon Pegasi"
+    ],
+    "ra": 326.046,
+    "dec": 9.875,
+    "magnitude": 2.38,
+    "spectralType": "K2Ib",
+    "distance": "690 ly",
+    "constellation": "Pegasus",
+    "story": "An orange supergiant marking the nose of the winged horse Pegasus.",
+    "culture_notes": {
+      "arabic": "Anf ('the nose')."
+    }
+  },
+  {
+    "name": "Kaus Australis",
+    "alternateNames": [
+      "Epsilon Sagittarii"
+    ],
+    "ra": 276.043,
+    "dec": -34.384,
+    "magnitude": 1.85,
+    "spectralType": "B9.5III",
+    "distance": "143 ly",
+    "constellation": "Sagittarius",
+    "story": "The brightest star in Sagittarius, marking the southern base of the archer's bow.",
+    "culture_notes": {
+      "arabic": "Al-Qaws (the bow). The suffix is Latin for 'southern'."
+    }
+  },
+  {
+    "name": "Nunki",
+    "alternateNames": [
+      "Sigma Sagittarii"
+    ],
+    "ra": 283.816,
+    "dec": -26.296,
+    "magnitude": 2.05,
+    "spectralType": "B2.5V",
+    "distance": "228 ly",
+    "constellation": "Sagittarius",
+    "story": "Marks the vane of the archer's arrow in Sagittarius.",
+    "culture_notes": {
+      "mesopotamian": "One of the oldest star names, from Babylonian 'NUN-KI', meaning 'Star of the City of Eridu'."
+    }
+  },
+  {
+    "name": "Alphard",
+    "alternateNames": [
+      "Alpha Hydrae"
+    ],
+    "ra": 141.896,
+    "dec": -8.658,
+    "magnitude": 1.99,
+    "spectralType": "K3II-III",
+    "distance": "177 ly",
+    "constellation": "Hydra",
+    "story": "An orange giant that dominates a region of the sky devoid of other bright stars.",
+    "culture_notes": {
+      "arabic": "Al-Fard ('the solitary one').",
+      "chinese": "Xing Su Yi, the first star of the Star mansion."
+    }
+  },
+  {
+    "name": "Hamal",
+    "alternateNames": [
+      "Alpha Arietis"
+    ],
+    "ra": 31.793,
+    "dec": 23.462,
+    "magnitude": 2.01,
+    "spectralType": "K2IIICa",
+    "distance": "65 ly",
+    "constellation": "Aries",
+    "story": "The brightest star in Aries, it was highly significant in antiquity as it lay near the vernal equinox.",
+    "culture_notes": {
+      "arabic": "Ras al-Hamal ('head of the ram')."
+    }
+  },
+  {
+    "name": "Diphda",
+    "alternateNames": [
+      "Beta Ceti",
+      "Deneb Kaitos"
+    ],
+    "ra": 10.897,
+    "dec": -17.986,
+    "magnitude": 2.02,
+    "spectralType": "K0III",
+    "distance": "96 ly",
+    "constellation": "Cetus",
+    "story": "An orange giant, brightest star in the constellation of the sea monster Cetus.",
+    "culture_notes": {
+      "arabic": "Al-Difdi al-Thani ('the second frog'). Fomalhaut was the first frog."
+    }
+  },
+  {
+    "name": "Markab",
+    "alternateNames": [
+      "Alpha Pegasi"
+    ],
+    "ra": 346.19,
+    "dec": 15.205,
+    "magnitude": 2.48,
+    "spectralType": "B9III",
+    "distance": "133 ly",
+    "constellation": "Pegasus",
+    "story": "Forms the southwestern corner of the Great Square of Pegasus.",
+    "culture_notes": {
+      "arabic": "Markab ('the saddle' of the horse)."
+    }
+  },
+  {
+    "name": "Alpheratz",
+    "alternateNames": [
+      "Alpha Andromedae",
+      "Sirrah"
+    ],
+    "ra": 2.096,
+    "dec": 29.09,
+    "magnitude": 2.06,
+    "spectralType": "B8IV",
+    "distance": "97 ly",
+    "constellation": "Andromeda",
+    "story": "Historically shared between Pegasus and Andromeda, it connects the Great Square to the chained princess.",
+    "culture_notes": {
+      "arabic": "Surrat al-Faras ('the navel of the horse')."
+    }
+  },
+  {
+    "name": "Menkar",
+    "alternateNames": [
+      "Alpha Ceti"
+    ],
+    "ra": 45.569,
+    "dec": 4.089,
+    "magnitude": 2.54,
+    "spectralType": "M1.5IIIa",
+    "distance": "249 ly",
+    "constellation": "Cetus",
+    "story": "An aging red giant marking the open jaws of the sea monster Cetus.",
+    "culture_notes": {
+      "arabic": "Al-Minkhar ('the nostril')."
+    }
+  },
+  {
+    "name": "Mirach",
+    "alternateNames": [
+      "Beta Andromedae"
+    ],
+    "ra": 17.433,
+    "dec": 35.62,
+    "magnitude": 2.05,
+    "spectralType": "M0III",
+    "distance": "197 ly",
+    "constellation": "Andromeda",
+    "story": "A prominent red giant used as a guide star to locate the Triangulum Galaxy (M33) and Andromeda Galaxy (M31).",
+    "culture_notes": {
+      "arabic": "Al-Mi'zar ('the girdle' or 'loincloth' of Andromeda)."
     }
   }
 ]
