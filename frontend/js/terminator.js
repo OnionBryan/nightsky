@@ -39,33 +39,51 @@ class Terminator {
     }
 
     /**
-     * Calculate the subsolar point from current UTC time
-     * Returns { longitude, latitude } where the sun is directly overhead
+     * Calculate the subsolar point from current UTC time.
+     * Returns { longitude, latitude } where the sun is directly overhead.
+     *
+     * Uses a low-order solar ephemeris (mean anomaly + equation of center)
+     * including equation-of-time effects. Typical error vs high-precision
+     * ephemerides: ~0.2–0.5° (vs ~1–4° for a pure sinusoidal model that
+     * ignores EoT). Adequate for day/night terminator visualization.
      */
     getSolarPosition(date) {
         const now = date || new Date();
-        const currentTime = now.getTime();
 
-        // Days since J2000.0 epoch (Jan 1, 2000 12:00 UTC)
-        // Julian Date at Unix epoch (Jan 1, 1970) = 2440587.5
-        // J2000.0 = 2451545.0
-        const days = (currentTime / 86400000) + 2440587.5 - 2451545;
+        // Julian centuries from J2000.0 (UT)
+        const jd = now.getTime() / 86400000 + 2440587.5;
+        const n = jd - 2451545.0; // days since J2000.0
 
-        // Solar declination (latitude where sun is directly overhead)
-        // Ranges from -23.44° (winter solstice) to +23.44° (summer solstice)
-        // The 81 offset accounts for the vernal equinox (~March 21)
-        const declination = 23.44 * Math.sin((2 * Math.PI / 365.25) * (days - 81));
+        // Mean longitude and anomaly (deg)
+        const L = (280.460 + 0.9856474 * n) % 360;
+        const gDeg = (357.528 + 0.9856003 * n) % 360;
+        const g = gDeg * Math.PI / 180;
 
-        // Hour angle (longitude where sun is directly overhead)
-        // Sun is at 0° longitude at 12:00 UTC, moves 15°/hour westward
-        const millisecondsInDay = 86400000;
-        const solarTime = (now.getUTCHours() * 3600 + now.getUTCMinutes() * 60 +
-                          now.getUTCSeconds()) * 1000 + now.getUTCMilliseconds();
-        const hourAngle = 180 - (solarTime / millisecondsInDay) * 360;
+        // Ecliptic longitude (equation of center)
+        const lambdaDeg = L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g);
+        const lambda = lambdaDeg * Math.PI / 180;
+
+        // Obliquity of the ecliptic
+        const eps = (23.439 - 0.0000004 * n) * Math.PI / 180;
+
+        // Declination
+        const sinDec = Math.sin(eps) * Math.sin(lambda);
+        const declination = Math.asin(Math.max(-1, Math.min(1, sinDec))) * 180 / Math.PI;
+
+        // Right ascension (radians → hours)
+        const ra = Math.atan2(Math.cos(eps) * Math.sin(lambda), Math.cos(lambda));
+        const raHours = ((ra * 180 / Math.PI) / 15 + 24) % 24;
+
+        // GMST (hours) — IAU-style linear term sufficient here
+        const gmstHours = (18.697374558 + 24.06570982441908 * n) % 24;
+
+        // Subsolar longitude: where hour angle is zero
+        let longitude = (raHours - gmstHours) * 15;
+        longitude = ((longitude + 180) % 360) - 180;
 
         return {
-            longitude: hourAngle,      // Subsolar longitude
-            latitude: declination      // Subsolar latitude
+            longitude: longitude,
+            latitude: declination
         };
     }
 

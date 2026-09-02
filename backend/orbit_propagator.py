@@ -160,11 +160,16 @@ class OrbitPropagator:
             "current_orbit_number": current_orbit
         }
 
-    def find_polar_crossings(self, duration_hours: int = 24) -> Dict:
+    def find_equator_crossings(self, duration_hours: int = 24) -> Dict:
         """
-        Find times when satellite crosses polar regions.
+        Find ascending/descending *node* crossings (equator crossings).
 
-        Returns dict with ascending (northbound) and descending (southbound) crossings.
+        - Ascending node: south → north (lat crosses 0° northbound)
+        - Descending node: north → south (lat crosses 0° southbound)
+
+        Note: Historically exposed as ``find_polar_crossings`` / ``/api/polar-crossings``,
+        but the implementation has always been equator-node detection, not polar
+        passage. Prefer this name; ``find_polar_crossings`` remains as an alias.
         """
         now = datetime.now(timezone.utc)
         positions = self.generate_track(
@@ -173,46 +178,76 @@ class OrbitPropagator:
             step_seconds=30
         )
 
-        ascending = []  # Crossing northward (lat increasing)
-        descending = []  # Crossing southward (lat decreasing)
+        ascending = []
+        descending = []
 
         for i in range(1, len(positions)):
-            prev_lat = positions[i-1]["latitude"]
+            prev_lat = positions[i - 1]["latitude"]
             curr_lat = positions[i]["latitude"]
+            prev_lon = positions[i - 1]["longitude"]
+            curr_lon = positions[i]["longitude"]
 
-            # Check for equator crossing
-            if prev_lat < 0 and curr_lat >= 0:
-                ascending.append({
-                    "time": positions[i]["timestamp"],
-                    "longitude": positions[i]["longitude"]
-                })
-            elif prev_lat > 0 and curr_lat <= 0:
-                descending.append({
-                    "time": positions[i]["timestamp"],
-                    "longitude": positions[i]["longitude"]
-                })
+            # Linear interpolate crossing time/lon within the 30 s step
+            if prev_lat < 0 <= curr_lat or prev_lat > 0 >= curr_lat:
+                denom = curr_lat - prev_lat
+                if abs(denom) < 1e-12:
+                    continue
+                frac = (0.0 - prev_lat) / denom
+                # Handle antimeridian for longitude interpolation
+                dlon = curr_lon - prev_lon
+                if dlon > 180:
+                    dlon -= 360
+                elif dlon < -180:
+                    dlon += 360
+                cross_lon = prev_lon + frac * dlon
+                if cross_lon > 180:
+                    cross_lon -= 360
+                elif cross_lon < -180:
+                    cross_lon += 360
+
+                t0 = datetime.fromisoformat(positions[i - 1]["timestamp"])
+                t1 = datetime.fromisoformat(positions[i]["timestamp"])
+                cross_t = t0 + (t1 - t0) * frac
+                entry = {
+                    "time": cross_t.isoformat(),
+                    "longitude": round(cross_lon, 4),
+                }
+                if prev_lat < 0 <= curr_lat:
+                    ascending.append(entry)
+                else:
+                    descending.append(entry)
 
         return {
-            "ascending_nodes": ascending[:10],  # Limit to 10
-            "descending_nodes": descending[:10]
+            "ascending_nodes": ascending[:10],
+            "descending_nodes": descending[:10],
+            "note": "Equator (node) crossings, not polar passages",
         }
+
+    def find_polar_crossings(self, duration_hours: int = 24) -> Dict:
+        """Deprecated alias for :meth:`find_equator_crossings` (kept for API compat)."""
+        return self.find_equator_crossings(duration_hours)
 
 
 def generate_swath_polygon(center_lat: float, center_lon: float,
                            radius_km: float = 1530) -> List[List[float]]:
     """
-    Generate a geodesic circle polygon for VIIRS swath visualization.
+    Generate a geodesic *circle* centered on the sub-satellite point.
+
+    **Science note:** This is a nadir-centered footprint disk of radius
+    ``radius_km``, *not* the true VIIRS scan-line swath. Real VIIRS imaging
+    is a cross-track strip (~3060 km wide) along the ground track; the orbit
+    frontend ``drawSwathStrip`` implements that geometry. Use this circle only
+    for a rough "current coverage disk" visualization.
 
     Args:
         center_lat: Center latitude in degrees
         center_lon: Center longitude in degrees
-        radius_km: Swath half-width in km (default: 1530 km for VIIRS)
+        radius_km: Disk radius in km (default 1530 ≈ VIIRS half-swath width)
 
     Returns:
         List of [lon, lat] coordinate pairs forming the circle
     """
-    earth_radius = 6371.0  # km
-    angular_radius = math.degrees(radius_km / earth_radius)
+    earth_radius = 6371.0  # km mean radius (consistent with haversine / strip)
 
     points = []
     for i in range(37):  # 36 segments + closing point

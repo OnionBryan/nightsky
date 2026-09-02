@@ -321,8 +321,14 @@ def api_swath():
 
 
 @app.route("/api/polar-crossings")
+@app.route("/api/equator-crossings")
 def api_polar_crossings():
-    """Return upcoming polar crossing times.
+    """Return upcoming equator (node) crossings.
+
+    Historical path name ``/api/polar-crossings`` is retained for compatibility;
+    the data are ascending/descending *node* (equator) crossings, not polar
+    passages. Prefer ``/api/equator-crossings``.
+
 
     Query params:
         satellite: satellite key (default: noaa21)

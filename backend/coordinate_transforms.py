@@ -178,14 +178,18 @@ def teme_to_geodetic(r_teme: list, v_teme: list, dt: datetime) -> dict:
     r_ecef, v_ecef = teme_to_ecef(r_teme, v_teme, jd, fr)
     lat, lon, alt = ecef_to_geodetic(r_ecef)
 
-    # Velocity magnitude
-    v_mag = math.sqrt(sum(v**2 for v in v_ecef))
+    # Inertial (TEME) speed ≈ classical "orbital velocity".
+    # ECEF speed differs by Earth-rotation contribution (~0.1–0.5 km/s for LEO).
+    v_inertial = math.sqrt(sum(v ** 2 for v in v_teme))
+    v_ecef_mag = math.sqrt(sum(v ** 2 for v in v_ecef))
 
     return {
         "latitude": round(lat, 6),
         "longitude": round(lon, 6),
         "altitude_km": round(alt, 3),
-        "velocity_km_s": round(v_mag, 4)
+        # Primary velocity is inertial (matches common orbital-velocity usage)
+        "velocity_km_s": round(v_inertial, 4),
+        "velocity_ecef_km_s": round(v_ecef_mag, 4),
     }
 
 

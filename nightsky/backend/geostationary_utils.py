@@ -78,20 +78,30 @@ def normalize_longitude(lon: float) -> float:
 def calculate_geo_look_angles(
     observer_lat: float,
     observer_lon: float,
-    sat_longitude: float
+    sat_longitude: float,
+    observer_alt_km: float = 0.0,
 ) -> Dict[str, Any]:
     """
     Calculate azimuth and elevation for a geostationary satellite.
 
+    Uses ECEF geometry on a spherical Earth of radius R_EARTH, then projects
+    the observer→satellite line-of-sight into the local East-North-Up (ENU)
+    frame. Azimuth is measured clockwise from true north (0–360°). Elevation
+    is the angle above the local horizon.
+
+    This replaces an earlier spherical-trig form that produced large azimuth
+    errors in the southern hemisphere and for large longitude offsets.
+
     Args:
         observer_lat: Observer latitude in degrees (-90 to +90)
         observer_lon: Observer longitude in degrees (-180 to +180)
-        sat_longitude: Satellite orbital longitude in degrees
+        sat_longitude: Satellite orbital longitude in degrees (sub-sat lon)
+        observer_alt_km: Observer height above the sphere (km)
 
     Returns:
-        dict with azimuth, elevation, slant_range, visible
+        dict with azimuth, elevation, slant_range, visible, delta_longitude
     """
-    # Check if observer is too far north/south
+    # Geometric horizon limit for a spherical Earth + GEO radius
     if abs(observer_lat) > MAX_VISIBLE_LATITUDE:
         return {
             "azimuth": None,
@@ -101,62 +111,55 @@ def calculate_geo_look_angles(
             "reason": f"Observer latitude {observer_lat}° exceeds maximum {MAX_VISIBLE_LATITUDE}°"
         }
 
-    # Calculate delta longitude
     delta_lon = normalize_longitude(sat_longitude - observer_lon)
 
-    # Convert to radians
-    lat_rad = math.radians(observer_lat)
-    delta_rad = math.radians(delta_lon)
+    lat = math.radians(observer_lat)
+    lon = math.radians(observer_lon)
+    slon = math.radians(sat_longitude)
 
-    # Calculate azimuth using spherical trigonometry
-    # Azimuth measured clockwise from North
-    az_num = math.sin(delta_rad)
-    cos_lat = math.cos(lat_rad)
-    sin_lat = math.sin(lat_rad)
-    cos_delta = math.cos(delta_rad)
+    r_obs = R_EARTH + observer_alt_km
+    # Observer ECEF (spherical Earth; GEO math is already spherical)
+    o_x = r_obs * math.cos(lat) * math.cos(lon)
+    o_y = r_obs * math.cos(lat) * math.sin(lon)
+    o_z = r_obs * math.sin(lat)
 
-    # Avoid division by zero near poles
-    if abs(cos_lat) < 1e-10:
+    # GEO satellite on the equatorial belt
+    s_x = R_GEO * math.cos(slon)
+    s_y = R_GEO * math.sin(slon)
+    s_z = 0.0
+
+    # Line-of-sight vector observer → satellite
+    dx = s_x - o_x
+    dy = s_y - o_y
+    dz = s_z - o_z
+
+    # Local ENU basis at observer
+    sin_lat, cos_lat = math.sin(lat), math.cos(lat)
+    sin_lon, cos_lon = math.sin(lon), math.cos(lon)
+
+    east = (-sin_lon, cos_lon, 0.0)
+    north = (-sin_lat * cos_lon, -sin_lat * sin_lon, cos_lat)
+    up = (cos_lat * cos_lon, cos_lat * sin_lon, sin_lat)
+
+    e = dx * east[0] + dy * east[1] + dz * east[2]
+    n = dx * north[0] + dy * north[1] + dz * north[2]
+    u = dx * up[0] + dy * up[1] + dz * up[2]
+
+    slant_range = math.sqrt(dx * dx + dy * dy + dz * dz)
+    horiz = math.hypot(e, n)
+
+    if horiz < 1e-12 and abs(u) < 1e-12:
         return {
             "azimuth": None,
             "elevation": None,
             "slant_range_km": None,
             "visible": False,
-            "reason": "Observer too close to pole"
+            "reason": "Degenerate geometry"
         }
 
-    # Full azimuth calculation
-    azimuth = math.degrees(math.atan2(
-        math.tan(delta_rad),
-        math.sin(lat_rad)
-    ))
-
-    # Adjust azimuth to 0-360 range
-    if delta_lon < 0:
-        azimuth = 180 + azimuth
-    else:
-        azimuth = 180 - azimuth
-
-    azimuth = azimuth % 360
-
-    # Calculate angular distance from observer to sub-satellite point
-    cos_d = cos_lat * cos_delta
-
-    # Calculate elevation using plane trigonometry
-    # El = arctan[(cos(d) - R/r) / sin(d)]
-    sin_d = math.sqrt(1 - cos_d**2)
-
-    if sin_d < 1e-10:
-        # Observer directly under satellite (equator, same longitude)
-        elevation = 90.0
-    else:
-        el_num = cos_d - (R_EARTH / R_GEO)
-        elevation = math.degrees(math.atan2(el_num, sin_d))
-
-    # Calculate slant range
-    slant_range = math.sqrt(
-        R_GEO**2 + R_EARTH**2 - 2 * R_GEO * R_EARTH * cos_d
-    )
+    # atan2(east, north): 0° = north, 90° = east (clockwise from north)
+    azimuth = math.degrees(math.atan2(e, n)) % 360.0
+    elevation = math.degrees(math.atan2(u, horiz)) if horiz > 1e-12 else (90.0 if u > 0 else -90.0)
 
     visible = elevation >= 0
 

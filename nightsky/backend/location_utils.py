@@ -171,26 +171,81 @@ def parse_coordinates(coord_string: str) -> Optional[Tuple[float, float]]:
         return None
 
 
+def _solar_elevation_deg(lat: float, lon: float, dt: datetime) -> float:
+    """
+    Approximate geometric solar elevation (degrees) at (lat, lon, dt).
+
+    Uses a compact solar-position model (declination + equation of time)
+    accurate to ~0.3–1° for civil day/night decisions. Not a substitute for
+    Skyfield twilight endpoints (see /api/nightsky/twilight).
+    """
+    import math
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ZoneInfo("UTC"))
+    utc = dt.astimezone(ZoneInfo("UTC"))
+
+    # Days since J2000.0 (UTC noon epoch approximation)
+    # Unix epoch JD = 2440587.5; J2000 = 2451545.0
+    day_frac = (
+        utc.hour * 3600 + utc.minute * 60 + utc.second + utc.microsecond / 1e6
+    ) / 86400.0
+    # Date ordinal from 2000-01-01
+    y, m, d = utc.year, utc.month, utc.day
+    # Meeus-style day number relative to J2000
+    jd = (
+        367 * y
+        - (7 * (y + (m + 9) // 12)) // 4
+        + (275 * m) // 9
+        + d
+        + 1721013.5
+        + day_frac
+    )
+    n = jd - 2451545.0
+
+    # Mean longitude and anomaly (deg)
+    L = (280.460 + 0.9856474 * n) % 360.0
+    g = math.radians((357.528 + 0.9856003 * n) % 360.0)
+    # Ecliptic longitude
+    lam = math.radians(L + 1.915 * math.sin(g) + 0.020 * math.sin(2 * g))
+    # Obliquity
+    eps = math.radians(23.439 - 0.0000004 * n)
+    # Declination
+    sin_dec = math.sin(eps) * math.sin(lam)
+    dec = math.asin(max(-1.0, min(1.0, sin_dec)))
+    # Right ascension
+    ra = math.atan2(math.cos(eps) * math.sin(lam), math.cos(lam))
+    # GMST (hours) then local hour angle
+    gmst_hours = (18.697374558 + 24.06570982441908 * n) % 24.0
+    lst_hours = (gmst_hours + lon / 15.0) % 24.0
+    ha = math.radians(lst_hours * 15.0 - math.degrees(ra))
+
+    lat_r = math.radians(lat)
+    sin_el = (
+        math.sin(lat_r) * math.sin(dec)
+        + math.cos(lat_r) * math.cos(dec) * math.cos(ha)
+    )
+    return math.degrees(math.asin(max(-1.0, min(1.0, sin_el))))
+
+
 def is_nighttime(lat: float, lon: float, dt: Optional[datetime] = None) -> bool:
     """
-    Check if it's currently nighttime at the given location.
+    Check if the Sun is geometrically below the horizon at the location.
 
-    Simple approximation based on hour - for more accuracy,
-    would need to calculate actual sunset/sunrise times.
+    Uses approximate solar elevation (no refraction). For civil/nautical/
+    astronomical twilight boundaries, use the Skyfield-backed twilight API.
 
     Args:
         lat: Latitude
         lon: Longitude
-        dt: Optional datetime (defaults to now)
+        dt: Optional datetime (defaults to now, interpreted in UTC if naive)
 
     Returns:
-        True if approximately nighttime (between 6 PM and 6 AM local)
+        True if solar elevation < 0°
     """
-    local_dt = get_local_datetime(lat, lon, dt)
-    hour = local_dt.hour
-
-    # Simple approximation: nighttime between 6 PM and 6 AM
-    return hour >= 18 or hour < 6
+    if dt is None:
+        dt = datetime.now(ZoneInfo("UTC"))
+    return _solar_elevation_deg(lat, lon, dt) < 0.0
 
 
 # Cardinal direction utilities
