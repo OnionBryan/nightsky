@@ -8,3 +8,7 @@ node_modules/
 .idea/
 *.log
 .env
+.edge-pids/
+.edge-logs/
+server_bin
+*.bak-*
