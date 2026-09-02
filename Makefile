@@ -2,9 +2,10 @@
 #  NOAA-21 Orbit & Night Sky Viewer - Makefile
 # ============================================================
 
-.PHONY: install run stop status clean help
+.PHONY: install run stop status clean help science edge-science edge-nightsky edge-go edge edge-start edge-stop edge-status edge-restart
 
 PORTS := 5050 5051 8080 8081
+EDGE_PORTS := 50051 50052 5050 5051
 
 help: ## Show this help
 	@echo ""
@@ -56,6 +57,48 @@ status: ## Show which services are running
 			echo "  [STOPPED] $$name :$$port"; \
 		fi; \
 	done
+	@echo ""
+
+science: ## Run science baseline regression tests (orbital + sky)
+	@backend/venv/bin/python -m unittest tests.test_science_baseline -v
+
+edge-science: ## Start Python orbit gRPC worker on :50051
+	@backend/venv/bin/python -m backend.orbit_science.server
+
+edge-nightsky: ## Start Python nightsky gRPC worker on :50052
+	@backend/venv/bin/python -m backend.nightsky_science.server
+
+edge-go: ## Start Go HTTP edge :5050 (orbit) + :5051 (nightsky)
+	@go run ./cmd/server
+
+edge-start: ## Supervised start: science workers + Go edge (one listener per port)
+	@bash scripts/edge-stack.sh start
+
+edge-stop: ## Stop supervised edge stack (ports 50051/50052/5050/5051)
+	@bash scripts/edge-stack.sh stop
+
+edge-status: ## Show edge stack listeners
+	@bash scripts/edge-stack.sh status
+
+edge-restart: ## Restart supervised edge stack
+	@bash scripts/edge-stack.sh restart
+
+edge: ## Print how to run the full gRPC edge stack
+	@echo ""
+	@echo "  Recommended (supervised, single-listener):"
+	@echo "    make edge-start"
+	@echo "    make edge-status"
+	@echo "    make edge-stop"
+	@echo ""
+	@echo "  Manual (three terminals):"
+	@echo "    make edge-science    # :50051"
+	@echo "    make edge-nightsky   # :50052"
+	@echo "    make edge-go         # :5050 + :5051"
+	@echo ""
+	@echo "  Probe:"
+	@echo "    curl -s http://localhost:5050/api/health"
+	@echo "    curl -s http://localhost:5051/api/nightsky/health"
+	@echo "    curl -s 'http://localhost:5051/api/nightsky/moon?lat=40.7&lon=-74'"
 	@echo ""
 
 clean: ## Remove venv, caches, and compiled files
